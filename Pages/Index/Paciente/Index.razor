@@ -1,0 +1,145 @@
+﻿@layout LabRamosLayout
+@page "/"
+@using LaboratorioRamos.Data.DtoPaciente
+@using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
+@using LaboratorioRamos.Data.DtoStateProvider
+@inject HttpClient Http;
+@inject IConfiguration _config;
+@inject AuthenticationStateProvider _authStateProvider
+@inject NavigationManager NavigationManager
+@inject Cryp Cryp;
+@inject ISnackbar Snackbar
+
+<PageTitle>Login</PageTitle>
+
+
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="7" md="12" Class="d-flex justify-center absolute" style="top:15%;">
+        <EditForm Model="@dtoLoginPaciente" OnValidSubmit="OnValidSubmit" style="width: 500px;">
+            <DataAnnotationsValidator />
+            <MudGrid>
+                <MudItem xs="12" md="12" sm="12">
+                    <MudCard>
+                        <MudCardMedia Image="Images/LogotipoWeb.png" Height="175" />
+                        <MudCardContent>
+                            <MudTextField Label="Usuario" HelperText="Max. 16 dígitos"
+                                          @bind-Value="dtoLoginPaciente.Usuario" For="@(() => dtoLoginPaciente.Usuario)" MaxLength="16" />
+                            <MudTextField Label="Contraseña" HelperText="Máx. 8 dígitos" Class="mt-3"
+                                          @bind-Value="dtoLoginPaciente.Contraseña" For="@(() => dtoLoginPaciente.Contraseña)" InputType="InputType.Password" MaxLength="8" />
+                        </MudCardContent>
+                        <MudCardActions>
+                            @if (ValidateData)
+                            {
+                                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Disabled Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                            }
+                            else
+                            {
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Ingresar</MudButton>
+                            }
+                            
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" sm="7" md="12" style="text-align: center;">
+                    <MudLink Href="#" Typo="Typo.body2" Align="Align.Center">Manual de Usuario</MudLink>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </MudItem>
+</MudGrid>
+
+
+@code{
+    #region Declaracion de Variables y Objetos
+    private DtoLogin dtoLogin = new();
+    private DtoLogin dtoLoginPaciente = new();
+    private List<DtoPaciente> dtoPaciente = new();
+    private DtoRequestPaciente dtoEequestPaciente = new();
+    private bool ValidateData = false;
+    private string UrlAuth = "LabRamos/services/identity/api/profile/login";
+    private string UrlUsuario = "LabRamos/services/records/api/MedicalRecord/now";
+    #endregion
+
+    #region Funcionalidad Página
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    void ShowSnack(string message)
+    {
+        Snackbar.Add($"Atención: {message}", Severity.Warning);
+    }
+
+    #endregion
+
+    #region Operaciones
+    async void OnValidSubmit(EditContext context)
+    {
+        ValidateData = true;
+        dtoLogin = new()
+        {
+            Usuario = _config.GetSection("UsrLoginGral:User").Value,
+            Contraseña = _config.GetSection("UsrLoginGral:Pwd").Value,
+        };
+        var ses = await Http.PostAsJsonAsync<DtoLogin>(UrlAuth, dtoLogin);
+        Http.DefaultRequestHeaders.Remove("Authorization");
+        switch (ses.StatusCode)
+        {
+            case System.Net.HttpStatusCode.OK:
+                var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
+                dtoEequestPaciente = new()
+                {
+                        Expediente = dtoLoginPaciente.Usuario
+                };
+                Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
+                var sesPaciente = await Http.PostAsJsonAsync<DtoRequestPaciente>(UrlUsuario, dtoEequestPaciente);
+                switch (sesPaciente.StatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                        try
+                        {
+                            dtoPaciente = await sesPaciente.Content.ReadFromJsonAsync<List<DtoPaciente>>();
+                            if (dtoPaciente.Count>0)
+                            {
+                                dtoPaciente[0].Token = result.Token;
+                                string json = JsonConvert.SerializeObject(dtoPaciente);
+                                var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+                                await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+                                    {
+                                        testsuncretr = Cryp.Encripta(json),
+                                        Type=1
+                                    });
+                                NavigationManager.NavigateTo("/Inicio", true);
+                                ValidateData = false;
+                            }
+                            else
+                            {
+                                Http.DefaultRequestHeaders.Remove("Authorization");
+                                ShowSnack("¡El Paciente no existe, favor de verificar!");
+                                ValidateData = false;
+                            }
+
+                        }
+                        catch (Exception ex)
+                        {
+                            ValidateData = false;
+                        }
+
+
+                        break;
+                }
+
+
+                break;
+            case System.Net.HttpStatusCode.NoContent:
+                ValidateData = false;
+                break;
+            default:
+                break;
+        }
+        StateHasChanged();
+    }
+    #endregion
+	
+}

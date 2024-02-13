@@ -1,0 +1,144 @@
+﻿@layout LabRamosLayout
+@page "/Empresa"
+@using LaboratorioRamos.Data.DtoPaciente
+@using LaboratorioRamos.Data.DtoEmpresa
+@using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
+@using LaboratorioRamos.Data.DtoStateProvider
+@inject HttpClient Http;
+@inject IConfiguration _config;
+@inject AuthenticationStateProvider _authStateProvider
+@inject NavigationManager NavigationManager
+@inject Cryp Cryp;
+@inject ISnackbar Snackbar
+
+<PageTitle>Login</PageTitle>
+
+
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="7" md="12" Class="d-flex justify-center absolute" style="top:15%;">
+        <EditForm Model="@dtoLoginEmpresa" OnValidSubmit="OnValidSubmit" style="width: 500px;">
+            <DataAnnotationsValidator />
+            <MudGrid>
+                <MudItem xs="12" md="12" sm="12">
+                    <MudCard>
+                        <MudCardMedia Image="Images/LogotipoWeb.png" Height="175" />
+                        <MudCardContent>
+                            <MudTextField Label="Usuario" HelperText="Max. 16 dígitos"
+                                          @bind-Value="dtoLoginEmpresa.Usuario" For="@(() => dtoLoginEmpresa.Usuario)" MaxLength="16" />
+                            <MudTextField Label="Contraseña" HelperText="Máx. 8 dígitos" Class="mt-3"
+                                          @bind-Value="dtoLoginEmpresa.Contraseña" For="@(() => dtoLoginEmpresa.Contraseña)" InputType="InputType.Password" MaxLength="8" />
+                        </MudCardContent>
+                        <MudCardActions>
+                            @if (ValidateData)
+                            {
+                                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                            }
+                            else
+                            {
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Ingresar</MudButton>
+                            }
+
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" sm="7" md="12" style="text-align: center;">
+                    <MudLink Href="#" Typo="Typo.body2" Align="Align.Center">Manual de Usuario</MudLink>
+                </MudItem>
+            </MudGrid>
+        </EditForm>
+    </MudItem>
+</MudGrid>
+
+
+@code {
+    #region Declaracion de Variables y Objetos
+    private DtoLoginEmpresa dtoLogin = new();
+    private DtoLoginEmpresa dtoLoginEmpresa = new();
+    private List<DtoEmpresa> LstEmpresa = new();
+    private DtoEmpresa ObjEmpresa = new();
+
+    private bool ValidateData = false;
+    private string UrlAuth = "LabRamos/services/identity/api/profile/login";
+    private string UrlEmpresa = "LabRamos/services/catalogo/api/Company/all/";
+    #endregion
+
+    #region Funcionalidad Página
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+    }
+
+    void ShowSnack(string message)
+    {
+        Snackbar.Add($"Atención:  {message}", Severity.Warning);
+    }
+
+    #endregion
+
+    #region Operaciones
+    async void OnValidSubmit(EditContext context)
+    {
+        ValidateData = true;
+        dtoLogin = new()
+            {
+                Usuario = _config.GetSection("UsrLoginGral:User").Value.Trim(),
+                Contraseña = _config.GetSection("UsrLoginGral:Pwd").Value.Trim(),
+            };
+        var ses = await Http.PostAsJsonAsync<DtoLoginEmpresa>(UrlAuth, dtoLogin);
+        Http.DefaultRequestHeaders.Remove("Authorization");
+        switch (ses.StatusCode)
+        {
+            case System.Net.HttpStatusCode.OK:
+                try
+                {
+                    var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
+                    Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
+                    LstEmpresa = await Http.GetFromJsonAsync<List<DtoEmpresa>>(UrlEmpresa + "/" + dtoLoginEmpresa.Usuario.Trim());
+                    if (LstEmpresa.Count() == 0)
+                    {
+                        Http.DefaultRequestHeaders.Remove("Authorization");
+                        ShowSnack("¡El Médico no existe, favor de verificar!");
+                        ValidateData = false;
+                    }
+                    else
+                    {
+                        ObjEmpresa = LstEmpresa.FirstOrDefault(op => op.Clave.Trim().ToUpper().Equals(dtoLoginEmpresa.Usuario.Trim().ToUpper()));
+                        if (ObjEmpresa.Contrasena.Trim().Equals(dtoLoginEmpresa.Contraseña.Trim()))
+                        {
+                            ObjEmpresa.Token = result.Token;
+                            string json = JsonConvert.SerializeObject(ObjEmpresa);
+                            var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+                            await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+                                {
+                                    testsuncretr = Cryp.Encripta(json),
+                                    Type = 3,
+                                });
+                            NavigationManager.NavigateTo("/Inicio", true);
+                            ValidateData = false;
+                        }
+                        else
+                        {
+                            Http.DefaultRequestHeaders.Remove("Authorization");
+                            ShowSnack("¡La Contraseña es incorrecta, favor de verificar!");
+                            ValidateData = false;
+                        }
+                        
+                    }
+                }
+                catch (Exception ex)
+                {
+                    var t = "";
+                }
+                
+                break;
+            case System.Net.HttpStatusCode.NoContent:
+                ValidateData = false;
+                break;
+            default:
+                break;
+        }
+        StateHasChanged();
+    }
+    #endregion
+
+}

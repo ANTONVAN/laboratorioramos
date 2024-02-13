@@ -1,0 +1,52 @@
+﻿@page "/Inicio"
+
+@using LaboratorioRamos.Data.DtoPaciente
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider _authStateProvider
+@inject Cryp Cryp;
+
+<MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+
+<h3>Paciente @msg</h3>
+
+
+
+@code {
+    #region Declaración de variables
+
+    private string? msg = "";
+    private int TypeUser = 0;
+    private List<DtoPaciente> dtoPaciente = new();
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Home", href: "/", icon: Icons.Material.Filled.Home),
+    };
+
+    #endregion
+
+    #region Fusiones Página
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        //AuthenticationState authState = await _authStateProvider.GetAuthenticationStateAsync();
+        var authState = await _authStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+        else
+        {
+            var idenUser = authState.User.Claims.ToList();
+            TypeUser = int.Parse(idenUser[1].Value);
+
+            NavigationManager.NavigateTo(TypeUser == 1 ? "/ConsultaResultadosPaciente/1/0" : TypeUser == 2 ? "/ConsultaExpedientesMedico/" : "/ConsultaExpedientesEmpresa/", true);
+            
+            
+        }
+        
+    }
+    #endregion
+    
+
+    
+}

@@ -1,0 +1,55 @@
+﻿@inject AuthenticationStateProvider _authStateProvider;
+@inject NavigationManager NavigationManager
+
+
+<MudNavMenu>
+    @switch (TypeUser)
+    {
+        case 1:
+            <MudNavLink Href="ConsultaResultadosPaciente/1/0" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">Consulta de Resultados</MudNavLink>
+            <MudNavLink Href="ConsultaGraficaPaciente" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.StackedBarChart">Gráficas</MudNavLink>
+            break;
+        case 2:
+            <MudNavLink Href="ConsultaExpedientesMedico" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Consulta de Expedientes</MudNavLink>
+            <MudNavLink Href="ConsultaResultadosPacientesMedico" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">Consulta de Resultados</MudNavLink>
+            break;
+        case 3:
+            <MudNavLink Href="ConsultaExpedienteEmpresa" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Pacientes</MudNavLink>
+            <MudNavLink Href="ConsultaResultadosPacientesEmpresa" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">Consulta de Resultados</MudNavLink>
+            break;
+    }
+    
+    <MudNavLink OnClick="@(()=> NavigateToExit())" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout" >Salir</MudNavLink>
+    
+</MudNavMenu>
+
+
+@code {
+
+    #region Declaración de variables
+    private int TypeUser = 0;
+
+    #endregion
+
+    #region Fusiones Página
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var authState = await _authStateProvider.GetAuthenticationStateAsync();
+        var idenUser = authState.User.Claims.ToList();
+        TypeUser = int.Parse(idenUser[1].Value);
+
+    }
+
+    private async void NavigateToExit()
+    {
+        var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+        await cusAuthStateProvider.UpdAuthenticationState(null);
+        NavigationManager.NavigateTo("/");
+    }
+    #endregion
+
+
+
+}
