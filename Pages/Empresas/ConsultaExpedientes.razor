@@ -30,7 +30,7 @@ else
     <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
     <MudGrid>
         <MudItem xs="12" sm="7" md="12">
-            <MudText Align="Align.Center" Typo="Typo.h4">Consulta de Resultados</MudText>
+            <MudText Align="Align.Center" Typo="Typo.h4" style="color: #0d37a8;">Consulta de Resultados</MudText>
         </MudItem>
         <MudPaper Class="pa-4" Elevation="4" Style="width:100%">
             <MudGrid>
@@ -64,7 +64,7 @@ else
         <br />
         <MudTable Class="mt-4" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;">
                 <ToolBarContent>
-                    <MudText Typo="Typo.h6">Consulta de Expedientes</MudText>
+                <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
                     <MudSpacer />
                 <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/>
                 <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Success" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
@@ -78,11 +78,11 @@ else
                     <col />
                 </ColGroup>
                 <HeaderContent>
-                    <MudTh>Expediente</MudTh>
-                    <MudTh>Nombre</MudTh>
-                    <MudTh>Edad</MudTh>
-                    <MudTh>Teléfono</MudTh>
-                    <MudTh>Detalles</MudTh>
+                <MudTh Style="color:#921313">Expediente</MudTh>
+                <MudTh Style="color:#921313">Nombre</MudTh>
+                <MudTh Style="color:#921313">Edad</MudTh>
+                <MudTh Style="color:#921313">Teléfono</MudTh>
+                <MudTh Style="color:#921313">Detalles</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel=">Expediente" Style="font-weight:bolder">@context.Expediente</MudTd>

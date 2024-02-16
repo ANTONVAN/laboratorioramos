@@ -39,7 +39,7 @@ else
     <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
     <MudGrid>
         <MudItem xs="12" sm="7" md="12">
-            <MudText Align="Align.Center" Typo="Typo.h4">Consulta de Resultados</MudText>
+            <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Consulta de Resultados</MudText>
         </MudItem>
         <MudPaper Class="pa-4" Elevation="4" Style="width:100%">
             <MudGrid>
@@ -86,7 +86,7 @@ else
         <br/>
         <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;">
             <ToolBarContent>
-                <MudText Typo="Typo.h6">Impresión de Resultados</MudText>
+                <MudText Typo="Typo.h6" style="color: #0d37a8;">Impresión de Resultados</MudText>
                     @if (ValidateData)
                 {
                     <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Large" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
@@ -109,9 +109,9 @@ else
             </ColGroup>
             <HeaderContent>
                 <MudTh></MudTh>
-                <MudTh>Número de Órden</MudTh>
-                <MudTh>Fecha de Ingreso</MudTh>
-                <MudTh>Sucursal</MudTh>
+                <MudTh Style="color:#921313">Número de Órden</MudTh>
+                <MudTh Style="color:#921313">Fecha de Ingreso</MudTh>
+                <MudTh Style="color:#921313">Sucursal</MudTh>
             </HeaderContent>
             <RowTemplate>
 

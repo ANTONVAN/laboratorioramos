@@ -1,10 +1,31 @@
 ﻿@page "/ConsultaGraficaPaciente"
 @using ApexCharts;
-<h3>ConsultaGraficaPaciente</h3>
 
-<ApexChart TItem="MyData"
-               Title="Sample Data">
-
+<MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+<MudGrid Style="text-align: -webkit-center;">
+    <MudItem xs="12" sm="7" md="12">
+        <MudText Align="MudBlazor.Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Consulta Gráfica del Paciente</MudText>
+    </MudItem>
+    <MudItem xs="12" sm="7" md="4">
+        <MudSelect T="string" Label="Estudio" Variant="Variant.Outlined">
+            <MudSelectItem Value="@("Glucosa")" />
+            <MudSelectItem Value="@("Antígeno Prostático")" />
+            <MudSelectItem Value="@("Urea")" />
+            <MudSelectItem Value="@("Hemoglobina")" />
+            <MudSelectItem Value="@("Glicosilada")" />
+        </MudSelect>
+    </MudItem>
+    <MudItem xs="12" sm="7" md="5">
+        <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" />
+    </MudItem>
+    <MudItem xs="12" sm="7" md="1">
+        <MudIconButton Icon="@Icons.Material.Outlined.Search"  Color="MudBlazor.Color.Primary" Size="MudBlazor.Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
+    </MudItem>
+    <MudItem xs="12" sm="7" md="12">
+        <ApexChart TItem="MyData"
+               Title="Sample Data"
+                   Width="600"
+                   Height="300">
         <ApexPointSeries TItem="MyData"
                          Items="Data"
                          Name="Net Profit"
@@ -19,9 +40,22 @@
                          XValue="e => e.Category"
                          YValue="e=> e.Revenue" />
     </ApexChart>
+    </MudItem>
+
+</MudGrid>
+
     
 @code {
+    #region Declaración de Variables
     private List<MyData> Data { get; set; } = new();
+    private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Gráficas", href: null, disabled: true, icon: Icons.Material.Filled.StackedBarChart),
+    };
+    #endregion
+
+    #region Funsiones Página
     protected override void OnInitialized()
     {
         Data.Add(new MyData { Category = "Jan", NetProfit = 12, Revenue = 33 });
@@ -35,4 +69,15 @@
         public int NetProfit { get; set; }
         public int Revenue { get; set; }
     }
+
+    async Task BuscaFecha()
+    {
+       
+
+        StateHasChanged();
+
+    }
+    #endregion
+    
+    
 }
