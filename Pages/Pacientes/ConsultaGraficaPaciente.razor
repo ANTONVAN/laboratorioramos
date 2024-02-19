@@ -266,21 +266,26 @@
 
             foreach (var item in dtoEstudio.Results)
             {
-                var EstudioTemp = item.Parameters.Where(op => op.Clave.Equals(ValorEstudioBusqueda)).ToList();
-                if (EstudioTemp.Count > 0)
+                var rowExiste = oResulEstudios.FirstOrDefault(op => op.Fecha.Equals($"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}"));
+                if (rowExiste == null)
                 {
-                    if (!String.IsNullOrEmpty(EstudioTemp[0].Valor))
+                    var EstudioTemp = item.Parameters.Where(op => op.Clave.Equals(ValorEstudioBusqueda)).ToList();
+                    if (EstudioTemp.Count > 0)
                     {
-                        DtoEstudioGrafica tempRes = new()
-                            {
-                                Fecha = $"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}",
-                                Estudio = ValEstudio,
-                                Valor = EstudioTemp[0].Valor
-                            };
-                        oResulEstudios.Add(tempRes);
-                    }
+                        if (!String.IsNullOrEmpty(EstudioTemp[0].Valor))
+                        {
+                            DtoEstudioGrafica tempRes = new()
+                                {
+                                    Fecha = $"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}",
+                                    Estudio = ValEstudio,
+                                    Valor = EstudioTemp[0].Valor
+                                };
+                            oResulEstudios.Add(tempRes);
+                        }
 
+                    }
                 }
+                
             }
             var orderRow=oResulEstudios.OrderBy(op => op.Fecha);
             oResulEstudios = new(orderRow);
