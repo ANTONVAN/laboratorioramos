@@ -47,37 +47,37 @@ else
                     @{
                         var nompac = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente : dtoMedicoPaciente.Nombre;
                     }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@nompac</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@nompac</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
                     @{
                         var gener = PostRequiere == "1" ? (dtoPaciente[0].Genero == "M" ? "MASCULINO" : "FEMENINO"):@dtoMedicoPaciente.Sexo.ToUpper();
                     }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@gener</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@gener</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
                     @{
                         var FecNac = PostRequiere == "1" ? dtoPaciente[0].FechaNacimiento : dtoMedicoPaciente.FechaNacimiento;
                     }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Fecha de Nacimiento: @FecNac</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Fecha de Nacimiento: @FecNac</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
                     @{
                         var PacEdad = PostRequiere == "1" ? $"{dtoPaciente[0].Edad} Años" : $"{dtoMedicoPaciente.Edad.ToString()} Años";
                     }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Edad: @PacEdad</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Edad: @PacEdad</MudText>
                     </MudItem>
                 <MudItem xs="12" sm="8" md="3">
                     @{
                         var PacCorreo = PostRequiere == "1" ? "--" : dtoMedicoPaciente.EnvioCorreo;
                     }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Email: @PacCorreo</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Email: @PacCorreo</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
                         @{
                         var PacTelefono = PostRequiere == "1" ? dtoPaciente[0].Telefono : dtoMedicoPaciente.Telefono;
                     }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Teléfono: @PacTelefono </MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Teléfono: @PacTelefono </MudText>
                 </MudItem>
             </MudGrid>
         </MudPaper>
@@ -96,7 +96,7 @@ else
                 
                 <MudSpacer />
                 <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/>
-                <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Success" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
                 <MudSpacer />
                 <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de solicitud" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField>
             </ToolBarContent>
@@ -239,8 +239,8 @@ else
                     _items = new List<BreadcrumbItem>
                     {
                         new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
-                        new BreadcrumbItem("Medico", href: "/ConsultaExpedientesMedico", icon: Icons.Material.Filled.Badge),
-                        new BreadcrumbItem("Paciente", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                        new BreadcrumbItem("Consulta de Expedientes", href: "/ConsultaExpedientesMedico", icon: Icons.Material.Filled.Badge),
+                        new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                     };
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);
                     dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);

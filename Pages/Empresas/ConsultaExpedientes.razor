@@ -38,25 +38,25 @@ else
                     @{
                         var nomCompleto = $"{@dtoEmpresaInfo.NombreComercial}";
                     }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@nomCompleto</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@nomCompleto</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Clave: @dtoEmpresa.Clave</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Clave: @dtoEmpresa.Clave</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">RFC: @dtoEmpresaInfo.Rfc</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">RFC: @dtoEmpresaInfo.Rfc</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="12" md="12">
                     @{
                         var direcci = $"{@dtoEmpresaInfo.Calle} {@dtoEmpresaInfo.Numero} {@dtoEmpresaInfo.Colonia} {@dtoEmpresaInfo.Ciudad} {@dtoEmpresaInfo.Estado} {@dtoEmpresaInfo.CodigoPostal}";
                     }
-                        <MudText Align="Align.Left" Typo="Typo.subtitle1">Dirección: @direcci </MudText>
+                    <MudText Align="Align.Left" Typo="Typo.subtitle1" Style="color: #0d37a8;">Dirección: @direcci </MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="6">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">Razon Social: @dtoEmpresaInfo.RazonSocial</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Razon Social: @dtoEmpresaInfo.RazonSocial</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="6">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Regimen Fiscal: @dtoEmpresaInfo.RegimenFiscal</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Regimen Fiscal: @dtoEmpresaInfo.RegimenFiscal</MudText>
                 </MudItem>
                 
                 </MudGrid>
@@ -67,7 +67,7 @@ else
                 <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
                     <MudSpacer />
                 <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/>
-                <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Success" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
                 <MudSpacer />
                     <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de expediente" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField>
                 </ToolBarContent>
@@ -78,11 +78,12 @@ else
                     <col />
                 </ColGroup>
                 <HeaderContent>
-                <MudTh Style="color:#921313">Expediente</MudTh>
-                <MudTh Style="color:#921313">Nombre</MudTh>
-                <MudTh Style="color:#921313">Edad</MudTh>
-                <MudTh Style="color:#921313">Teléfono</MudTh>
-                <MudTh Style="color:#921313">Detalles</MudTh>
+                    <MudTh Style="color:#921313">Expediente</MudTh>
+                    <MudTh Style="color:#921313">Nombre</MudTh>
+                    <MudTh Style="color:#921313">Edad</MudTh>
+                    <MudTh Style="color:#921313">Teléfono</MudTh>
+                    <MudTh Style="color:#921313">Detalles</MudTh>
+                    <MudTh Style="color:#921313">Gráficas</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel=">Expediente" Style="font-weight:bolder">@context.Expediente</MudTd>
@@ -91,6 +92,9 @@ else
                     <MudTd DataLabel="Teléfono">@context.EnvioWhatsapp</MudTd>
                     <MudTd DataLabel="Detalles">
                         <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToDetallePaciente(context))"></MudIconButton>
+                    </MudTd>
+                    <MudTd DataLabel="Gráfica">
+                        <MudIconButton Icon="@Icons.Material.Filled.BarChart" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToGraphPaciente(context))"></MudIconButton>
                     </MudTd>
                 </RowTemplate>
                 <NoRecordsContent>
@@ -134,7 +138,7 @@ else
     private string UrlMedicoInfo = "LabRamos/services/catalogo/api/Company/";
     private string searchString1 = "";
 
-    private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
     private MudDateRangePicker _picker;
     #endregion
 
@@ -223,7 +227,12 @@ else
     private void NavigateToDetallePaciente(DtoResponseMedicoPaciente item)
     {
         string json = JsonConvert.SerializeObject(item);
-        NavigationManager.NavigateTo($"/ConsultaResultadosPaciente/2/{Cryp.Encripta(json)}");
+        NavigationManager.NavigateTo($"/ConsultaResultadosPaciente/3/{Cryp.Encripta(json)}");
+    }
+    private void NavigateToGraphPaciente(DtoResponseMedicoPaciente item)
+    {
+        string json = JsonConvert.SerializeObject(item);
+        NavigationManager.NavigateTo($"/ConsultaGraficaPaciente/3/{Cryp.Encripta(json)}");
     }
 
     async Task BuscaFecha()

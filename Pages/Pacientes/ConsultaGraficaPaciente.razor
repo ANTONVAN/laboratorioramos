@@ -1,5 +1,17 @@
-﻿@page "/ConsultaGraficaPaciente"
+﻿@page "/ConsultaGraficaPaciente/{PostRequiere}/{PostPaciente}"
 @using ApexCharts;
+@using LaboratorioRamos.Data.DtoPaciente
+@using LaboratorioRamos.Data.DtoEstudio;
+@using LaboratorioRamos.Data.DtoEstudio.DtoRequestEstudio;
+@using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
+@using Newtonsoft.Json.Linq
+@inject HttpClient Http;
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider _authStateProvider
+@inject Cryp Cryp;
+@inject ISnackbar Snackbar
+@inject IJSRuntime IJSRuntime
+
 
 <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
 <MudGrid Style="text-align: -webkit-center;">
@@ -7,73 +19,275 @@
         <MudText Align="MudBlazor.Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Consulta Gráfica del Paciente</MudText>
     </MudItem>
     <MudItem xs="12" sm="7" md="4">
-        <MudSelect T="string" Label="Estudio" Variant="Variant.Outlined">
-            <MudSelectItem Value="@("Glucosa")" />
-            <MudSelectItem Value="@("Antígeno Prostático")" />
-            <MudSelectItem Value="@("Urea")" />
-            <MudSelectItem Value="@("Hemoglobina")" />
-            <MudSelectItem Value="@("Glicosilada")" />
+        <MudSelect T="string" Label="Estudio" Variant="Variant.Outlined" @bind-Value="ValEstudio">
+            <MudSelectItem Value="@("ACIDO URICO")" />
+            <MudSelectItem Value="@("COLESTEROL HDL")" />
+            <MudSelectItem Value="@("COLESTEROL LDL")" />
+            <MudSelectItem Value="@("COLESTEROL TOTAL")" />
+            <MudSelectItem Value="@("CREATININA")" />
+            <MudSelectItem Value="@("GLUCOSA")" />
+            <MudSelectItem Value="@("HEMOGLOBINA GLICOSILADA")" />
+            <MudSelectItem Value="@("TRIGLICERIDOS")" />
+            <MudSelectItem Value="@("UREA")" />
         </MudSelect>
     </MudItem>
     <MudItem xs="12" sm="7" md="5">
         <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" />
     </MudItem>
     <MudItem xs="12" sm="7" md="1">
-        <MudIconButton Icon="@Icons.Material.Outlined.Search"  Color="MudBlazor.Color.Primary" Size="MudBlazor.Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
+        @if (ValidateData)
+        {
+            <MudIconButton Color="MudBlazor.Color.Default" Size="MudBlazor.Size.Large" aria-label="Buscando"><MudProgressCircular Color="MudBlazor.Color.Default" Size="MudBlazor.Size.Small" Indeterminate="true" /></MudIconButton>
+        }
+        else
+        {
+            <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="MudBlazor.Color.Primary" Size="MudBlazor.Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
+        }
+        
     </MudItem>
-    <MudItem xs="12" sm="7" md="12">
-        <ApexChart TItem="MyData"
-               Title="Sample Data"
-                   Width="600"
-                   Height="300">
-        <ApexPointSeries TItem="MyData"
-                         Items="Data"
-                         Name="Net Profit"
-                         SeriesType="SeriesType.Bar"
-                         XValue="e => e.Category"
-                         YValue="e=> e.NetProfit" />
+    <br/>
+    @if (oResulEstudios.Count>0)
+    {
+        var titleGrafica = $"Gráfica de Resultados ({ValEstudio})";
+        <MudItem xs="12" sm="7" md="12">
+            <ApexChart TItem="DtoEstudioGrafica"
+                       Title="@titleGrafica" Width="800"
+                       Height="400"
+                       Options="@options">
 
-        <ApexPointSeries TItem="MyData"
-                         Items="Data"
-                         Name="Revenue"
-                         SeriesType="SeriesType.Bar"
-                         XValue="e => e.Category"
-                         YValue="e=> e.Revenue" />
-    </ApexChart>
-    </MudItem>
+
+                <ApexPointSeries TItem="DtoEstudioGrafica"
+                                 Items="oResulEstudios"
+                                 Name="@ValEstudio"
+                                 SeriesType="SeriesType.Line"
+                                 XValue="@(e => e.Fecha)"
+                                 YAggregate="@(e => e.Sum(e => decimal.Parse(e.Valor)))"
+                                 OrderByDescending="e=>e.Y"
+                                 ShowDataLabels />
+
+                @* <ApexPointSeries TItem="Order"
+                                 Items="Orders"
+                                 Name="Net Value"
+                                 SeriesType="SeriesType.Line"
+                                 XValue="@(e => e.Country)"
+                                 YAggregate="@(e => e.Sum(e => e.NetValue))"
+                                 OrderByDescending="e=>e.Y"
+                                 ShowDataLabels /> *@
+            </ApexChart>
+        </MudItem>
+    }
+    
 
 </MudGrid>
 
     
 @code {
     #region Declaración de Variables
-    private List<MyData> Data { get; set; } = new();
-    private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+
+    [Parameter]
+    public string PostRequiere { get; set; }
+    [Parameter]
+    public string PostPaciente { get; set; }
+
+    private string ValEstudio { get; set; }
+    //private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
+    private string UrlGraficas = "LabRamos/services/records/api/MassSearch/GetByFilter";
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Gráficas", href: null, disabled: true, icon: Icons.Material.Filled.StackedBarChart),
     };
+
+    private DtoEstudio dtoEstudio = new();
+    private bool ValidateData = false;
+    private List<DtoPaciente> dtoPaciente = new();
+    private List<DtoEstudioGrafica> oResulEstudios = new();
+    private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
+
+
+    private ApexChartOptions<DtoEstudioGrafica> options;
     #endregion
 
     #region Funsiones Página
-    protected override void OnInitialized()
+    protected async override void OnInitialized()
     {
-        Data.Add(new MyData { Category = "Jan", NetProfit = 12, Revenue = 33 });
-        Data.Add(new MyData { Category = "Feb", NetProfit = 43, Revenue = 42 });
-        Data.Add(new MyData { Category = "Mar", NetProfit = 112, Revenue = 23 });
+        await base.OnInitializedAsync();
+        var authState = await _authStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+        else
+        {
+            if (PostRequiere == "1") //Paciente
+            {
+                var idenUser = authState.User.Claims.ToList();
+                var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
+            }
+            else if (PostRequiere == "2")//Medico
+            {
+                _items = new List<BreadcrumbItem>
+                    {
+                        new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
+                        new BreadcrumbItem("Consulta de Expedientes", href: "/ConsultaExpedientesMedico", icon: Icons.Material.Filled.Badge),
+                        new BreadcrumbItem("Gráficas", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                    };
+                var resPacDecrip = Cryp.Desencripta(PostPaciente);
+                dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+            }
+            else if (PostRequiere == "3")//Compañia
+            {
+                _items = new List<BreadcrumbItem>
+                    {
+                        new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
+                        new BreadcrumbItem("Consulta de Expedientes", href: "/ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
+                        new BreadcrumbItem("Gráficas", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                    };
+                var resPacDecrip = Cryp.Desencripta(PostPaciente);
+                dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+            }
+
+
+            options = new ApexChartOptions<DtoEstudioGrafica>
+                {
+                    Chart = new Chart
+                    {
+                        Toolbar = new Toolbar
+                        {
+                            Show = true
+                        },
+                        DropShadow = new DropShadow
+                        {
+                            Enabled = true,
+                            Color = "",
+                            Top = 18,
+                            Left = 7,
+                            Blur = 10,
+                            Opacity = 0.2d
+                        }
+                    },
+                    DataLabels = new ApexCharts.DataLabels
+                    {
+                        OffsetY = -6d
+                    },
+                    Grid = new Grid
+                    {
+                        BorderColor = "#e7e7e7",
+                        Row = new GridRow
+                        {
+                            Colors = new List<string> { "#f3f3f3", "transparent" },
+                            Opacity = 0.5d
+                        }
+                    },
+
+                    Colors = new List<string> { "#77B6EA", "#545454" },
+                    Markers = new Markers { Shape = ShapeEnum.Circle, Size = 5, FillOpacity = new Opacity(0.8d) },
+                    Stroke = new Stroke { Curve = Curve.Smooth },
+                    Legend = new Legend
+                    {
+                        Position = LegendPosition.Top,
+                        HorizontalAlign = ApexCharts.Align.Right,
+                        Floating = true,
+                        OffsetX = -5,
+                        OffsetY = -25
+                    },
+
+                };
+        }
+
     }
 
-    public class MyData
+    void ShowSnack(string message)
     {
-        public string Category { get; set; }
-        public int NetProfit { get; set; }
-        public int Revenue { get; set; }
+        Snackbar.Add($"Atención: {message}", Severity.Error);
     }
 
     async Task BuscaFecha()
     {
-       
+        if (String.IsNullOrEmpty(ValEstudio))
+        {
+            ShowSnack("¡Por favor Seleccione un Estudio!");
+        }
+        else
+        {
+            ValidateData = true;
+            oResulEstudios = new();
 
+            DtoRequestEstudio parametrobusqueda = new()
+            {
+                Fecha = new() { _dateRange.Start.Value.ToString("yyyy-MM-dd"), _dateRange.End.Value.ToString("yyyy-MM-dd") },
+                    Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente : dtoMedicoPaciente.Nombre,
+            };
+
+            var ValorEstudioBusqueda = "";
+            switch (ValEstudio)
+            {
+                case "ACIDO URICO":
+                    parametrobusqueda.Estudio = new() { 897, 173 };
+                    ValorEstudioBusqueda = "_ACUR_SU";
+                    break;
+                case "COLESTEROL HDL":
+                    parametrobusqueda.Estudio = new() { 458 };
+                    ValorEstudioBusqueda = "_HDL_SU";
+                    break;
+                case "COLESTEROL LDL":
+                    parametrobusqueda.Estudio = new() { 458 };
+                    ValorEstudioBusqueda = "_LDL_SU";
+                    break;
+                case "COLESTEROL TOTAL":
+                    parametrobusqueda.Estudio = new() { 458, 677, 173 };
+                    ValorEstudioBusqueda = "_COL_SU";
+                    break;
+                case "CREATININA":
+                    parametrobusqueda.Estudio = new() { 644, 173 };
+                    ValorEstudioBusqueda = "_CREA_SU";
+                    break;
+                case "GLUCOSA":
+                    parametrobusqueda.Estudio = new() { 479, 480, 483, 516, 631, 932, 1133, 1183, 1830, 173 };
+                    ValorEstudioBusqueda = "_GLU_SU";
+                    break;
+                case "HEMOGLOBINA GLICOSILADA":
+                    parametrobusqueda.Estudio = new() { 486 };
+                    ValorEstudioBusqueda = "_HGA1C_ST";
+                    break;
+                case "TRIGLICERIDOS":
+                    parametrobusqueda.Estudio = new() { 49, 173, 458 };
+                    ValorEstudioBusqueda = "_TAG_SU";
+                    break;
+                case "UREA":
+                    parametrobusqueda.Estudio = new() { 36, 173 };
+                    ValorEstudioBusqueda = "_UREA_SU";
+                    break;
+
+            }
+            var sesPacientes = await Http.PostAsJsonAsync<DtoRequestEstudio>(UrlGraficas, parametrobusqueda);
+            dtoEstudio = await sesPacientes.Content.ReadFromJsonAsync<DtoEstudio>();
+
+            foreach (var item in dtoEstudio.Results)
+            {
+                var EstudioTemp = item.Parameters.Where(op => op.Clave.Equals(ValorEstudioBusqueda)).ToList();
+                if (EstudioTemp.Count > 0)
+                {
+                    if (!String.IsNullOrEmpty(EstudioTemp[0].Valor))
+                    {
+                        DtoEstudioGrafica tempRes = new()
+                            {
+                                Fecha = $"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}",
+                                Estudio = ValEstudio,
+                                Valor = EstudioTemp[0].Valor
+                            };
+                        oResulEstudios.Add(tempRes);
+                    }
+
+                }
+            }
+            var orderRow=oResulEstudios.OrderBy(op => op.Fecha);
+            oResulEstudios = new(orderRow);
+        }
+        
+
+        ValidateData = false;
         StateHasChanged();
 
     }

@@ -38,31 +38,31 @@ else
                     @{
                         var nomCompleto = $"{@dtoMedico.Nombre} {@dtoMedico.PrimerApellido} {@dtoMedico.SegundoApellido}";
                     }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@nomCompleto</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@nomCompleto</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Especialidad: @dtoMedico.Especialidad</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Especialidad: @dtoMedico.Especialidad</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">Email: @dtoMedico.Correo</MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Email: @dtoMedico.Correo</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
                     @{
                         var direcci = $"{@dtoMedico.Calle} Ext: {@dtoMedico.NumeroExterior} Int: {@dtoMedico.NumeroInterior} {@dtoMedico.ColoniaId} {@dtoMedico.CiudadId} {@dtoMedico.EstadoId} {@dtoMedico.CodigoPostal}";
                     }
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">Dirección: @direcci </MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Dirección: @direcci </MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
-                        <MudText Align="Align.Center" Typo="Typo.subtitle1">C.P.: @dtoMedico.CodigoPostal </MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">C.P.: @dtoMedico.CodigoPostal </MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Teléfono: @dtoMedico.Telefono </MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Teléfono: @dtoMedico.Telefono </MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Celular: @dtoMedico.Celular </MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Celular: @dtoMedico.Celular </MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Clínicas: @dtoMedico.Clinicas.Count() </MudText>
+                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Clínicas: @dtoMedico.Clinicas.Count() </MudText>
                 </MudItem>
                 </MudGrid>
             </MudPaper>
@@ -88,6 +88,7 @@ else
                     <MudTh Style="color:#921313">Edad</MudTh>
                     <MudTh Style="color:#921313">Teléfono</MudTh>
                     <MudTh Style="color:#921313">Detalles</MudTh>
+                    <MudTh Style="color:#921313">Gráficas</MudTh>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel=">Expediente" Style="font-weight:bolder">@context.Expediente</MudTd>
@@ -96,6 +97,9 @@ else
                     <MudTd DataLabel="Teléfono">@context.EnvioWhatsapp</MudTd>
                     <MudTd DataLabel="Detalles">
                         <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToDetallePaciente(context))"></MudIconButton>
+                    </MudTd>
+                    <MudTd DataLabel="Gráfica">
+                        <MudIconButton Icon="@Icons.Material.Filled.BarChart" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToGraphPaciente(context))"></MudIconButton>
                     </MudTd>
                 </RowTemplate>
                 <NoRecordsContent>
@@ -137,7 +141,8 @@ else
     private string UrlMedicoPacienteExpediente = "LabRamos/services/records/api/MedicalRecord/report/expedientes";
     private string searchString1 = "";
 
-    private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    // private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
+    private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
     private MudDateRangePicker _picker;
     #endregion
 
@@ -230,33 +235,47 @@ else
         NavigationManager.NavigateTo($"/ConsultaResultadosPaciente/2/{Cryp.Encripta(json)}");
     }
 
+    private void NavigateToGraphPaciente(DtoResponseMedicoPaciente item)
+    {
+        string json = JsonConvert.SerializeObject(item);
+        NavigationManager.NavigateTo($"/ConsultaGraficaPaciente/2/{Cryp.Encripta(json)}");
+    }
+
     async Task BuscaFecha()
     {
-        dataLoaded = true;
-        DtoRequestMedicoPacientes parametrobusqueda = new()
+        try
         {
-            MedicoId = new()
+            dataLoaded = true;
+            DtoRequestMedicoPacientes parametrobusqueda = new()
+                {
+                    MedicoId = new()
             {
                 dtoMedico.IdMedico
             },
-            CompañiaId = new(),
-            Buscar = "",
-            TipoFecha = 1,
-                Fecha = new() { DateTime.Parse(_dateRange.Start.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_dateRange.End.ToString()).ToString("yyyy-MM-dd") }
-        };
-        var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
-        dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-        foreach (var item in dtoMedicoPaciente)
-        {
-            List<string> refExpe = new();
-            refExpe.Add(item.ExpedienteId.ToString());
-            string json = JsonConvert.SerializeObject(refExpe);
-            var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
-            var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
-            item.Expediente = sesExpediente[0].Expediente;
-        }
+                    CompañiaId = new(),
+                    Buscar = "",
+                    TipoFecha = 1,
+                    Fecha = new() { DateTime.Parse(_dateRange.Start.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_dateRange.End.ToString()).ToString("yyyy-MM-dd") }
+                };
+            var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
+            dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+            foreach (var item in dtoMedicoPaciente)
+            {
+                List<string> refExpe = new();
+                refExpe.Add(item.ExpedienteId.ToString());
+                string json = JsonConvert.SerializeObject(refExpe);
+                var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                item.Expediente = sesExpediente[0].Expediente;
+            }
 
-                    dataLoaded = false;
+            dataLoaded = false;
+        }
+        catch (Exception ex)
+        {
+            var ter = "";
+        }
+        
 
         StateHasChanged();
 
