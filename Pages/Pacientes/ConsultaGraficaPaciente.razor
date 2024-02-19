@@ -62,7 +62,7 @@
                                  SeriesType="SeriesType.Line"
                                  XValue="@(e => e.Fecha)"
                                  YAggregate="@(e => e.Sum(e => decimal.Parse(e.Valor)))"
-                                 OrderByDescending="e=>e.Y"
+                                 OrderByDescending="e=>e.X"
                                  ShowDataLabels />
 
                 @* <ApexPointSeries TItem="Order"
