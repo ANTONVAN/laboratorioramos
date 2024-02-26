@@ -135,7 +135,7 @@ else
                 @if (context.ShowEstudios)
                 {
                     <td colspan="12" style="text-align:-webkit-center;">
-                        <MudTable Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" MultiSelection="true" @bind-SelectedItems="selectedItems" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
+                        <MudTable Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
                             <ToolBarContent>
                                 <MudText Typo="Typo.subtitle2">Estudios</MudText>
                                 <MudSpacer />
@@ -143,11 +143,20 @@ else
                                 <MudTextField @bind-Value="searchEstudios" Placeholder="Búsqueda por nombre de estudio o fecha de entrega" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"  ></MudTextField>
                             </ToolBarContent>
                             <HeaderContent>
+                                <MudTh></MudTh>
                                 <MudTh>Nombre</MudTh>
                                 <MudTh>Fecha de Entrega</MudTh>
                                 <MudTh>Estatus</MudTh>
                             </HeaderContent>
                             <RowTemplate>
+                                @if (LstEstatusPrint.Contains(EstContext.EstatusId))
+                                {
+                                    <MudTd DataLabel="Nombre"><MudCheckBox T="bool" Color="Color.Primary" CheckedChanged="@(e=> AgregarRegistro(e, EstContext))"></MudCheckBox></MudTd>
+                                }
+                                else
+                                {
+                                    <MudTd DataLabel="Nombre">&nbsp;</MudTd>
+                                }
                                 <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
                                 <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
                                 <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
@@ -189,6 +198,7 @@ else
     private List<DtoPaciente> dtoPaciente = new();
     private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
     private List<DtoResponseMedicoPaciente> LstExpedientes = new();
+    private List<int> LstEstatusPrint = new();
     private string searchString1 = "";
     private string searchEstudios = "";
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
@@ -228,6 +238,11 @@ else
 
             try
             {
+                var estatusSep = _config.GetSection("IdImpresion").Value.Trim().Split(",");
+                foreach (var itemST in estatusSep)
+                {
+                    LstEstatusPrint.Add(int.Parse(itemST));
+                }
                 if (PostRequiere == "1") //Paciente
                 {
                     var idenUser = authState.User.Claims.ToList();
@@ -334,8 +349,6 @@ else
             return true;
         if (element.Estudio.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
-        if (element.MedioSolicitado.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
         if (element.FechaEntrega.Contains(searchString, StringComparison.OrdinalIgnoreCase))
             return true;
         return false;
@@ -345,6 +358,20 @@ else
     {
         DtoResponseMedicoPaciente tmpEstudio = LstExpedientes.First(f => f.Solicitud == nr);
         tmpEstudio.ShowEstudios = !tmpEstudio.ShowEstudios;
+    }
+    async Task  AgregarRegistro(bool chec, DtoResponseMedicoPacienteStudios item)
+    {
+        if (chec)
+        {
+            selectedItems.Add(item);
+        }
+        else
+        {
+            selectedItems.Remove(item);
+        }
+
+        
+        
     }
 
     async Task ImprimirExp()
@@ -356,29 +383,62 @@ else
         }
         else
         {
-            foreach (var item in selectedItems)
+            DtoImpresionResultados prinResultadoTrue = new()
             {
-                DtoImpresionResultados prinResultado = new()
+                Estudios = new(),
+                MediosEnvio = new() { "Fisico", "Logos" },
+
+            };
+            DtoImpresionResultados prinResultadoFalse = new()
                 {
                     Estudios = new(),
-                    MediosEnvio=new(){"Fisico","Logos"},
+                    MediosEnvio = new() { "Fisico", "Logos" },
 
                 };
-                DtoSolicitudPDF solpdf = new()
+            foreach (var item in selectedItems)
+            {
+                if (item.IsPathological)
                 {
-                    SolicitudId = item.SolicitudId,
-                    EstudiosId= new()
-                };
-                DtoEstudiosPDF estPdf = new()
+                    
+                }
+                var rowExiste = item.IsPathological == true ? prinResultadoTrue.Estudios.FirstOrDefault(op => op.SolicitudId == item.SolicitudId) : prinResultadoFalse.Estudios.FirstOrDefault(op => op.SolicitudId == item.SolicitudId);
+
+                if (rowExiste== null)
                 {
-                    EstudioId = item.EstudioId,
-                    Tipo=0
-                };
-                solpdf.EstudiosId.Add(estPdf);
+                    DtoSolicitudPDF solpdf = new()
+                        {
+                            SolicitudId = item.SolicitudId,
+                            EstudiosId = new()
+                        };
+                    DtoEstudiosPDF estPdf = new()
+                        {
+                            EstudioId = item.EstudioId,
+                            Tipo = 0
+                        };
+                    solpdf.EstudiosId.Add(estPdf);
 
-                prinResultado.Estudios.Add(solpdf);
+                    if (item.IsPathological)
+                    {
+                        prinResultadoTrue.Estudios.Add(solpdf);
+                    }else{
+                        prinResultadoFalse.Estudios.Add(solpdf);
+                    }
 
-                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>(UrlImprimeResultados, prinResultado);
+                    
+                }
+                else
+                {
+                    DtoEstudiosPDF estPdf = new()
+                        {
+                            EstudioId = item.EstudioId,
+                            Tipo = 0
+                        };
+                    rowExiste.EstudiosId.Add(estPdf);
+                }
+            }
+            if (prinResultadoTrue.Estudios.Count>0)
+            {
+                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>(UrlImprimeResultados, prinResultadoTrue);
                 switch (sesExpediente.StatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:
@@ -388,11 +448,11 @@ else
                             buffer = new byte[stream.Length];
                             stream.Read(buffer, 0, buffer.Length);
                             //FileStream fStr = stream;
-                            File.WriteAllBytes($"wwwroot/ArchivosPDF/Estudios{item.EstudioId}.pdf", buffer);
+                            File.WriteAllBytes($"wwwroot/ArchivosPDF/Estudios{DateTime.Now.Ticks}.pdf", buffer);
                             //var ter = new FileContentResult(buffer, "application/pdf");
                             //await IJSRuntime.InvokeVoidAsync("open", ter, "_blank");
                         }
-                        await IJSRuntime.InvokeVoidAsync("open", $"{_config.GetSection("UrlArchivos").Value.Trim()}Estudios{item.EstudioId}.pdf", "_blank");
+                        await IJSRuntime.InvokeVoidAsync("open", $"{_config.GetSection("UrlArchivos").Value.Trim()}Estudios{DateTime.Now.Ticks}.pdf", "_blank");
 
 
                         break;
@@ -404,7 +464,35 @@ else
                         break;
 
                 }
+            }
+            if (prinResultadoFalse.Estudios.Count > 0)
+            {
+                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>(UrlImprimeResultados, prinResultadoFalse);
+                switch (sesExpediente.StatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                        byte[] buffer;
+                        using (Stream stream = sesExpediente.Content.ReadAsStream())
+                        {
+                            buffer = new byte[stream.Length];
+                            stream.Read(buffer, 0, buffer.Length);
+                            //FileStream fStr = stream;
+                            File.WriteAllBytes($"wwwroot/ArchivosPDF/Estudios{DateTime.Now.Ticks}.pdf", buffer);
+                            //var ter = new FileContentResult(buffer, "application/pdf");
+                            //await IJSRuntime.InvokeVoidAsync("open", ter, "_blank");
+                        }
+                        await IJSRuntime.InvokeVoidAsync("open", $"{_config.GetSection("UrlArchivos").Value.Trim()}Estudios{DateTime.Now.Ticks}.pdf", "_blank");
 
+
+                        break;
+                    case System.Net.HttpStatusCode.FailedDependency:
+                        ShowSnack("¡El archivo no existe, por favor comunícate con tu laboratorio!");
+                        ValidateData = false;
+                        break;
+                    case System.Net.HttpStatusCode.BadRequest:
+                        break;
+
+                }
             }
 
             ValidateData = false;
