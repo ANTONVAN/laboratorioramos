@@ -93,10 +93,12 @@
                 {
                     var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
                     Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
+                   
                     dtoMedico = await Http.GetFromJsonAsync<List<DtoMedico>>(UrlMedico + "all/" + dtoLoginMedico.Usuario);
                     if (dtoMedico.Count() == 0)
                     {
                         Http.DefaultRequestHeaders.Remove("Authorization");
+                        Http.DefaultRequestHeaders.Remove("branchid");
                         ShowSnack("¡El Médico no existe, favor de verificar!");
                         ValidateData = false;
                     }
@@ -109,6 +111,7 @@
                         if (!dtoMedicoPWD.Password.Trim().Equals(dtoLoginMedico.Contraseña.Trim()))
                         {
                             Http.DefaultRequestHeaders.Remove("Authorization");
+                            Http.DefaultRequestHeaders.Remove("branchid");
                             ShowSnack("¡La Contraseña es incorrecta, favor de verificar!");
                             ValidateData = false;
                         }
@@ -122,6 +125,7 @@
                                     testsuncretr = Cryp.Encripta(json),
                                     Type = 2,
                                 });
+                            Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
                             NavigationManager.NavigateTo("/Inicio", true);
                             ValidateData = false;
                         }

@@ -6,6 +6,7 @@
 @using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
 @using LaboratorioRamos.Data.DtoImpresionResultados
+@using LaboratorioRamos.PDF;
 @using Microsoft.AspNetCore.Mvc
 @using Microsoft.AspNetCore.StaticFiles
 @inject HttpClient Http;
@@ -213,6 +214,7 @@ else
     private IEnumerable<DtoEstudioExpediente> Elements = new List<DtoEstudioExpediente>();
     private bool _selectOnRowClick = true;
     private MudTable<DtoResponseMedicoPacienteStudios> _table;
+    private PDFGenerator _PdfGenerator = new();
     private bool ValidateData = false;
 
     private bool dataLoaded = true;
@@ -370,8 +372,8 @@ else
             selectedItems.Remove(item);
         }
 
-        
-        
+
+
     }
 
     async Task ImprimirExp()
@@ -383,117 +385,126 @@ else
         }
         else
         {
-            DtoImpresionResultados prinResultadoTrue = new()
-            {
-                Estudios = new(),
-                MediosEnvio = new() { "Fisico", "Logos" },
 
-            };
-            DtoImpresionResultados prinResultadoFalse = new()
-                {
-                    Estudios = new(),
-                    MediosEnvio = new() { "Fisico", "Logos" },
+            var archivopdf = await _PdfGenerator.CreatePDF(_config,IJSRuntime, Http, selectedItems.ToList());
+            _PdfGenerator.DownloadPDF(IJSRuntime, archivopdf);
+            // DtoImpresionResultados prinResultadoTrue = new()
+            // {
+            //     Estudios = new(),
+            //     MediosEnvio = new() { "Fisico", "Logos" },
 
-                };
-            foreach (var item in selectedItems)
-            {
-                if (item.IsPathological)
-                {
-                    
-                }
-                var rowExiste = item.IsPathological == true ? prinResultadoTrue.Estudios.FirstOrDefault(op => op.SolicitudId == item.SolicitudId) : prinResultadoFalse.Estudios.FirstOrDefault(op => op.SolicitudId == item.SolicitudId);
+            // };
+            // DtoImpresionResultados prinResultadoFalse = new()
+            //     {
+            //         Estudios = new(),
+            //         MediosEnvio = new() { "Fisico", "Logos" },
 
-                if (rowExiste== null)
-                {
-                    DtoSolicitudPDF solpdf = new()
-                        {
-                            SolicitudId = item.SolicitudId,
-                            EstudiosId = new()
-                        };
-                    DtoEstudiosPDF estPdf = new()
-                        {
-                            EstudioId = item.EstudioId,
-                            Tipo = 0
-                        };
-                    solpdf.EstudiosId.Add(estPdf);
+            //     };
+            // foreach (var item in selectedItems)
+            // {
+            //     if (item.IsPathological)
+            //     {
 
-                    if (item.IsPathological)
-                    {
-                        prinResultadoTrue.Estudios.Add(solpdf);
-                    }else{
-                        prinResultadoFalse.Estudios.Add(solpdf);
-                    }
+            //     }
+            //     var rowExiste = item.IsPathological == true ? prinResultadoTrue.Estudios.FirstOrDefault(op => op.SolicitudId == item.SolicitudId) : prinResultadoFalse.Estudios.FirstOrDefault(op => op.SolicitudId == item.SolicitudId);
 
-                    
-                }
-                else
-                {
-                    DtoEstudiosPDF estPdf = new()
-                        {
-                            EstudioId = item.EstudioId,
-                            Tipo = 0
-                        };
-                    rowExiste.EstudiosId.Add(estPdf);
-                }
-            }
-            if (prinResultadoTrue.Estudios.Count>0)
-            {
-                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>(UrlImprimeResultados, prinResultadoTrue);
-                switch (sesExpediente.StatusCode)
-                {
-                    case System.Net.HttpStatusCode.OK:
-                        byte[] buffer;
-                        using (Stream stream = sesExpediente.Content.ReadAsStream())
-                        {
-                            buffer = new byte[stream.Length];
-                            stream.Read(buffer, 0, buffer.Length);
-                            //FileStream fStr = stream;
-                            File.WriteAllBytes($"wwwroot/ArchivosPDF/Estudios{DateTime.Now.Ticks}.pdf", buffer);
-                            //var ter = new FileContentResult(buffer, "application/pdf");
-                            //await IJSRuntime.InvokeVoidAsync("open", ter, "_blank");
-                        }
-                        await IJSRuntime.InvokeVoidAsync("open", $"{_config.GetSection("UrlArchivos").Value.Trim()}Estudios{DateTime.Now.Ticks}.pdf", "_blank");
+            //     if (rowExiste== null)
+            //     {
+            //         DtoSolicitudPDF solpdf = new()
+            //             {
+            //                 SolicitudId = item.SolicitudId,
+            //                 EstudiosId = new()
+            //             };
+            //         DtoEstudiosPDF estPdf = new()
+            //             {
+            //                 EstudioId = item.EstudioId,
+            //                 Tipo = 0
+            //             };
+            //         solpdf.EstudiosId.Add(estPdf);
+
+            //         if (item.IsPathological)
+            //         {
+            //             prinResultadoTrue.Estudios.Add(solpdf);
+            //         }else{
+            //             prinResultadoFalse.Estudios.Add(solpdf);
+            //         }
 
 
-                        break;
-                    case System.Net.HttpStatusCode.FailedDependency:
-                        ShowSnack("¡El archivo no existe, por favor comunícate con tu laboratorio!");
-                        ValidateData = false;
-                        break;
-                    case System.Net.HttpStatusCode.BadRequest:
-                        break;
+            //     }
+            //     else
+            //     {
+            //         DtoEstudiosPDF estPdf = new()
+            //             {
+            //                 EstudioId = item.EstudioId,
+            //                 Tipo = 0
+            //             };
+            //         rowExiste.EstudiosId.Add(estPdf);
+            //     }
+            // }
+            // if (prinResultadoTrue.Estudios.Count>0)
+            // {
+            //     var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>(UrlImprimeResultados, prinResultadoTrue);
+            //     switch (sesExpediente.StatusCode)
+            //     {
+            //         case System.Net.HttpStatusCode.OK:
+            //             byte[] buffer;
+            //             MemoryStream _ms = new();
+            //             using (Stream stream = sesExpediente.Content.ReadAsStream())
+            //             {
+            //                 stream.CopyTo(_ms);
+            //                 buffer = new byte[stream.Length];
+            //                 stream.Read(buffer, 0, buffer.Length);
+            //                 File.WriteAllBytes($"wwwroot/ArchivosPDF/Estudios{DateTime.Now.Ticks}.pdf", buffer);
+            //             }
+            //             PDFGenerator _PdfGenerator = new();
+            //             _PdfGenerator.DownloadPDF(IJSRuntime, _ms);
+            //             //await IJSRuntime.InvokeVoidAsync("open", $"{_config.GetSection("UrlArchivos").Value.Trim()}Estudios{DateTime.Now.Ticks}.pdf", "_blank");
+                        
 
-                }
-            }
-            if (prinResultadoFalse.Estudios.Count > 0)
-            {
-                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>(UrlImprimeResultados, prinResultadoFalse);
-                switch (sesExpediente.StatusCode)
-                {
-                    case System.Net.HttpStatusCode.OK:
-                        byte[] buffer;
-                        using (Stream stream = sesExpediente.Content.ReadAsStream())
-                        {
-                            buffer = new byte[stream.Length];
-                            stream.Read(buffer, 0, buffer.Length);
-                            //FileStream fStr = stream;
-                            File.WriteAllBytes($"wwwroot/ArchivosPDF/Estudios{DateTime.Now.Ticks}.pdf", buffer);
-                            //var ter = new FileContentResult(buffer, "application/pdf");
-                            //await IJSRuntime.InvokeVoidAsync("open", ter, "_blank");
-                        }
-                        await IJSRuntime.InvokeVoidAsync("open", $"{_config.GetSection("UrlArchivos").Value.Trim()}Estudios{DateTime.Now.Ticks}.pdf", "_blank");
+
+            //             break;
+            //         case System.Net.HttpStatusCode.FailedDependency:
+            //             ShowSnack("¡El archivo no existe, por favor comunícate con tu laboratorio!");
+            //             ValidateData = false;
+            //             break;
+            //         case System.Net.HttpStatusCode.BadRequest:
+            //             break;
+
+            //     }
+            // }
+            // if (prinResultadoFalse.Estudios.Count > 0)
+            // {
+            //     var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>(UrlImprimeResultados, prinResultadoFalse);
+            //     switch (sesExpediente.StatusCode)
+            //     {
+            //         case System.Net.HttpStatusCode.OK:
+            //             byte[] buffer;
+            //             MemoryStream _ms = new();
+            //             using (Stream stream = sesExpediente.Content.ReadAsStream())
+            //             {
+            //                 stream.CopyTo(_ms);
+            //                 buffer = new byte[stream.Length];
+            //                 stream.Read(buffer, 0, buffer.Length);
+            //                 //FileStream fStr = stream;
+            //                 File.WriteAllBytes($"wwwroot/ArchivosPDF/Estudios{DateTime.Now.Ticks}.pdf", buffer);
+            //                 //var ter = new FileContentResult(buffer, "application/pdf");
+            //                 //await IJSRuntime.InvokeVoidAsync("open", ter, "_blank");
+            //             }
+            //             PDFGenerator _PdfGenerator = new();
+            //             _PdfGenerator.DownloadPDF(IJSRuntime, _ms);
+            //             //await IJSRuntime.InvokeVoidAsync("open", $"{_config.GetSection("UrlArchivos").Value.Trim()}Estudios{DateTime.Now.Ticks}.pdf", "_blank");
 
 
-                        break;
-                    case System.Net.HttpStatusCode.FailedDependency:
-                        ShowSnack("¡El archivo no existe, por favor comunícate con tu laboratorio!");
-                        ValidateData = false;
-                        break;
-                    case System.Net.HttpStatusCode.BadRequest:
-                        break;
+            //             break;
+            //         case System.Net.HttpStatusCode.FailedDependency:
+            //             ShowSnack("¡El archivo no existe, por favor comunícate con tu laboratorio!");
+            //             ValidateData = false;
+            //             break;
+            //         case System.Net.HttpStatusCode.BadRequest:
+            //             break;
 
-                }
-            }
+            //     }
+            // }
 
             ValidateData = false;
         }

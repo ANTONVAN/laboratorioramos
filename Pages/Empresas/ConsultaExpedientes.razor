@@ -171,16 +171,32 @@ else
                             Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                         };
                     var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
-                    dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                    foreach (var item in dtoMedicoPaciente)
+
+                    switch (sesPacientes.StatusCode)
                     {
-                        List<string> refExpe = new();
-                        refExpe.Add(item.ExpedienteId.ToString());
-                        string json = JsonConvert.SerializeObject(refExpe);
-                        var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
-                        var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
-                        item.Expediente = sesExpediente[0].Expediente;
+                        case System.Net.HttpStatusCode.OK:
+                            try
+                            {
+                                dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                                foreach (var item in dtoMedicoPaciente)
+                                {
+                                    List<string> refExpe = new();
+                                    refExpe.Add(item.ExpedienteId.ToString());
+                                    string json = JsonConvert.SerializeObject(refExpe);
+                                    var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                                    var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                                    item.Expediente = sesExpediente[0].Expediente;
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                //ValidateData = false;
+                            }
+
+
+                            break;
                     }
+                    
 
                     dataLoaded = false;
                 }

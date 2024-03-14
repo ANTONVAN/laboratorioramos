@@ -35,7 +35,7 @@
             var idenUser = authState.User.Claims.ToList();
             TypeUser = int.Parse(idenUser[1].Value);
 
-            NavigationManager.NavigateTo(TypeUser == 1 ? "/ConsultaResultadosPaciente/1/0" : TypeUser == 2 ? "/ConsultaExpedientesMedico/" : "/ConsultaExpedientesEmpresa/", true);
+            NavigationManager.NavigateTo(TypeUser == 1 ? "/ConsultaResultadosPaciente/1/0" : TypeUser == 2 ? "/ConsultaExpedientesMedico/" : TypeUser == 3 ? "/ConsultaExpedientesEmpresa/" : "/ImpresionResultados/", true);
             
             
         }

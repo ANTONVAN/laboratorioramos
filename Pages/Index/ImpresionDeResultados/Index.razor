@@ -1,5 +1,5 @@
 ﻿@layout LabRamosLayout
-@page "/"
+@page "/ImpresionDeResultados"
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
 @using LaboratorioRamos.Data.DtoStateProvider
@@ -9,6 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject Cryp Cryp;
 @inject ISnackbar Snackbar
+@inject IJSRuntime IJSRuntime
 
 <PageTitle>Login</PageTitle>
 
@@ -24,8 +25,8 @@
                         <MudCardContent>
                             <MudTextField Label="Usuario" HelperText="Max. 16 dígitos"
                                           @bind-Value="dtoLoginPaciente.Usuario" For="@(() => dtoLoginPaciente.Usuario)" MaxLength="16" />
-                            <MudTextField Label="Contraseña" HelperText="Máx. 8 dígitos" Class="mt-3"
-                                          @bind-Value="dtoLoginPaciente.Contraseña" For="@(() => dtoLoginPaciente.Contraseña)" InputType="InputType.Password" MaxLength="8" />
+                            <MudTextField Label="Contraseña" HelperText="Máx. 16 dígitos" Class="mt-3"
+                                          @bind-Value="dtoLoginPaciente.Contraseña" For="@(() => dtoLoginPaciente.Contraseña)" InputType="InputType.Password" MaxLength="16" />
                         </MudCardContent>
                         <MudCardActions>
                             @if (ValidateData)
@@ -54,7 +55,7 @@
     private DtoLogin dtoLogin = new();
     private DtoLogin dtoLoginPaciente = new();
     private List<DtoPaciente> dtoPaciente = new();
-    private DtoRequestPaciente dtoEequestPaciente = new();
+    private DtoRequestPaciente dtoRequestPaciente = new();
     private bool ValidateData = false;
     private string UrlAuth = "LabRamos/services/identity/api/profile/login";
     private string UrlUsuario = "LabRamos/services/records/api/MedicalRecord/now";
@@ -88,13 +89,13 @@
         {
             case System.Net.HttpStatusCode.OK:
                 var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
-                dtoEequestPaciente = new()
+                dtoRequestPaciente = new()
                 {
                         Expediente = dtoLoginPaciente.Usuario
                 };
                 Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
-                //Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
-                var sesPaciente = await Http.PostAsJsonAsync<DtoRequestPaciente>(UrlUsuario, dtoEequestPaciente);
+                
+                var sesPaciente = await Http.PostAsJsonAsync<DtoRequestPaciente>(UrlUsuario, dtoRequestPaciente);
                 switch (sesPaciente.StatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:
@@ -103,16 +104,18 @@
                             dtoPaciente = await sesPaciente.Content.ReadFromJsonAsync<List<DtoPaciente>>();
                             if (dtoPaciente.Count>0)
                             {
+                                dtoPaciente[0].SolicitudIMR = dtoLoginPaciente.Contraseña;
                                 dtoPaciente[0].Token = result.Token;
                                 string json = JsonConvert.SerializeObject(dtoPaciente);
                                 var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
                                 await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
                                     {
                                         testsuncretr = Cryp.Encripta(json),
-                                        Type=1
+                                        Type=4
                                     });
                                 Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
-                                NavigationManager.NavigateTo("/Inicio", true);
+                                await IJSRuntime.InvokeAsync<object>("open", CancellationToken.None, "/ImpresionResultados");
+                                //NavigationManager.NavigateTo("/ImpresionResultados", true);
                                 ValidateData = false;
                             }
                             else
