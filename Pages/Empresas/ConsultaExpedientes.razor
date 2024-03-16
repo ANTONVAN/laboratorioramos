@@ -66,7 +66,10 @@ else
                 <ToolBarContent>
                 <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
                     <MudSpacer />
-                <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/>
+                @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/> *@
+                <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
+                <MudSpacer />
+                <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
                 <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
                 <MudSpacer />
                     <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de expediente" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField>
@@ -140,6 +143,9 @@ else
 
     private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
     private MudDateRangePicker _picker;
+
+    DateTime? dateInicial = DateTime.Today;
+    DateTime? dateFinal = DateTime.Today;
     #endregion
 
     #region Funsiones Página
@@ -260,7 +266,7 @@ else
             CompañiaId = new() {dtoEmpresa.Id},
             Buscar = "",
             TipoFecha = 1,
-                Fecha = new() { DateTime.Parse(_dateRange.Start.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_dateRange.End.ToString()).ToString("yyyy-MM-dd") }
+            Fecha = new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") }
         };
         var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
         dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
