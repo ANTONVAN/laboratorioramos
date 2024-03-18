@@ -31,8 +31,12 @@
             <MudSelectItem Value="@("UREA")" />
         </MudSelect>
     </MudItem>
-    <MudItem xs="12" sm="7" md="5">
-        <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" />
+    <MudItem xs="12" sm="5" md="3">
+        @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" /> *@
+        <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
+    </MudItem>
+    <MudItem xs="12" sm="5" md="3">        
+        <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
     </MudItem>
     <MudItem xs="12" sm="7" md="1">
         @if (ValidateData)
@@ -106,6 +110,9 @@
 
 
     private ApexChartOptions<DtoEstudioGrafica> options;
+
+    DateTime? dateInicial = DateTime.Today;
+    DateTime? dateFinal = DateTime.Today;
     #endregion
 
     #region Funsiones Página
@@ -216,8 +223,8 @@
 
             DtoRequestEstudio parametrobusqueda = new()
             {
-                Fecha = new() { _dateRange.Start.Value.ToString("yyyy-MM-dd"), _dateRange.End.Value.ToString("yyyy-MM-dd") },
-                    Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente : dtoMedicoPaciente.Nombre,
+                Fecha = new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") },
+                Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente : dtoMedicoPaciente.Nombre,
             };
 
             var ValorEstudioBusqueda = "";

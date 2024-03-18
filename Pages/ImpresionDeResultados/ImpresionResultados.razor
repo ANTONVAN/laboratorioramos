@@ -1,0 +1,196 @@
+﻿@page "/ImpresionResultados"
+@layout LabRamosLayout
+@using LaboratorioRamos.Data.DtoPaciente
+@using LaboratorioRamos.Data.DtoExpediente
+@using LaboratorioRamos.Data.DtoExpediente.DtoRequestExpedientes
+@using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
+@using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
+@using LaboratorioRamos.Data.DtoImpresionResultados
+@using LaboratorioRamos.PDF;
+@using Microsoft.AspNetCore.Mvc
+@using Microsoft.AspNetCore.StaticFiles
+@inject HttpClient Http;
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider _authStateProvider
+@inject Cryp Cryp;
+@inject ISnackbar Snackbar
+@inject IJSRuntime IJSRuntime
+@inject IConfiguration _config;
+
+<PageTitle>Consulta de Resultados</PageTitle>
+
+@if (dataLoaded)
+{
+    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="600px" />
+    <MudCardContent>
+        <MudSkeleton Width="30%" Height="42px;" />
+        <MudSkeleton Width="80%" />
+        <MudSkeleton Width="100%" />
+    </MudCardContent>
+    <MudCardActions>
+        <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
+        <MudSkeleton Width="105px" Height="40px" Class="ml-3" />
+    </MudCardActions>
+    <MudOverlay Visible="true" DarkBackground="true" Absolute="true" ZIndex="9999" AutoClose="true">
+        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+    </MudOverlay>
+}
+else
+{
+    <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+    <MudGrid>
+        <MudItem xs="12" sm="7" md="12">
+            <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Impresión de Resultados</MudText><MudSpacer/>
+            @if (ShowBtnDescargar)
+            {
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="() => DownloadPDF()">Descargar</MudButton>
+            }
+            
+        </MudItem>
+        @* <div id="iFrameId">
+
+        </div> *@
+        <MudItem xs="12" sm="7" md="12" id="iFrameId">
+        </MudItem>
+    </MudGrid>
+}
+
+<style>
+    .mud-input-input-control {
+        align-items: normal;
+    }
+
+    .mud-toolbar mud-toolbar-gutters mud-table-toolbar {
+        margin-bottom: 20px;
+    }
+</style>
+
+
+@code {
+
+    #region Declaración de variables
+
+
+    public string resDecrip { get; set; }
+
+    private List<DtoPaciente> dtoPaciente = new();
+
+    private List<DtoResponseMedicoPaciente> LstExpedientes = new();
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Home", href: "#", icon: Icons.Material.Filled.Home),
+        new BreadcrumbItem("Consulta de Resultados", href: "#", icon: Icons.Material.Filled.Badge),
+    };
+
+    PDFGenerator _PdfGenerator = new();
+    private bool ValidateData = false;
+    private bool ShowBtnDescargar = false;
+    private List<DtoResponseMedicoPacienteStudios> StudioSelect = new();
+
+    private bool dataLoaded = true;
+    private MemoryStream archivopdf = new();
+
+    private string UrlUsuario = "LabRamos/services/records/api/ClinicResults/getList";
+    private string UrlPaciente = "LabRamos/services/records/api/MassSearch/GetAllCaptureResults";
+    private string UrlImprimeResultados = "LabRamos/services/records/api/ClinicResults/printResultFile";
+
+    #endregion
+
+    #region Funsiones Página
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        //AuthenticationState authState = await _authStateProvider.GetAuthenticationStateAsync();
+        var authState = await _authStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+        else
+        {
+
+            dataLoaded = false;
+
+
+        }
+        StateHasChanged();
+
+    }
+    protected override async void OnParametersSet()
+    {
+
+        try
+        {
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            var idenUser = authState.User.Claims.ToList();
+            var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+            dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
+
+            DtoRequestMedicoPacientes parametrobusqueda = new()
+                {
+                    MedicoId = new(),
+                    CompañiaId = new(),
+                    Buscar = dtoPaciente[0].NombrePaciente.Trim(),
+                    TipoFecha = 1,
+                    Fecha = new()
+                };
+
+            var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
+
+            switch (sesExpediente.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    try
+                    {
+                        LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                        foreach (var itemExp in LstExpedientes)
+                        {
+                            foreach (var itemSol in itemExp.Estudios)
+                            {
+                                itemSol.SolicitudId = itemExp.SolicitudId;
+                                if (itemExp.Solicitud == dtoPaciente[0].SolicitudIMR)
+                                {
+                                    StudioSelect.Add(itemSol);
+                                }
+
+                            }
+                        }
+                        archivopdf = await _PdfGenerator.CreatePDF(_config, IJSRuntime, Http, StudioSelect);
+                        //_PdfGenerator.DownloadPDF(IJSRuntime, archivopdf);
+                        _PdfGenerator.ViewPDF(IJSRuntime, "iFrameId", archivopdf);
+                        ShowBtnDescargar = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        //ValidateData = false;
+                    }
+
+
+                    break;
+            }
+
+            dataLoaded = false;
+        }
+        catch (Exception ex)
+        {
+
+            var t = "";
+        }
+
+        StateHasChanged();
+    }
+
+    void ShowSnack(string message)
+    {
+        Snackbar.Add($"Atención: {message}", Severity.Warning);
+    }
+
+    async Task DownloadPDF()
+    {
+        _PdfGenerator.DownloadPDF(IJSRuntime, archivopdf);        
+    }
+
+    #endregion
+
+}

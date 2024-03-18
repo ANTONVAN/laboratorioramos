@@ -4,6 +4,7 @@
     {
         public string Id{ get; set; }
         public string Expediente { get; set; }
+        public string SolicitudIMR { get; set; }
         public string NombrePaciente { get; set; }
         public string Genero { get; set; }
         public int Edad { get; set; }

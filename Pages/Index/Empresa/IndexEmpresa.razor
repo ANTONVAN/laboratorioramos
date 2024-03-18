@@ -93,10 +93,12 @@
                 {
                     var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
                     Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
+                    Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
                     LstEmpresa = await Http.GetFromJsonAsync<List<DtoEmpresa>>(UrlEmpresa + "/" + dtoLoginEmpresa.Usuario.Trim());
                     if (LstEmpresa.Count() == 0)
                     {
                         Http.DefaultRequestHeaders.Remove("Authorization");
+                        Http.DefaultRequestHeaders.Remove("branchid");
                         ShowSnack("¡El Médico no existe, favor de verificar!");
                         ValidateData = false;
                     }
@@ -119,6 +121,7 @@
                         else
                         {
                             Http.DefaultRequestHeaders.Remove("Authorization");
+                            Http.DefaultRequestHeaders.Remove("branchid");
                             ShowSnack("¡La Contraseña es incorrecta, favor de verificar!");
                             ValidateData = false;
                         }
