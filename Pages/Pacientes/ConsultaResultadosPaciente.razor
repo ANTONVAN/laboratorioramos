@@ -85,97 +85,128 @@ else
 
         
         <br/>
-        <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;">
-            <ToolBarContent>
-                <MudText Typo="Typo.h6" style="color: #0d37a8;">Impresión de Resultados</MudText>
-                    @if (ValidateData)
-                {
-                    <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Large" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
-                }else{
-                    <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Large" aria-label="Imprimir Estudios" OnClick="() => ImprimirExp()"></MudIconButton>
-                }
-                
-                <MudSpacer />
-                @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/> *@
-                <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
-                <MudSpacer />
-                <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
-                <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
-                <MudSpacer />
-                <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de solicitud" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField>
-            </ToolBarContent>
-            <ColGroup>
-                <col style="width: 20px;" />
-                <col />
-                <col />
-                <col />
-                <col />
-            </ColGroup>
-            <HeaderContent>
-                <MudTh></MudTh>
-                <MudTh Style="color:#921313">Número de Órden</MudTh>
-                <MudTh Style="color:#921313">Fecha de Ingreso</MudTh>
-                <MudTh Style="color:#921313">Sucursal</MudTh>
-            </HeaderContent>
-            <RowTemplate>
+        <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="1">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="4">
+                            @* <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (16 dígitos)"></MudTextField> *@
+                            <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="1">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
+                    <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6" style="color: #0d37a8;">Impresión de Resultados</MudText>
+                            @if (ValidateData)
+                            {
+                                <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Large" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
+                            }
+                            else
+                            {
+                                <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Large" aria-label="Imprimir Estudios" OnClick="() => ImprimirExp()"></MudIconButton>
+                            }
 
-                <MudTd>
-                @if (context.ShowEstudios)
-                {
-                    <MudIconButton Icon="@Icons.Material.Filled.ArrowDropDown" Size="Size.Small" Color="Color.Dark" OnClick="@(() => ShowBtnPress(context.Solicitud))"></MudIconButton>
+                            <MudSpacer />
+                            @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/>
+                        <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
+                        <MudSpacer />
+                        <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
+                        <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de solicitud" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField>*@
+                        </ToolBarContent>
+                        <ColGroup>
+                            <col style="width: 20px;" />
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh></MudTh>
+                            <MudTh Style="color:#921313">Número de Órden</MudTh>
+                            <MudTh Style="color:#921313">Fecha de Ingreso</MudTh>
+                            <MudTh Style="color:#921313">Sucursal</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
 
-                }
-                else
-                {
-                    <MudIconButton Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Small" Color="Color.Dark" OnClick="@(() => ShowBtnPress(context.Solicitud))"></MudIconButton>
-                }
-                </MudTd>
-
-                <MudTd DataLabel=">Número de Órden">@context.Solicitud</MudTd>
-                <MudTd DataLabel="Fecha de Ingreso">@context.Registro</MudTd>
-                <MudTd DataLabel="Sucursal">@context.Sucursal</MudTd>
-            </RowTemplate>
-            <ChildRowContent>
-                @if (context.ShowEstudios)
-                {
-                    <td colspan="12" style="text-align:-webkit-center;">
-                        <MudTable Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
-                            <ToolBarContent>
-                                <MudText Typo="Typo.subtitle2">Estudios</MudText>
-                                <MudSpacer />
-                                @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" Style="width:45%;" /> *@
-                                <MudTextField @bind-Value="searchEstudios" Placeholder="Búsqueda por nombre de estudio o fecha de entrega" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"  ></MudTextField>
-                            </ToolBarContent>
-                            <HeaderContent>
-                                <MudTh></MudTh>
-                                <MudTh>Nombre</MudTh>
-                                <MudTh>Fecha de Entrega</MudTh>
-                                <MudTh>Estatus</MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                @if (LstEstatusPrint.Contains(EstContext.EstatusId))
+                            <MudTd>
+                                @if (context.ShowEstudios)
                                 {
-                                    <MudTd DataLabel="Nombre"><MudCheckBox T="bool" Color="Color.Primary" CheckedChanged="@(e=> AgregarRegistro(e, EstContext))"></MudCheckBox></MudTd>
+                                    <MudIconButton Icon="@Icons.Material.Filled.ArrowDropDown" Size="Size.Small" Color="Color.Dark" OnClick="@(() => ShowBtnPress(context.Solicitud))"></MudIconButton>
+
                                 }
                                 else
                                 {
-                                    <MudTd DataLabel="Nombre">&nbsp;</MudTd>
+                                    <MudIconButton Icon="@Icons.Material.Filled.ArrowRight" Size="Size.Small" Color="Color.Dark" OnClick="@(() => ShowBtnPress(context.Solicitud))"></MudIconButton>
                                 }
-                                <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
-                                <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
-                                <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
-                            </RowTemplate>
-                        </MudTable>
-                    </td>
-                }
-            </ChildRowContent>
-            <NoRecordsContent>
-                <MudText>Sin Registros para mostrar</MudText>
-            </NoRecordsContent>
-            <PagerContent>
-                <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
-            </PagerContent>
-        </MudTable>
+                            </MudTd>
+
+                            <MudTd DataLabel=">Número de Órden">@context.Solicitud</MudTd>
+                            <MudTd DataLabel="Fecha de Ingreso">@context.Registro</MudTd>
+                            <MudTd DataLabel="Sucursal">@context.Sucursal</MudTd>
+                        </RowTemplate>
+                        <ChildRowContent>
+                            @if (context.ShowEstudios)
+                            {
+                                <td colspan="12" style="text-align:-webkit-center;">
+                                    <MudTable Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
+                                        <ToolBarContent>
+                                            <MudText Typo="Typo.subtitle2">Estudios</MudText>
+                                            <MudSpacer />
+                                            @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" Style="width:45%;" /> *@
+                                            <MudTextField @bind-Value="searchEstudios" Placeholder="Búsqueda por nombre de estudio o fecha de entrega" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                                        </ToolBarContent>
+                                        <HeaderContent>
+                                            <MudTh></MudTh>
+                                            <MudTh>Nombre</MudTh>
+                                            <MudTh>Fecha de Entrega</MudTh>
+                                            <MudTh>Estatus</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            @if (LstEstatusPrint.Contains(EstContext.EstatusId))
+                                            {
+                                                <MudTd DataLabel="Nombre"><MudCheckBox T="bool" Color="Color.Primary" CheckedChanged="@(e=> AgregarRegistro(e, EstContext))"></MudCheckBox></MudTd>
+                                            }
+                                            else
+                                            {
+                                                <MudTd DataLabel="Nombre">&nbsp;</MudTd>
+                                            }
+                                            <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
+                                            <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
+                                            <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </td>
+                            }
+                        </ChildRowContent>
+                        <NoRecordsContent>
+                            <MudText>Sin Registros para mostrar</MudText>
+                        </NoRecordsContent>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                        </PagerContent>
+                    </MudTable>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+        
+        
     </MudGrid>
 }
 
@@ -203,7 +234,7 @@ else
     private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
     private List<DtoResponseMedicoPaciente> LstExpedientes = new();
     private List<int> LstEstatusPrint = new();
-    private string searchString1 = "";
+    private Int64 searchString1;
     private string searchEstudios = "";
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -336,7 +367,7 @@ else
     #endregion
 
     #region Funsiones TABLA
-    private bool FilterFuncExpedientes(DtoResponseMedicoPaciente element) => FilterFunc(element, searchString1);
+    // private bool FilterFuncExpedientes(DtoResponseMedicoPaciente element) => FilterFunc(element, searchString1);
     private bool FilterFunc(DtoResponseMedicoPaciente element, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
@@ -465,7 +496,7 @@ else
             //             PDFGenerator _PdfGenerator = new();
             //             _PdfGenerator.DownloadPDF(IJSRuntime, _ms);
             //             //await IJSRuntime.InvokeVoidAsync("open", $"{_config.GetSection("UrlArchivos").Value.Trim()}Estudios{DateTime.Now.Ticks}.pdf", "_blank");
-                        
+
 
 
             //             break;
@@ -529,9 +560,9 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
+                        Buscar = PostRequiere == "1" ? searchString1 == 0 ? dtoPaciente[0].NombrePaciente.Trim() : searchString1.ToString() : dtoMedicoPaciente.Nombre.Trim(),
                         TipoFecha = 1,
-                        Fecha = new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") }
+                        Fecha = searchString1==0 ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                     };
 
             }
@@ -541,9 +572,9 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
+                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : searchString1 == 0 ? dtoMedicoPaciente.Nombre.Trim() : searchString1.ToString(),
                         TipoFecha = 1,
-                        Fecha = new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") }
+                        Fecha = searchString1 == 0 ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                     };
             }
             else if (PostRequiere == "3")//Compañia
@@ -552,9 +583,9 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
+                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : searchString1 == 0 ? dtoMedicoPaciente.Nombre.Trim() : searchString1.ToString(),
                         TipoFecha = 1,
-                        Fecha = new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") }
+                        Fecha = searchString1 == 0 ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                     };
             }
 
@@ -567,13 +598,21 @@ else
                     try
                     {
                         LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                        foreach (var itemExp in LstExpedientes)
+                        if (LstExpedientes[0].Nombre.Trim().ToUpper().Equals(PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim().ToUpper() : dtoMedicoPaciente.Nombre.Trim().ToUpper()))
                         {
-                            foreach (var itemSol in itemExp.Estudios)
+                            foreach (var itemExp in LstExpedientes)
                             {
-                                itemSol.SolicitudId = itemExp.SolicitudId;
+                                foreach (var itemSol in itemExp.Estudios)
+                                {
+                                    itemSol.SolicitudId = itemExp.SolicitudId;
+                                }
                             }
                         }
+                        else
+                        {
+                            LstExpedientes = new();
+                        }
+
                     }
                     catch (Exception ex)
                     {
@@ -592,7 +631,7 @@ else
         {
             var t = "";
         }
-
+        
         StateHasChanged();
 
     }

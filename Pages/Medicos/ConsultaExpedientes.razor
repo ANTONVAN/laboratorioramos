@@ -67,51 +67,81 @@ else
                 </MudGrid>
             </MudPaper>
             <br />
-            <MudTable Class="mt-4" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;">
-                <ToolBarContent>
-                <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
-                    <MudSpacer />
-                @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/> *@
-                <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
-                <MudSpacer />
-                <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
-                <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
-                <MudSpacer />
-                    <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de expediente" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField>
-                </ToolBarContent>
-                <ColGroup>
-                    <col />
-                    <col />
-                    <col />
-                    <col />
-                </ColGroup>
-                <HeaderContent>
-                    <MudTh Style="color:#921313">Expediente</MudTh>
-                    <MudTh Style="color:#921313">Nombre</MudTh>
-                    <MudTh Style="color:#921313">Edad</MudTh>
-                    <MudTh Style="color:#921313">Teléfono</MudTh>
-                    <MudTh Style="color:#921313">Detalles</MudTh>
-                    <MudTh Style="color:#921313">Gráficas</MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel=">Expediente" Style="font-weight:bolder">@context.Expediente</MudTd>
-                    <MudTd DataLabel="Nombre">@context.Nombre</MudTd>
-                    <MudTd DataLabel="Edad">@context.Edad</MudTd>
-                    <MudTd DataLabel="Teléfono">@context.EnvioWhatsapp</MudTd>
-                    <MudTd DataLabel="Detalles">
-                        <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToDetallePaciente(context))"></MudIconButton>
-                    </MudTd>
-                    <MudTd DataLabel="Gráfica">
-                        <MudIconButton Icon="@Icons.Material.Filled.BarChart" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToGraphPaciente(context))"></MudIconButton>
-                    </MudTd>
-                </RowTemplate>
-                <NoRecordsContent>
-                    <MudText>Sin Registros para mostrar</MudText>
-                </NoRecordsContent>
-                <PagerContent>
-                    <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
-                </PagerContent>
-        </MudTable>
+
+        <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="1">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="4">
+                            <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
+                            @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="1">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTable Class="mt-4" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
+                            <MudSpacer />
+                            @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/> *@
+                            @* <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
+                            <MudSpacer />
+                            <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
+                            <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
+                            <MudSpacer />
+                            <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de expediente" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField> *@
+                        </ToolBarContent>
+                        <ColGroup>
+                            <col />
+                            <col />
+                            <col />
+                            <col />
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh Style="color:#921313">Expediente</MudTh>
+                            <MudTh Style="color:#921313">Nombre</MudTh>
+                            <MudTh Style="color:#921313">Edad</MudTh>
+                            <MudTh Style="color:#921313">Teléfono</MudTh>
+                            <MudTh Style="color:#921313">Detalles</MudTh>
+                            <MudTh Style="color:#921313">Gráficas</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel=">Expediente" Style="font-weight:bolder">@context.Expediente</MudTd>
+                            <MudTd DataLabel="Nombre">@context.Nombre</MudTd>
+                            <MudTd DataLabel="Edad">@context.Edad</MudTd>
+                            <MudTd DataLabel="Teléfono">@context.EnvioWhatsapp</MudTd>
+                            <MudTd DataLabel="Detalles">
+                                <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToDetallePaciente(context))"></MudIconButton>
+                            </MudTd>
+                            <MudTd DataLabel="Gráfica">
+                                <MudIconButton Icon="@Icons.Material.Filled.BarChart" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToGraphPaciente(context))"></MudIconButton>
+                            </MudTd>
+                        </RowTemplate>
+                        <NoRecordsContent>
+                            <MudText>Sin Registros para mostrar</MudText>
+                        </NoRecordsContent>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                        </PagerContent>
+                    </MudTable>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+
+
+            
             
     </MudGrid>
 }
@@ -142,7 +172,7 @@ else
     private string UrlUsuario = "LabRamos/services/records/api/ClinicResults/getList";
     private string UrlMedicoPaciente = "LabRamos/services/records/api/MassSearch/GetAllCaptureResults";
     private string UrlMedicoPacienteExpediente = "LabRamos/services/records/api/MedicalRecord/report/expedientes";
-    private string searchString1 = "";
+    private string searchString1="";
 
     // private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
     private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
@@ -182,16 +212,36 @@ else
                             Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                         };
                     var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
-                    dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                    foreach (var item in dtoMedicoPaciente)
+                    switch (sesPacientes.StatusCode)
                     {
-                        List<string> refExpe = new();
-                        refExpe.Add(item.ExpedienteId.ToString());
-                        string json = JsonConvert.SerializeObject(refExpe);
-                        var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
-                        var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
-                        item.Expediente = sesExpediente[0].Expediente;
+                        case System.Net.HttpStatusCode.OK:
+                            try
+                            {
+
+                                dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                                foreach (var item in dtoMedicoPaciente)
+                                {
+                                    List<string> refExpe = new();
+                                    refExpe.Add(item.ExpedienteId.ToString());
+                                    string json = JsonConvert.SerializeObject(refExpe);
+                                    var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                                    var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                                    item.Expediente = sesExpediente[0].Expediente;
+                                }
+
+                            }
+                            catch (Exception ex)
+                            {
+                                //ValidateData = false;
+                            }
+
+
+                            break;
+                        case System.Net.HttpStatusCode.InternalServerError:
+                            //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
+                            break;
                     }
+                    
 
                     dataLoaded = false;
                 }
@@ -255,13 +305,13 @@ else
             DtoRequestMedicoPacientes parametrobusqueda = new()
                 {
                     MedicoId = new()
-            {
-                dtoMedico.IdMedico
-            },
+                        {
+                            dtoMedico.IdMedico
+                        },
                     CompañiaId = new(),
-                    Buscar = "",
+                    Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? "" : searchString1.ToString(),
                     TipoFecha = 1,
-                    Fecha = new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") }
+                    Fecha = String.IsNullOrEmpty(searchString1.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
                 };
             var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
             dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
@@ -274,6 +324,7 @@ else
                 var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
                 item.Expediente = sesExpediente[0].Expediente;
             }
+            
 
             dataLoaded = false;
         }
