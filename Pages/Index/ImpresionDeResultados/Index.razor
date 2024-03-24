@@ -23,9 +23,9 @@
                     <MudCard>
                         <MudCardMedia Image="Images/LogotipoWeb.png" Height="175" />
                         <MudCardContent>
-                            <MudTextField Label="Usuario" HelperText="Max. 16 dígitos"
+                            <MudTextField Label="Expediente" HelperText="Max. 16 dígitos"
                                           @bind-Value="dtoLoginPaciente.Usuario" For="@(() => dtoLoginPaciente.Usuario)" MaxLength="16" />
-                            <MudTextField Label="Contraseña" HelperText="Máx. 16 dígitos" Class="mt-3"
+                            <MudTextField Label="Código" HelperText="Máx. 16 dígitos" Class="mt-3"
                                           @bind-Value="dtoLoginPaciente.Contraseña" For="@(() => dtoLoginPaciente.Contraseña)" InputType="InputType.Password" MaxLength="16" />
                         </MudCardContent>
                         <MudCardActions>
