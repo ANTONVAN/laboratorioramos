@@ -91,12 +91,12 @@ else
                             <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
                             <MudSpacer />
                             @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/> *@
-                            <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
+                            @* <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
                             <MudSpacer />
                             <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
                             <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
                             <MudSpacer />
-                            <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de expediente" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField>
+                            <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de expediente" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField> *@
                         </ToolBarContent>
                         <ColGroup>
                             <col />
