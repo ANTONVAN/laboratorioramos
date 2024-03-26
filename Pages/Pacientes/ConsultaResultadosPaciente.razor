@@ -259,6 +259,7 @@ else
 
     DateTime? dateInicial = DateTime.Today;
     DateTime? dateFinal = DateTime.Today;
+    private string Sucursal = "";
 
     #endregion
 
@@ -298,6 +299,7 @@ else
                     };
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);
                     dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+                    Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
                 }
                 else if (PostRequiere == "3")//Compañia
                 {
@@ -542,8 +544,9 @@ else
 
             //     }
             // }
-
+            Http.DefaultRequestHeaders.Add("branchid", Sucursal);
             ValidateData = false;
+            StateHasChanged();
         }
     }
 

@@ -108,6 +108,8 @@
     private List<DtoEstudioGrafica> oResulEstudios = new();
     private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
 
+    private string Sucursal = "";
+
 
     private ApexChartOptions<DtoEstudioGrafica> options;
 
@@ -142,6 +144,7 @@
                     };
                 var resPacDecrip = Cryp.Desencripta(PostPaciente);
                 dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+                Sucursal = Http.DefaultRequestHeaders.GetValues("branchid").ToString();
             }
             else if (PostRequiere == "3")//Compañia
             {
