@@ -297,7 +297,7 @@
                 }
                 
             }
-            var orderRow=oResulEstudios.OrderBy(op => op.Fecha);
+            var orderRow=oResulEstudios.OrderByDescending(op => op.Fecha);
             oResulEstudios = new(orderRow);
         }
         

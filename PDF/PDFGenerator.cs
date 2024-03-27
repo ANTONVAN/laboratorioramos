@@ -68,7 +68,7 @@ namespace LaboratorioRamos.PDF
                     rowExiste.EstudiosId.Add(estPdf);
                 }
             }
-            Http.DefaultRequestHeaders.Remove("branchid");
+            //Http.DefaultRequestHeaders.Remove("branchid");
 
             if (prinResultadoTrue.Estudios.Count > 0)
             {

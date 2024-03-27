@@ -90,6 +90,8 @@ else
 
     private bool dataLoaded = true;
     private MemoryStream archivopdf = new();
+    private string Sucursal = "";
+    private List<int> LstEstatusPrint = new();
 
     private string UrlUsuario = "LabRamos/services/records/api/ClinicResults/getList";
     private string UrlPaciente = "LabRamos/services/records/api/MassSearch/GetAllCaptureResults";
@@ -126,15 +128,19 @@ else
             var idenUser = authState.User.Claims.ToList();
             var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
             dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
+            Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
 
             DtoRequestMedicoPacientes parametrobusqueda = new()
-                {
-                    MedicoId = new(),
-                    CompañiaId = new(),
-                    Buscar = dtoPaciente[0].NombrePaciente.Trim(),
-                    TipoFecha = 1,
-                    Fecha = new()
-                };
+            {
+                MedicoId = new(),
+                CompañiaId = new(),
+                Buscar = dtoPaciente[0].NombrePaciente.Trim(),
+                TipoFecha = 1,
+                Fecha = new()
+            };
+
+            Http.DefaultRequestHeaders.Remove("branchid");
+            Http.DefaultRequestHeaders.Add("branchid", Sucursal);
 
             var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
 
@@ -144,16 +150,24 @@ else
                     try
                     {
                         LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                        var estatusSep = _config.GetSection("IdImpresion").Value.Trim().Split(",");
+                        LstEstatusPrint = new();
+                        foreach (var itemST in estatusSep)
+                        {
+                            LstEstatusPrint.Add(int.Parse(itemST));
+                        }
                         foreach (var itemExp in LstExpedientes)
                         {
                             foreach (var itemSol in itemExp.Estudios)
                             {
-                                itemSol.SolicitudId = itemExp.SolicitudId;
-                                if (itemExp.Solicitud == dtoPaciente[0].SolicitudIMR)
+                                if (LstEstatusPrint.Contains(itemSol.EstatusId))
                                 {
-                                    StudioSelect.Add(itemSol);
+                                    itemSol.SolicitudId = itemExp.SolicitudId;
+                                    if (itemExp.Solicitud == dtoPaciente[0].SolicitudIMR)
+                                    {
+                                        StudioSelect.Add(itemSol);
+                                    }
                                 }
-
                             }
                         }
                         archivopdf = await _PdfGenerator.CreatePDF(_config, IJSRuntime, Http, StudioSelect);
