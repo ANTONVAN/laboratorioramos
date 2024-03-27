@@ -99,8 +99,8 @@ else
                             <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
                         </MudItem>
                         <MudItem xs="12" sm="12" md="4">
-                            @* <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (16 dígitos)"></MudTextField> *@
-                            <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" />
+                             <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> 
+                            @*<MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="1" Max="999999999999" HelperText="Sólo Números (12 dígitos)" />*@
                         </MudItem>
                         <MudItem xs="12" sm="12" md="1">
                             <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
@@ -234,7 +234,9 @@ else
     private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
     private List<DtoResponseMedicoPaciente> LstExpedientes = new();
     private List<int> LstEstatusPrint = new();
-    private Int64 searchString1;
+
+    [RegularExpression("^[0-9]*$", ErrorMessage = "Solo se permiten números")]
+    private string searchString1;
     private string searchEstudios = "";
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
@@ -279,6 +281,7 @@ else
             try
             {
                 var estatusSep = _config.GetSection("IdImpresion").Value.Trim().Split(",");
+                Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
                 foreach (var itemST in estatusSep)
                 {
                     LstEstatusPrint.Add(int.Parse(itemST));
@@ -299,7 +302,7 @@ else
                     };
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);
                     dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
-                    Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
+                    
                 }
                 else if (PostRequiere == "3")//Compañia
                 {
@@ -544,9 +547,10 @@ else
 
             //     }
             // }
+            Http.DefaultRequestHeaders.Remove("branchid");
             Http.DefaultRequestHeaders.Add("branchid", Sucursal);
             ValidateData = false;
-            StateHasChanged();
+            //StateHasChanged();
         }
     }
 
@@ -563,9 +567,9 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? searchString1 == 0 ? dtoPaciente[0].NombrePaciente.Trim() : searchString1.ToString() : dtoMedicoPaciente.Nombre.Trim(),
+                        Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(searchString1) ? dtoPaciente[0].NombrePaciente.Trim() : searchString1.ToString() : dtoMedicoPaciente.Nombre.Trim(),
                         TipoFecha = 1,
-                        Fecha = searchString1==0 ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        Fecha = String.IsNullOrEmpty(searchString1) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                     };
 
             }
@@ -575,9 +579,9 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : searchString1 == 0 ? dtoMedicoPaciente.Nombre.Trim() : searchString1.ToString(),
+                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(searchString1) ? dtoMedicoPaciente.Nombre.Trim() : searchString1.ToString(),
                         TipoFecha = 1,
-                        Fecha = searchString1 == 0 ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        Fecha = String.IsNullOrEmpty(searchString1) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                     };
             }
             else if (PostRequiere == "3")//Compañia
@@ -586,13 +590,14 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : searchString1 == 0 ? dtoMedicoPaciente.Nombre.Trim() : searchString1.ToString(),
+                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(searchString1) ? dtoMedicoPaciente.Nombre.Trim() : searchString1.ToString(),
                         TipoFecha = 1,
-                        Fecha = searchString1 == 0 ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        Fecha = String.IsNullOrEmpty(searchString1) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                     };
             }
 
-
+            Http.DefaultRequestHeaders.Remove("branchid");
+            Http.DefaultRequestHeaders.Add("branchid", Sucursal);
             var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
 
             switch (sesExpediente.StatusCode)

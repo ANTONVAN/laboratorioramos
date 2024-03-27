@@ -180,6 +180,7 @@ else
 
     DateTime? dateInicial = DateTime.Today;
     DateTime? dateFinal = DateTime.Today;
+    private string Sucursal = "";
     #endregion
 
     #region Funsiones Página
@@ -189,6 +190,7 @@ else
         try
         {
             var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
             if (!authState.User.Identity.IsAuthenticated)
             {
                 NavigationManager.NavigateTo("/", true);
