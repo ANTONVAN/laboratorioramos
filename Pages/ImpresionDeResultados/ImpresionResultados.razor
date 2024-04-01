@@ -44,6 +44,12 @@ else
             @if (ShowBtnDescargar)
             {
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="() => DownloadPDF()">Descargar</MudButton>
+            }else{
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="12" style="text-align: center;">
+                        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+                    </MudItem>
+                </MudGrid>
             }
             
         </MudItem>
