@@ -85,6 +85,7 @@
         };
         var ses = await Http.PostAsJsonAsync<DtoLogin>(UrlAuth, dtoLogin);
         Http.DefaultRequestHeaders.Remove("Authorization");
+        Http.DefaultRequestHeaders.Remove("branchid");
         switch (ses.StatusCode)
         {
             case System.Net.HttpStatusCode.OK:
