@@ -72,7 +72,7 @@ namespace LaboratorioRamos.PDF
 
             if (prinResultadoTrue.Estudios.Count > 0)
             {
-                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>("LabRamos/services/records/api/ClinicResults/printResultFilePreview", prinResultadoTrue);
+                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>("records/api/ClinicResults/printResultFilePreview", prinResultadoTrue);
                 switch (sesExpediente.StatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:
@@ -105,7 +105,7 @@ namespace LaboratorioRamos.PDF
             }
             if (prinResultadoFalse.Estudios.Count > 0)
             {
-                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>("LabRamos/services/records/api/ClinicResults/printResultFilePreview", prinResultadoFalse);
+                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>("records/api/ClinicResults/printResultFilePreview", prinResultadoFalse);
                 switch (sesExpediente.StatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:

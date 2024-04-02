@@ -96,7 +96,7 @@
     private string ValEstudio { get; set; }
     //private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
     private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
-    private string UrlGraficas = "LabRamos/services/records/api/MassSearch/GetByFilter";
+    private string UrlGraficas = "records/api/MassSearch/GetByFilter";
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Gráficas", href: null, disabled: true, icon: Icons.Material.Filled.StackedBarChart),

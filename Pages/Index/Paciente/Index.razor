@@ -25,7 +25,7 @@
                             <MudTextField Label="Expediente" HelperText="Max. 16 dígitos"
                                           @bind-Value="dtoLoginPaciente.Usuario" For="@(() => dtoLoginPaciente.Usuario)" MaxLength="16" />
                             <MudTextField Label="Código" HelperText="Máx. 8 dígitos" Class="mt-3"
-                                          @bind-Value="dtoLoginPaciente.Contraseña" For="@(() => dtoLoginPaciente.Contraseña)" InputType="InputType.Password" MaxLength="8" />
+                                          @bind-Value="dtoLoginPaciente.Contraseña" For="@(() => dtoLoginPaciente.Contraseña)" InputType="InputType.Password" MaxLength="16" />
                         </MudCardContent>
                         <MudCardActions>
                             @if (ValidateData)
@@ -56,8 +56,8 @@
     private List<DtoPaciente> dtoPaciente = new();
     private DtoRequestPaciente dtoEequestPaciente = new();
     private bool ValidateData = false;
-    private string UrlAuth = "LabRamos/services/identity/api/profile/login";
-    private string UrlUsuario = "LabRamos/services/records/api/MedicalRecord/now";
+    private string UrlAuth = "identity/api/profile/login";
+    private string UrlUsuario = "records/api/MedicalRecord/now";
     #endregion
 
     #region Funcionalidad Página
