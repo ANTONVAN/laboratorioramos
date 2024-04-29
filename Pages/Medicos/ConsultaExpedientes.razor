@@ -1,5 +1,6 @@
 ﻿@page "/ConsultaExpedientesMedico"
 @using LaboratorioRamos.Data.DtoMedico
+@using LaboratorioRamos.Data.DtoFiltro
 @using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
 @inject HttpClient Http;
@@ -71,27 +72,39 @@ else
         <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
             <MudGrid>
                 <MudItem xs="12" sm="12" md="12">
-                    <MudGrid>
-                        <MudItem xs="12" sm="12" md="1">
-                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        </MudItem>
-                        <MudItem xs="12" sm="12" md="3">
-                            <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
-                        </MudItem>
-                        <MudItem xs="12" sm="12" md="3">
-                            <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
-                        </MudItem>
-                        <MudItem xs="12" sm="12" md="4">
-                            <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
-                            @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
-                        </MudItem>
-                        <MudItem xs="12" sm="12" md="1">
-                            <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
-                        </MudItem>
-                    </MudGrid>
+                    <EditForm Model="@dtoFiltro" OnValidSubmit="BuscaFecha" style="width: 100%;">
+                        
+                        <MudGrid>
+                            <MudItem xs="12" sm="12" md="1">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="3">
+                                <MudDatePicker Label="Fecha Inicio" @bind-Date="dtoFiltro.DateInicial"/>
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="3">
+                                <MudDatePicker Label="Fecha Final" @bind-Date="dtoFiltro.DateFinal" />
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="4">
+                                <MudTextField @bind-Value="dtoFiltro.ExpedienteNombre" Label="Expediente o Nombre del paciente:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Teclee la Clave de Expediente o Nombre del paciente, y pulse Enter." For="@(() => dtoFiltro.ExpedienteNombre)"></MudTextField>
+                                @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="1">
+                                @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
+                                @if (ValidateData)
+                                {
+                                    <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                                }
+                                else
+                                {
+                                    <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton>
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </EditForm>
+                    
                 </MudItem>
                 <MudItem xs="12" sm="12" md="12">
-                    <MudTable Class="mt-4" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;">
+                    <MudTable Class="mt-4" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
                             <MudSpacer />
@@ -164,22 +177,29 @@ else
         new BreadcrumbItem("Consulta de Expedientes", href: "#", icon: Icons.Material.Filled.Badge),
     };
     private DtoMedicoPwd dtoMedico = new();
+    private DtoFiltro dtoFiltro = new();
     private List<DtoResponseMedicoPaciente> dtoMedicoPaciente = new();
 
     private bool ValidateData = false;
 
     private bool dataLoaded = true;
+<<<<<<< HEAD
     private string UrlUsuario = "records/api/ClinicResults/getList";
     private string UrlMedicoPaciente = "records/api/MassSearch/GetAllCaptureResults";
     private string UrlMedicoPacienteExpediente = "records/api/MedicalRecord/report/expedientes";
     private string searchString1="";
+=======
+    private string UrlUsuario = "LabRamos/services/records/api/ClinicResults/getList";
+    private string UrlMedicoPaciente = "LabRamos/services/records/api/MassSearch/GetAllCaptureResults";
+    private string UrlMedicoPacienteExpediente = "LabRamos/services/records/api/MedicalRecord/report/expedientes";
+
+>>>>>>> a4748ce5b24d1e31db7cb036accfcfdb9df882fc
 
     // private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
     private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
     private MudDateRangePicker _picker;
 
-    DateTime? dateInicial = DateTime.Today;
-    DateTime? dateFinal = DateTime.Today;
+
     private string Sucursal = "";
     #endregion
 
@@ -243,7 +263,7 @@ else
                             //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
                             break;
                     }
-                    
+
 
                     dataLoaded = false;
                 }
@@ -266,26 +286,45 @@ else
         StateHasChanged();
     }
 
-    void ShowSnack(string message)
+    void ShowSnack(string message, int sev)
     {
-        Snackbar.Add($"Atención: {message}", Severity.Warning);
+        switch (sev)
+        {
+            case 0:
+                Snackbar.Add($"Atención: {message}", Severity.Normal);
+                break;
+            case 1:
+                Snackbar.Add($"Atención: {message}", Severity.Info);
+                break;
+            case 2:
+                Snackbar.Add($"Atención: {message}", Severity.Success);
+                break;
+            case 3:
+                Snackbar.Add($"Atención: {message}", Severity.Warning);
+                break;
+            case 4:
+                Snackbar.Add($"Atención: {message}", Severity.Error);
+                break;
+
+        }
+
     }
     #endregion
 
     #region Funsiones GRID
-    private bool FilterFuncExpedientes(DtoResponseMedicoPaciente element) => FilterFunc(element, searchString1);
-    private bool FilterFunc(DtoResponseMedicoPaciente element, string searchString)
-    {
-        if (string.IsNullOrWhiteSpace(searchString))
-            return true;
-        if (element.Nombre.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if (element.Expediente.Contains(searchString, StringComparison.OrdinalIgnoreCase))
-            return true;
-        if ($"{element.EnvioCorreo} {element.Sucursal} {element.Sexo}".Contains(searchString))
-            return true;
-        return false;
-    }
+    // private bool FilterFuncExpedientes(DtoResponseMedicoPaciente element) => FilterFunc(element, searchString1);
+    // private bool FilterFunc(DtoResponseMedicoPaciente element, string searchString)
+    // {
+    //     if (string.IsNullOrWhiteSpace(searchString))
+    //         return true;
+    //     if (element.Nombre.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+    //         return true;
+    //     if (element.Expediente.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+    //         return true;
+    //     if ($"{element.EnvioCorreo} {element.Sucursal} {element.Sexo}".Contains(searchString))
+    //         return true;
+    //     return false;
+    // }
 
     private void NavigateToDetallePaciente(DtoResponseMedicoPaciente item)
     {
@@ -299,33 +338,51 @@ else
         NavigationManager.NavigateTo($"/ConsultaGraficaPaciente/2/{Cryp.Encripta(json)}");
     }
 
-    async Task BuscaFecha()
+
+    //async Task BuscaFecha()
+    async void BuscaFecha()
     {
         try
         {
-            dataLoaded = true;
-            DtoRequestMedicoPacientes parametrobusqueda = new()
-                {
-                    MedicoId = new()
+            if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
+            {
+                ShowSnack("¡Por favor Ingresa Fecha Inicial, Fecha Final y/o Expediente o Nombre del Paciente!",4);
+            }
+            else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
+            {
+                ShowSnack("¡Por favor Ingresa Fecha Final!", 4);
+            }
+            else if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
+            {
+                ShowSnack("¡Por favor Ingresa Fecha Inicial", 4);
+            }
+            else
+            {
+                dataLoaded = true;
+                DtoRequestMedicoPacientes parametrobusqueda = new()
+                    {
+                        MedicoId = new()
                         {
                             dtoMedico.IdMedico
                         },
-                    CompañiaId = new(),
-                    Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? "" : searchString1.ToString(),
-                    TipoFecha = 1,
-                    Fecha = String.IsNullOrEmpty(searchString1.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
-                };
-            var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
-            dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-            foreach (var item in dtoMedicoPaciente)
-            {
-                List<string> refExpe = new();
-                refExpe.Add(item.ExpedienteId.ToString());
-                string json = JsonConvert.SerializeObject(refExpe);
-                var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
-                var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
-                item.Expediente = sesExpediente[0].Expediente;
+                        CompañiaId = new(),
+                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? "" : dtoFiltro.ExpedienteNombre,
+                        TipoFecha = 1,
+                        Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
+                    };
+                var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
+                dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                foreach (var item in dtoMedicoPaciente)
+                {
+                    List<string> refExpe = new();
+                    refExpe.Add(item.ExpedienteId.ToString());
+                    string json = JsonConvert.SerializeObject(refExpe);
+                    var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                    var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                    item.Expediente = sesExpediente[0].Expediente;
+                }
             }
+            
             
 
             dataLoaded = false;

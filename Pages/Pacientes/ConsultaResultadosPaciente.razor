@@ -1,6 +1,7 @@
 ﻿@page "/ConsultaResultadosPaciente/{PostRequiere}/{PostPaciente}"
 
 @using LaboratorioRamos.Data.DtoPaciente
+@using LaboratorioRamos.Data.DtoFiltro
 @using LaboratorioRamos.Data.DtoExpediente
 @using LaboratorioRamos.Data.DtoExpediente.DtoRequestExpedientes
 @using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
@@ -88,7 +89,7 @@ else
         <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
             <MudGrid>
                 <MudItem xs="12" sm="12" md="12">
-                    <MudGrid>
+                    @* <MudGrid>
                         <MudItem xs="12" sm="12" md="1">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         </MudItem>
@@ -100,12 +101,40 @@ else
                         </MudItem>
                         <MudItem xs="12" sm="12" md="4">
                              <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> 
-                            @*<MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="1" Max="999999999999" HelperText="Sólo Números (12 dígitos)" />*@
                         </MudItem>
                         <MudItem xs="12" sm="12" md="1">
                             <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
                         </MudItem>
-                    </MudGrid>
+                    </MudGrid> *@
+            <EditForm Model="@dtoFiltro" OnValidSubmit="BuscaFecha" style="width: 100%;">
+
+                <MudGrid>
+                    <MudItem xs="12" sm="12" md="1">
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudDatePicker Label="Fecha Inicio" @bind-Date="dtoFiltro.DateInicial" />
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudDatePicker Label="Fecha Final" @bind-Date="dtoFiltro.DateFinal" />
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="4">
+                                <MudTextField @bind-Value="dtoFiltro.Solicitud" Label="Número de solicitud:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
+                        @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="1">
+                        @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
+                        @if (ValidateData)
+                        {
+                            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                        }
+                        else
+                        {
+                            <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </EditForm>
                 </MudItem>
                 <MudItem xs="12" sm="12" md="12">
                     @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
@@ -169,8 +198,8 @@ else
                                         <ToolBarContent>
                                             <MudText Typo="Typo.subtitle2">Estudios</MudText>
                                             <MudSpacer />
-                                            @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" Style="width:45%;" /> *@
-                                            <MudTextField @bind-Value="searchEstudios" Placeholder="Búsqueda por nombre de estudio o fecha de entrega" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                                            @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" Style="width:45%;" />
+                                    <MudTextField @bind-Value="searchEstudios" Placeholder="Búsqueda por nombre de estudio o fecha de entrega" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>*@
                                         </ToolBarContent>
                                         <HeaderContent>
                                             <MudTh></MudTh>
@@ -231,6 +260,7 @@ else
     public string resDecrip { get; set; }
 
     private List<DtoPaciente> dtoPaciente = new();
+    private DtoFiltro dtoFiltro = new();
     private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
     private List<DtoResponseMedicoPaciente> LstExpedientes = new();
     private List<int> LstEstatusPrint = new();
@@ -567,9 +597,9 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(searchString1) ? dtoPaciente[0].NombrePaciente.Trim() : searchString1.ToString() : dtoMedicoPaciente.Nombre.Trim(),
+                        Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoPaciente[0].NombrePaciente.Trim() : dtoFiltro.Solicitud.ToString() : dtoMedicoPaciente.Nombre.Trim(),
                         TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(searchString1) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                     };
 
             }
@@ -579,9 +609,9 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(searchString1) ? dtoMedicoPaciente.Nombre.Trim() : searchString1.ToString(),
+                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
                         TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(searchString1) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                     };
             }
             else if (PostRequiere == "3")//Compañia
@@ -590,9 +620,9 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(searchString1) ? dtoMedicoPaciente.Nombre.Trim() : searchString1.ToString(),
+                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString().ToString(),
                         TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(searchString1) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                     };
             }
 
