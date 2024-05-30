@@ -1,6 +1,14 @@
 ﻿@inherits LayoutComponentBase
+@using LaboratorioRamos.Data.DtoMedico
+@using LaboratorioRamos.Data.DtoPaciente
+@using LaboratorioRamos.Data.DtoExpediente
+@using LaboratorioRamos.Data.DtoExpediente.DtoRequestExpedientes
+@using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
+@using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
 
 @inject AuthenticationStateProvider _authStateProvider;
+@inject IHttpContextAccessor httpContextAccessor;
+@inject Cryp Cryp;
 
 <MudThemeProvider />
 <MudDialogProvider />
@@ -11,6 +19,7 @@
     <MudAppBar Elevation="0">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
+        <h5>Hola, @NombreUsuario</h5>
         @* <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" /> *@
     </MudAppBar>
@@ -33,11 +42,40 @@
     #region Declaración de variables
 
     bool _drawerOpen = true;
+    private int TypeUser = 0;
+    private string NombreUsuario = "";
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Home", href: "/", icon: Icons.Material.Filled.Home),
     };
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var authState = await _authStateProvider.GetAuthenticationStateAsync();
+        var idenUser = authState.User.Claims.ToList();
+        TypeUser = int.Parse(idenUser[1].Value);
+        var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+        if (TypeUser == 1) //Paciente
+        {
+            List<DtoPaciente> dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
+            NombreUsuario = dtoPaciente[0].NombrePaciente;
+        }
+        else if (TypeUser == 2)//Medico
+        {
+            DtoResponseMedicoPaciente dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resDecrip);
+            NombreUsuario = dtoMedicoPaciente.Nombre;
+        }
+        else if (TypeUser == 3)//Compañia
+        {
+            DtoResponseMedicoPaciente dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resDecrip);
+            NombreUsuario = dtoMedicoPaciente.Nombre;
+        }
+        StateHasChanged();
+
+    }
 
     #endregion
 

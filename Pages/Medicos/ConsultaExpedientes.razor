@@ -28,9 +28,9 @@
 }
 else
 {
-    <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+    <MudBreadcrumbs Items="_items" Style="padding: 0px;"></MudBreadcrumbs>
     <MudGrid>
-        <MudItem xs="12" sm="7" md="12">
+       @*  <MudItem xs="12" sm="7" md="12">
             <MudText Align="Align.Center" Typo="Typo.h4" style="color: #0d37a8;">Consulta de Resultados</MudText>
         </MudItem>
         <MudPaper Class="pa-4" Elevation="4" Style="width:100%">
@@ -67,7 +67,7 @@ else
                 </MudItem>
                 </MudGrid>
             </MudPaper>
-            <br />
+            <br /> *@
 
         <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
             <MudGrid>
@@ -179,13 +179,14 @@ else
     private DtoMedicoPwd dtoMedico = new();
     private DtoFiltro dtoFiltro = new();
     private List<DtoResponseMedicoPaciente> dtoMedicoPaciente = new();
+    private List<DtoResponseMedicoPaciente> dtoMedicoPacienteTmp = new();
 
     private bool ValidateData = false;
 
     private bool dataLoaded = true;
-    private string UrlUsuario = "LabRamos/services/records/api/ClinicResults/getList";
-    private string UrlMedicoPaciente = "LabRamos/services/records/api/MassSearch/GetAllCaptureResults";
-    private string UrlMedicoPacienteExpediente = "LabRamos/services/records/api/MedicalRecord/report/expedientes";
+    private string UrlUsuario = "services/records/api/ClinicResults/getList";
+    private string UrlMedicoPaciente = "services/records/api/MassSearch/GetAllCaptureResults";
+    private string UrlMedicoPacienteExpediente = "services/records/api/MedicalRecord/report/expedientes";
 
 
     // private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
@@ -233,8 +234,8 @@ else
                             try
                             {
 
-                                dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                                foreach (var item in dtoMedicoPaciente)
+                                dtoMedicoPacienteTmp = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                                foreach (var item in dtoMedicoPacienteTmp)
                                 {
                                     List<string> refExpe = new();
                                     refExpe.Add(item.ExpedienteId.ToString());
@@ -243,6 +244,20 @@ else
                                     var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
                                     item.Expediente = sesExpediente[0].Expediente;
                                 }
+                                dtoMedicoPaciente.Clear();
+
+                                foreach (var itemExp in dtoMedicoPacienteTmp)
+                                {
+                                    var existeexp = dtoMedicoPaciente.Where(e => e.Expediente.Equals(itemExp.Expediente)).Count();
+                                    if (existeexp==0)
+                                    {
+                                        dtoMedicoPaciente.Add(itemExp);
+                                    }
+
+
+                                }
+
+
 
                             }
                             catch (Exception ex)
@@ -364,8 +379,9 @@ else
                         Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
                     };
                 var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
-                dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                foreach (var item in dtoMedicoPaciente)
+
+                dtoMedicoPacienteTmp = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                foreach (var item in dtoMedicoPacienteTmp)
                 {
                     List<string> refExpe = new();
                     refExpe.Add(item.ExpedienteId.ToString());
@@ -374,6 +390,33 @@ else
                     var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
                     item.Expediente = sesExpediente[0].Expediente;
                 }
+
+                dtoMedicoPaciente.Clear();
+
+                foreach (var itemExp in dtoMedicoPacienteTmp)
+                {
+                    var existeexp = dtoMedicoPaciente.Where(e => e.Expediente.Equals(itemExp.Expediente)).Count();
+                    if (existeexp == 0)
+                    {
+                        dtoMedicoPaciente.Add(itemExp);
+                    }
+
+
+                }
+
+
+
+
+                // dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                // foreach (var item in dtoMedicoPaciente)
+                // {
+                //     List<string> refExpe = new();
+                //     refExpe.Add(item.ExpedienteId.ToString());
+                //     string json = JsonConvert.SerializeObject(refExpe);
+                //     var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                //     var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                //     item.Expediente = sesExpediente[0].Expediente;
+                // }
             }
             
             

@@ -38,54 +38,56 @@
 }
 else
 {
-    <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+    <MudBreadcrumbs Items="_items" Style="padding: 0px;"></MudBreadcrumbs>
     <MudGrid>
-        <MudItem xs="12" sm="7" md="12">
-            <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Consulta de Resultados</MudText>
-        </MudItem>
-        <MudPaper Class="pa-4" Elevation="4" Style="width:100%">
-            <MudGrid>
-                <MudItem xs="12" sm="8" md="3">
-                    @{
-                        var nompac = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente : dtoMedicoPaciente.Nombre;
-                    }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@nompac</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    @{
-                        var gener = PostRequiere == "1" ? (dtoPaciente[0].Genero == "M" ? "MASCULINO" : "FEMENINO"):@dtoMedicoPaciente.Sexo.ToUpper();
-                    }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@gener</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    @{
-                        var FecNac = PostRequiere == "1" ? dtoPaciente[0].FechaNacimiento : dtoMedicoPaciente.FechaNacimiento;
-                    }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Fecha de Nacimiento: @FecNac</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    @{
-                        var PacEdad = PostRequiere == "1" ? $"{dtoPaciente[0].Edad} Años" : $"{dtoMedicoPaciente.Edad.ToString()} Años";
-                    }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Edad: @PacEdad</MudText>
-                    </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    @{
-                        var PacCorreo = PostRequiere == "1" ? "--" : dtoMedicoPaciente.EnvioCorreo;
-                    }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Email: @PacCorreo</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
+        @if (ShowNombre)
+        {
+            <MudItem xs="12" sm="7" md="12">
+                <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Consulta de Resultados</MudText>
+            </MudItem>
+            <MudPaper Class="pa-4" Elevation="4" Style="width:100%">
+                <MudGrid>
+                    <MudItem xs="12" sm="8" md="3">
                         @{
-                        var PacTelefono = PostRequiere == "1" ? dtoPaciente[0].Telefono : dtoMedicoPaciente.Telefono;
-                    }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Teléfono: @PacTelefono </MudText>
-                </MudItem>
-            </MudGrid>
-        </MudPaper>
+                            var nompac = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente : dtoMedicoPaciente.Nombre;
+                        }
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@nompac</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="8" md="3">
+                        @{
+                            var gener = PostRequiere == "1" ? (dtoPaciente[0].Genero == "M" ? "MASCULINO" : "FEMENINO") : @dtoMedicoPaciente.Sexo.ToUpper();
+                        }
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@gener</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="8" md="3">
+                        @{
+                            var FecNac = PostRequiere == "1" ? dtoPaciente[0].FechaNacimiento : dtoMedicoPaciente.FechaNacimiento;
+                        }
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Fecha de Nacimiento: @FecNac</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="8" md="3">
+                        @{
+                            var PacEdad = PostRequiere == "1" ? $"{dtoPaciente[0].Edad} Años" : $"{dtoMedicoPaciente.Edad.ToString()} Años";
+                        }
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Edad: @PacEdad</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="8" md="3">
+                        @{
+                            var PacCorreo = PostRequiere == "1" ? "--" : dtoMedicoPaciente.EnvioCorreo;
+                        }
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Email: @PacCorreo</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="8" md="3">
+                        @{
+                            var PacTelefono = PostRequiere == "1" ? dtoPaciente[0].Telefono : dtoMedicoPaciente.Telefono;
+                        }
+                        <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Teléfono: @PacTelefono </MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+                    <br/>
+        }
 
-        
-        <br/>
         <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
             <MudGrid>
                 <MudItem xs="12" sm="12" md="12">
@@ -195,15 +197,36 @@ else
                             {
                                 <td colspan="12" style="text-align:-webkit-center;">
                                     <MudTable Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
-                                        <ToolBarContent>
+                                        @* <ToolBarContent>
                                             <MudText Typo="Typo.subtitle2">Estudios</MudText>
                                             <MudSpacer />
-                                            @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" Style="width:45%;" />
-                                    <MudTextField @bind-Value="searchEstudios" Placeholder="Búsqueda por nombre de estudio o fecha de entrega" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>*@
-                                        </ToolBarContent>
+                                            <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" Style="width:45%;" />
+                                    <MudTextField @bind-Value="searchEstudios" Placeholder="Búsqueda por nombre de estudio o fecha de entrega" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                                        </ToolBarContent> *@
                                         <HeaderContent>
-                                            <MudTh></MudTh>
-                                            <MudTh>Nombre</MudTh>
+                                            <MudTh style="padding: 0px;">
+                                                @* @{
+                                                    var countIDSeleAll = 0;
+                                                    foreach (var item in @context.Estudios)
+                                                    {
+                                                        if (LstEstatusPrint.Contains(item.EstatusId))
+                                                        {
+                                                            countIDSeleAll++;
+                                                        }
+
+                                                    }
+                                                    if (countIDSeleAll >=2)
+                                                    {
+                                                        <MudTd DataLabel="SelecAll"><MudCheckBox T="bool" Color="Color.Primary" CheckedChanged="@(e=> AgregarAllRegistros(e, @context.Estudios))"></MudCheckBox></MudTd>
+                                                    }
+                                                    else
+                                                    {
+                                                        <MudTd DataLabel="SelecAll">&nbsp;</MudTd>
+                                                    }
+                                                }
+                                                 *@
+                                            </MudTh>
+                                            <MudTh>Estudio</MudTh>
                                             <MudTh>Fecha de Entrega</MudTh>
                                             <MudTh>Estatus</MudTh>
                                         </HeaderContent>
@@ -282,12 +305,13 @@ else
     private MudTable<DtoResponseMedicoPacienteStudios> _table;
     private PDFGenerator _PdfGenerator = new();
     private bool ValidateData = false;
+    private bool ShowNombre = false;
 
     private bool dataLoaded = true;
 
-    private string UrlUsuario = "LabRamos/services/records/api/ClinicResults/getList";
-    private string UrlPaciente = "LabRamos/services/records/api/MassSearch/GetAllCaptureResults";
-    private string UrlImprimeResultados = "LabRamos/services/records/api/ClinicResults/printResultFile";
+    private string UrlUsuario = "services/records/api/ClinicResults/getList";
+    private string UrlPaciente = "services/records/api/MassSearch/GetAllCaptureResults";
+    private string UrlImprimeResultados = "services/records/api/ClinicResults/printResultFile";
 
     DateTime? dateInicial = DateTime.Today;
     DateTime? dateFinal = DateTime.Today;
@@ -332,6 +356,7 @@ else
                     };
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);
                     dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+                    ShowNombre = true;
                     
                 }
                 else if (PostRequiere == "3")//Compañia
@@ -344,6 +369,7 @@ else
                     };
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);
                     dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+                    ShowNombre = true;
                 }
 
                 DtoRequestMedicoPacientes parametrobusqueda = new()
@@ -446,6 +472,26 @@ else
 
 
 
+    }
+
+    async Task AgregarAllRegistros(bool chec, List<DtoResponseMedicoPacienteStudios> item)
+    {
+        if (chec)
+        {
+            foreach (var itemadd in item)
+            {
+                selectedItems.Add(itemadd);
+            }
+            
+        }
+        else
+        {
+            foreach (var itemdel in item)
+            {
+                selectedItems.Remove(itemdel);
+            }
+            
+        }
     }
 
     async Task ImprimirExp()
