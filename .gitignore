@@ -2,3 +2,5 @@
 .vs/
 bin/
 obj/
+/Properties
+/LaboratorioRamos.csproj.user
