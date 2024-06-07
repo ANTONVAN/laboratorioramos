@@ -1,6 +1,7 @@
-﻿@page "/ConsultaResultadosPaciente/{PostRequiere}/{PostPaciente}"
+﻿@page "/ConsultaSolicitudesMedico"
 
 @using LaboratorioRamos.Data.DtoPaciente
+@using LaboratorioRamos.Data.DtoMedico
 @using LaboratorioRamos.Data.DtoFiltro
 @using LaboratorioRamos.Data.DtoExpediente
 @using LaboratorioRamos.Data.DtoExpediente.DtoRequestExpedientes
@@ -40,10 +41,9 @@ else
 {
     <MudBreadcrumbs Items="_items" Style="padding: 0px;"></MudBreadcrumbs>
     <MudGrid>
-        @if (ShowNombre)
+        @* @if (ShowNombre)
         {
              <MudItem xs="12" sm="7" md="12">
-                @*<MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Consulta de Resultados</MudText>*@
                 &nbsp;
             </MudItem>
             <MudPaper Class="pa-4" Elevation="4" Style="width:100%;margin-top: -25px;">
@@ -87,7 +87,7 @@ else
                 </MudGrid>
             </MudPaper>
                     <br/>
-        }
+        } *@
 
         <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
             <MudGrid>
@@ -173,7 +173,11 @@ else
                             <MudTh></MudTh>
                             <MudTh Style="color:#921313">Número de Órden</MudTh>
                             <MudTh Style="color:#921313">Fecha de Ingreso</MudTh>
+                            <MudTh Style="color:#921313">Nombre</MudTh>
+                            <MudTh Style="color:#921313">Sexo</MudTh>
+                            <MudTh Style="color:#921313">Edad</MudTh>
                             <MudTh Style="color:#921313">Sucursal</MudTh>
+                            <MudTh Style="color:#921313">Imprimir Estudios</MudTh>
                         </HeaderContent>
                         <RowTemplate>
 
@@ -191,41 +195,28 @@ else
 
                             <MudTd DataLabel=">Número de Órden">@context.Solicitud</MudTd>
                             <MudTd DataLabel="Fecha de Ingreso">@context.Registro</MudTd>
+                            <MudTd DataLabel="Nombre">@context.Nombre</MudTd>
+                            <MudTd DataLabel="Sexo">@context.Sexo</MudTd>
+                            <MudTd DataLabel="Edad">@context.Edad</MudTd>
                             <MudTd DataLabel="Sucursal">@context.Sucursal</MudTd>
+                            <MudTd DataLabel="Imprimir">
+                                @if (ValidateData)
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Medium" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
+                                }
+                                else
+                                {
+                                    <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => ImprimirExp()"></MudIconButton>
+                                }
+                            </MudTd>
                         </RowTemplate>
                         <ChildRowContent>
                             @if (context.ShowEstudios)
                             {
                                 <td colspan="12" style="text-align:-webkit-center;">
                                     <MudTable Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
-                                        @* <ToolBarContent>
-                                            <MudText Typo="Typo.subtitle2">Estudios</MudText>
-                                            <MudSpacer />
-                                            <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" Style="width:45%;" />
-                                    <MudTextField @bind-Value="searchEstudios" Placeholder="Búsqueda por nombre de estudio o fecha de entrega" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
-                                        </ToolBarContent> *@
-                                        <HeaderContent>
+                                        <HeaderContent >
                                             <MudTh style="padding: 0px;">
-                                                @* @{
-                                                    var countIDSeleAll = 0;
-                                                    foreach (var item in @context.Estudios)
-                                                    {
-                                                        if (LstEstatusPrint.Contains(item.EstatusId))
-                                                        {
-                                                            countIDSeleAll++;
-                                                        }
-
-                                                    }
-                                                    if (countIDSeleAll >=2)
-                                                    {
-                                                        <MudTd DataLabel="SelecAll"><MudCheckBox T="bool" Color="Color.Primary" CheckedChanged="@(e=> AgregarAllRegistros(e, @context.Estudios))"></MudCheckBox></MudTd>
-                                                    }
-                                                    else
-                                                    {
-                                                        <MudTd DataLabel="SelecAll">&nbsp;</MudTd>
-                                                    }
-                                                }
-                                                 *@
                                             </MudTh>
                                             <MudTh>Estudio</MudTh>
                                             <MudTh>Fecha de Entrega</MudTh>
@@ -277,15 +268,12 @@ else
 
     #region Declaración de variables
 
-    [Parameter]
-    public string PostRequiere { get; set; }
-    [Parameter]
-    public string PostPaciente { get; set; }
+   
     public string resDecrip { get; set; }
-
+    private DtoMedicoPwd dtoMedico = new();
     private List<DtoPaciente> dtoPaciente = new();
     private DtoFiltro dtoFiltro = new();
-    private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
+    private List<DtoResponseMedicoPaciente> dtoMedicoPaciente = new();
     private List<DtoResponseMedicoPaciente> LstExpedientes = new();
     private List<int> LstEstatusPrint = new();
 
@@ -313,6 +301,7 @@ else
     private string UrlUsuario = "services/records/api/ClinicResults/getList";
     private string UrlPaciente = "services/records/api/MassSearch/GetAllCaptureResults";
     private string UrlImprimeResultados = "services/records/api/ClinicResults/printResultFile";
+    
 
     DateTime? dateInicial = DateTime.Today;
     DateTime? dateFinal = DateTime.Today;
@@ -341,55 +330,37 @@ else
                 {
                     LstEstatusPrint.Add(int.Parse(itemST));
                 }
-                if (PostRequiere == "1") //Paciente
-                {
-                    var idenUser = authState.User.Claims.ToList();
-                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
-                    dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
-                }
-                else if (PostRequiere == "2")//Medico
-                {
-                    _items = new List<BreadcrumbItem>
+                _items = new List<BreadcrumbItem>
                     {
                         new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
-                        new BreadcrumbItem("Consulta de Expedientes", href: "/ConsultaExpedientesMedico", icon: Icons.Material.Filled.Badge),
-                        new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                        new BreadcrumbItem("Consulta de Solicitudes", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                     };
-                    var resPacDecrip = Cryp.Desencripta(PostPaciente);
-                    dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
-                    ShowNombre = true;
-                    
-                }
-                else if (PostRequiere == "3")//Compañia
-                {
-                    _items = new List<BreadcrumbItem>
-                    {
-                        new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
-                        new BreadcrumbItem("Empresa", href: "/ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
-                        new BreadcrumbItem("Paciente", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
-                    };
-                    var resPacDecrip = Cryp.Desencripta(PostPaciente);
-                    dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
-                    ShowNombre = true;
-                }
 
+                var idenUser = authState.User.Claims.ToList();
+                var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
                 DtoRequestMedicoPacientes parametrobusqueda = new()
                     {
-                        MedicoId = new(),
+                        MedicoId = new()
+                        {
+                            dtoMedico.IdMedico
+                        },
                         CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim():dtoMedicoPaciente.Nombre.Trim(),
+                        Buscar = "",
                         TipoFecha = 1,
-                        Fecha = new()
+                        Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                     };
+                var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
 
-                var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
-
-                switch (sesExpediente.StatusCode)
+                switch (sesPacientes.StatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:
                         try
                         {
-                            LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+
+                            LstExpedientes = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                            
+
                             foreach (var itemExp in LstExpedientes)
                             {
                                 foreach (var itemSol in itemExp.Estudios)
@@ -397,6 +368,9 @@ else
                                     itemSol.SolicitudId = itemExp.SolicitudId;
                                 }
                             }
+
+
+
                         }
                         catch (Exception ex)
                         {
@@ -404,6 +378,9 @@ else
                         }
 
 
+                        break;
+                    case System.Net.HttpStatusCode.InternalServerError:
+                        //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
                         break;
                 }
 
@@ -638,40 +615,17 @@ else
 
         try
         {
-            if (PostRequiere == "1") //Paciente
-            {
-                parametrobusqueda = new()
-                    {
-                        MedicoId = new(),
-                        CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoPaciente[0].NombrePaciente.Trim() : dtoFiltro.Solicitud.ToString() : dtoMedicoPaciente.Nombre.Trim(),
-                        TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
-                    };
-
-            }
-            else if (PostRequiere == "2")//Medico
-            {
-                parametrobusqueda = new()
-                    {
-                        MedicoId = new(),
-                        CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
-                        TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
-                    };
-            }
-            else if (PostRequiere == "3")//Compañia
-            {
-                parametrobusqueda = new()
-                    {
-                        MedicoId = new(),
-                        CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString().ToString(),
-                        TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
-                    };
-            }
+            parametrobusqueda = new()
+                {
+                    MedicoId = new()
+                        {
+                            dtoMedico.IdMedico
+                        },
+                    CompañiaId = new(),
+                    Buscar = dtoFiltro.Solicitud.ToString(),
+                    TipoFecha = 1,
+                    Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                };
 
             Http.DefaultRequestHeaders.Remove("branchid");
             Http.DefaultRequestHeaders.Add("branchid", Sucursal);
@@ -683,19 +637,12 @@ else
                     try
                     {
                         LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                        if (LstExpedientes[0].Nombre.Trim().ToUpper().Equals(PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim().ToUpper() : dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                        foreach (var itemExp in LstExpedientes)
                         {
-                            foreach (var itemExp in LstExpedientes)
+                            foreach (var itemSol in itemExp.Estudios)
                             {
-                                foreach (var itemSol in itemExp.Estudios)
-                                {
-                                    itemSol.SolicitudId = itemExp.SolicitudId;
-                                }
+                                itemSol.SolicitudId = itemExp.SolicitudId;
                             }
-                        }
-                        else
-                        {
-                            LstExpedientes = new();
                         }
 
                     }
