@@ -20,15 +20,27 @@
     </MudItem>
     <MudItem xs="12" sm="7" md="4">
         <MudSelect T="string" Label="Estudio" Variant="Variant.Outlined" @bind-Value="ValEstudio">
+            <MudSelectItem Value="@("GLUCOSA")" />
+            <MudSelectItem Value="@("UREA")" />
+            <MudSelectItem Value="@("CREATININA")" />
             <MudSelectItem Value="@("ACIDO URICO")" />
             <MudSelectItem Value="@("COLESTEROL HDL")" />
             <MudSelectItem Value="@("COLESTEROL LDL")" />
             <MudSelectItem Value="@("COLESTEROL TOTAL")" />
-            <MudSelectItem Value="@("CREATININA")" />
-            <MudSelectItem Value="@("GLUCOSA")" />
-            <MudSelectItem Value="@("HEMOGLOBINA GLICOSILADA")" />
             <MudSelectItem Value="@("TRIGLICERIDOS")" />
-            <MudSelectItem Value="@("UREA")" />
+            <MudSelectItem Value="@("HEMOGLOBINA GLICOSILADA")" />
+            <MudSelectItem Value="@("HEMOGLOBINA")" />
+            <MudSelectItem Value="@("PLAQUETAS")" />
+            <MudSelectItem Value="@("ANTÍGENO PROSTATICO ESPECÍFICO")" />
+            <MudSelectItem Value="@("CA125")" />
+            <MudSelectItem Value="@("ALFA FETO PROTEÍNA")" />
+            <MudSelectItem Value="@("ANTÍGENO CARINOEMBRIONARIO")" />
+            <MudSelectItem Value="@("CA 19-9")" />
+            <MudSelectItem Value="@("ACIDO VALPROICO SERICO")" />
+            <MudSelectItem Value="@("TOPIRAMATO")" />
+            <MudSelectItem Value="@("KEPPRA (LEVETIRACETAM)")" />
+            <MudSelectItem Value="@("CARBAMAZEPINA")" />
+            <MudSelectItem Value="@("DIFENILHIDANTOINA (EPAMIN)")" />
         </MudSelect>
     </MudItem>
     <MudItem xs="12" sm="5" md="3">
@@ -269,7 +281,58 @@
                     parametrobusqueda.Estudio = new() { 36, 173 };
                     ValorEstudioBusqueda = "_UREA_SU";
                     break;
-
+                case "HEMOGLOBINA":
+                    parametrobusqueda.Estudio = new() { 928 };
+                    ValorEstudioBusqueda = "_HB_ST";
+                    break;
+                case "PLAQUETAS":
+                    parametrobusqueda.Estudio = new() { 928 };
+                    ValorEstudioBusqueda = "_PLAQ_ST";
+                    break;
+                case "ANTÍGENO PROSTÁTICO ESPECÍFICO":
+                    parametrobusqueda.Estudio = new() { 876 };
+                    ValorEstudioBusqueda = "_ANTI_SU";
+                    break;
+                case "CA125":
+                    parametrobusqueda.Estudio = new() { 773 };
+                    ValorEstudioBusqueda = "_CA125_SU";
+                    break;
+                case "ALFA FETO PROTEÍNA":
+                    parametrobusqueda.Estudio = new() { 509 };
+                    ValorEstudioBusqueda = "_AFP_SU2";
+                    break;
+                case "ANTÍGENO CARCINOEMBRIONARIO":
+                    parametrobusqueda.Estudio = new() { 739 };
+                    ValorEstudioBusqueda = "_CEA_SU";
+                    break;
+                case "CA 19-9":
+                    parametrobusqueda.Estudio = new() { 774 };
+                    ValorEstudioBusqueda = "_CA199_SU";
+                    break;
+                case "CA 15.3":
+                    parametrobusqueda.Estudio = new() { 389 };
+                    ValorEstudioBusqueda = "_CA153_SU";
+                    break;
+                case "ACIDO VALPROICO SERICO":
+                    parametrobusqueda.Estudio = new() { 22 };
+                    ValorEstudioBusqueda = "_ACVA_SU";
+                    break;
+                case "TOPIRAMATO":
+                    parametrobusqueda.Estudio = new() { 62 };
+                    ValorEstudioBusqueda = "_TOP_SU";
+                    break;
+                case "KEPPRA (LEVETIRACETAM)":
+                    parametrobusqueda.Estudio = new() { 337 };
+                    ValorEstudioBusqueda = "_KEPR";
+                    break;
+                case "CARBAMAZEPINA":
+                    parametrobusqueda.Estudio = new() { 761 };
+                    ValorEstudioBusqueda = "_CARBA_SU";
+                    break;
+                case "DIFENILHIDANTOINA (EPAMIN)":
+                    parametrobusqueda.Estudio = new() { 614 };
+                    ValorEstudioBusqueda = "_DIFE_SU";
+                    break;
             }
             var sesPacientes = await Http.PostAsJsonAsync<DtoRequestEstudio>(UrlGraficas, parametrobusqueda);
             dtoEstudio = await sesPacientes.Content.ReadFromJsonAsync<DtoEstudio>();
