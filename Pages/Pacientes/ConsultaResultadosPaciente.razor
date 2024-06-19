@@ -142,7 +142,7 @@ else
                 <MudItem xs="12" sm="12" md="12">
                     @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
                     <MudTable Class="mt-4" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;">
-                        <ToolBarContent>
+                        @* <ToolBarContent>
                             <MudText Typo="Typo.h6" style="color: #0d37a8;">Impresión de Resultados</MudText>
                             @if (ValidateData)
                             {
@@ -154,14 +154,7 @@ else
                             }
 
                             <MudSpacer />
-                            @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/>
-                        <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
-                        <MudSpacer />
-                        <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
-                        <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
-                        <MudSpacer />
-                        <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de solicitud" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField>*@
-                        </ToolBarContent>
+                        </ToolBarContent> *@
                         <ColGroup>
                             <col style="width: 20px;" />
                             <col />
@@ -174,6 +167,7 @@ else
                             <MudTh Style="color:#921313">Número de Órden</MudTh>
                             <MudTh Style="color:#921313">Fecha de Ingreso</MudTh>
                             <MudTh Style="color:#921313">Sucursal</MudTh>
+                            <MudTh Style="color:#921313">Imprimir Estudios</MudTh>
                         </HeaderContent>
                         <RowTemplate>
 
@@ -192,6 +186,30 @@ else
                             <MudTd DataLabel=">Número de Órden">@context.Solicitud</MudTd>
                             <MudTd DataLabel="Fecha de Ingreso">@context.Registro</MudTd>
                             <MudTd DataLabel="Sucursal">@context.Sucursal</MudTd>
+                            <MudTd DataLabel="Imprimir">
+                                @{
+                                    int countStudi = 0;
+                                    foreach (var itemStd in context.Estudios)
+                                    {
+                                        @if (LstEstatusPrint.Contains(itemStd.EstatusId))
+                                        {
+                                            countStudi++;
+                                        }
+                                    }
+                                    if (countStudi>0)
+                                    {
+                                        if (ValidateData)
+                                        {
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Medium" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
+                                        }
+                                        else
+                                        {
+                                            // <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => ImprimirExp()"></MudIconButton>
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => OpenDialog(context)"></MudIconButton>
+                                        }
+                                    }
+                                }
+                            </MudTd>
                         </RowTemplate>
                         <ChildRowContent>
                             @if (context.ShowEstudios)
@@ -205,41 +223,20 @@ else
                                     <MudTextField @bind-Value="searchEstudios" Placeholder="Búsqueda por nombre de estudio o fecha de entrega" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
                                         </ToolBarContent> *@
                                         <HeaderContent>
-                                            <MudTh style="padding: 0px;">
-                                                @* @{
-                                                    var countIDSeleAll = 0;
-                                                    foreach (var item in @context.Estudios)
-                                                    {
-                                                        if (LstEstatusPrint.Contains(item.EstatusId))
-                                                        {
-                                                            countIDSeleAll++;
-                                                        }
-
-                                                    }
-                                                    if (countIDSeleAll >=2)
-                                                    {
-                                                        <MudTd DataLabel="SelecAll"><MudCheckBox T="bool" Color="Color.Primary" CheckedChanged="@(e=> AgregarAllRegistros(e, @context.Estudios))"></MudCheckBox></MudTd>
-                                                    }
-                                                    else
-                                                    {
-                                                        <MudTd DataLabel="SelecAll">&nbsp;</MudTd>
-                                                    }
-                                                }
-                                                 *@
-                                            </MudTh>
+                                            
                                             <MudTh>Estudio</MudTh>
                                             <MudTh>Fecha de Entrega</MudTh>
                                             <MudTh>Estatus</MudTh>
                                         </HeaderContent>
                                         <RowTemplate>
-                                            @if (LstEstatusPrint.Contains(EstContext.EstatusId))
+                                            @* @if (LstEstatusPrint.Contains(EstContext.EstatusId))
                                             {
                                                 <MudTd DataLabel="Nombre"><MudCheckBox T="bool" Color="Color.Primary" CheckedChanged="@(e=> AgregarRegistro(e, EstContext))"></MudCheckBox></MudTd>
                                             }
                                             else
                                             {
                                                 <MudTd DataLabel="Nombre">&nbsp;</MudTd>
-                                            }
+                                            } *@
                                             <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
                                             <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
                                             <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
@@ -261,6 +258,63 @@ else
         
         
     </MudGrid>
+
+    <MudDialog @bind-IsVisible="visiblePrintResult" Options="diaOptions">
+        <TitleContent>
+            <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center">
+                <MudIcon Icon="@Icons.Material.Filled.Print" Color="Color.Error" Class="mr-3" Size="Size.Large" />Impresión de Resultados
+            </MudText>
+        </TitleContent>
+        <DialogContent>
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudText Typo="Typo.h6" Align="Align.Center">Paciente: <k>@SolicitudMedicaPrint.Nombre</k></MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="6">
+                    <MudText Typo="Typo.h6">Solicitud: @SolicitudMedicaPrint.Solicitud</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="6">
+                    <MudText Typo="Typo.h6">Fecha Ingreso: @SolicitudMedicaPrint.Registro</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="6">
+                    <MudText Typo="Typo.h6">Sexo: @SolicitudMedicaPrint.Sexo</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="6">
+                    <MudText Typo="Typo.h6">Edad: @SolicitudMedicaPrint.Edad</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTable MultiSelection="true" @bind-SelectedItems="selectedItems" Items="@SolicitudMedicaPrint.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Elevation="1" Striped="true" HeaderClass="table-head-bordered" Style="width:100%;" Dense="true" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
+                        <HeaderContent>
+                            <MudTh>Estudio</MudTh>
+                            <MudTh>Fecha de Entrega</MudTh>
+                            <MudTh>Estatus</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
+                            <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
+                            <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                        </PagerContent>
+                    </MudTable>
+                </MudItem>
+
+            </MudGrid>
+
+        </DialogContent>
+        <DialogActions>
+            @if (ValidateDataMod)
+            {
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+            }
+            else
+            {
+                <MudIconButton Icon="@Icons.Material.Filled.Print" aria-label="Imprimir" Color="Color.Error" OnClick="ImprimirExp"></MudIconButton>
+            }
+            <MudIconButton Icon="@Icons.Material.Filled.Cancel" aria-label="Cancelar" Color="Color.Error" OnClick="CancelPrint"></MudIconButton>
+        </DialogActions>
+    </MudDialog>
 }
 
 <style>
@@ -288,6 +342,7 @@ else
     private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
     private List<DtoResponseMedicoPaciente> LstExpedientes = new();
     private List<int> LstEstatusPrint = new();
+    private DtoResponseMedicoPaciente SolicitudMedicaPrint = new();
 
     [RegularExpression("^[0-9]*$", ErrorMessage = "Solo se permiten números")]
     private string searchString1;
@@ -306,6 +361,7 @@ else
     private MudTable<DtoResponseMedicoPacienteStudios> _table;
     private PDFGenerator _PdfGenerator = new();
     private bool ValidateData = false;
+    private bool ValidateDataMod = false;
     private bool ShowNombre = false;
 
     private bool dataLoaded = true;
@@ -318,6 +374,9 @@ else
     DateTime? dateFinal = DateTime.Today;
     private string Sucursal = "";
 
+    private bool visiblePrintResult = false;
+
+    DialogOptions diaOptions = new DialogOptions { ClassBackground = "my-custom-class", DisableBackdropClick = true };
     #endregion
 
     #region Funsiones Página
@@ -358,7 +417,7 @@ else
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);
                     dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
                     ShowNombre = true;
-                    
+
                 }
                 else if (PostRequiere == "3")//Compañia
                 {
@@ -421,9 +480,28 @@ else
 
     }
 
-    void ShowSnack(string message)
+    void ShowSnack(string message, int sev)
     {
-        Snackbar.Add($"Atención: {message}", Severity.Warning);
+        switch (sev)
+        {
+            case 0:
+                Snackbar.Add($"Atención: {message}", Severity.Normal);
+                break;
+            case 1:
+                Snackbar.Add($"Atención: {message}", Severity.Info);
+                break;
+            case 2:
+                Snackbar.Add($"Atención: {message}", Severity.Success);
+                break;
+            case 3:
+                Snackbar.Add($"Atención: {message}", Severity.Warning);
+                break;
+            case 4:
+                Snackbar.Add($"Atención: {message}", Severity.Error);
+                break;
+
+        }
+
     }
 
     #endregion
@@ -483,7 +561,7 @@ else
             {
                 selectedItems.Add(itemadd);
             }
-            
+
         }
         else
         {
@@ -491,16 +569,16 @@ else
             {
                 selectedItems.Remove(itemdel);
             }
-            
+
         }
     }
 
     async Task ImprimirExp()
     {
-        ValidateData = true;
+        ValidateDataMod = true;
         if(selectedItems.Count==0){
-            ShowSnack("¡Por favor selecciona estudios!");
-            ValidateData = false;
+            ShowSnack("¡Por favor selecciona estudios!",3);
+            ValidateDataMod = false;
         }
         else
         {
@@ -626,7 +704,7 @@ else
             // }
             Http.DefaultRequestHeaders.Remove("branchid");
             Http.DefaultRequestHeaders.Add("branchid", Sucursal);
-            ValidateData = false;
+            ValidateDataMod = false;
             //StateHasChanged();
         }
     }
@@ -638,76 +716,92 @@ else
 
         try
         {
-            if (PostRequiere == "1") //Paciente
+            if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
             {
-                parametrobusqueda = new()
-                    {
-                        MedicoId = new(),
-                        CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoPaciente[0].NombrePaciente.Trim() : dtoFiltro.Solicitud.ToString() : dtoMedicoPaciente.Nombre.Trim(),
-                        TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
-                    };
-
+                ShowSnack("¡Por favor Ingresa Fecha Inicial, Fecha Final y/o Expediente o Nombre del Paciente!", 4);
             }
-            else if (PostRequiere == "2")//Medico
+            else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
             {
-                parametrobusqueda = new()
-                    {
-                        MedicoId = new(),
-                        CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
-                        TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
-                    };
+                ShowSnack("¡Por favor Ingresa Fecha Final!", 4);
             }
-            else if (PostRequiere == "3")//Compañia
+            else if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
             {
-                parametrobusqueda = new()
-                    {
-                        MedicoId = new(),
-                        CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString().ToString(),
-                        TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
-                    };
+                ShowSnack("¡Por favor Ingresa Fecha Inicial", 4);
             }
-
-            Http.DefaultRequestHeaders.Remove("branchid");
-            Http.DefaultRequestHeaders.Add("branchid", Sucursal);
-            var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
-
-            switch (sesExpediente.StatusCode)
+            else
             {
-                case System.Net.HttpStatusCode.OK:
-                    try
-                    {
-                        LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                        if (LstExpedientes[0].Nombre.Trim().ToUpper().Equals(PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim().ToUpper() : dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                if (PostRequiere == "1") //Paciente
+                {
+                    parametrobusqueda = new()
                         {
-                            foreach (var itemExp in LstExpedientes)
+                            MedicoId = new(),
+                            CompañiaId = new(),
+                            Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoPaciente[0].NombrePaciente.Trim() : dtoFiltro.Solicitud.ToString() : dtoMedicoPaciente.Nombre.Trim(),
+                            TipoFecha = 1,
+                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        };
+
+                }
+                else if (PostRequiere == "2")//Medico
+                {
+                    parametrobusqueda = new()
+                        {
+                            MedicoId = new(),
+                            CompañiaId = new(),
+                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
+                            TipoFecha = 1,
+                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        };
+                }
+                else if (PostRequiere == "3")//Compañia
+                {
+                    parametrobusqueda = new()
+                        {
+                            MedicoId = new(),
+                            CompañiaId = new(),
+                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString().ToString(),
+                            TipoFecha = 1,
+                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        };
+                }
+
+                Http.DefaultRequestHeaders.Remove("branchid");
+                Http.DefaultRequestHeaders.Add("branchid", Sucursal);
+                var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
+
+                switch (sesExpediente.StatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                        try
+                        {
+                            LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                            if (LstExpedientes[0].Nombre.Trim().ToUpper().Equals(PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim().ToUpper() : dtoMedicoPaciente.Nombre.Trim().ToUpper()))
                             {
-                                foreach (var itemSol in itemExp.Estudios)
+                                foreach (var itemExp in LstExpedientes)
                                 {
-                                    itemSol.SolicitudId = itemExp.SolicitudId;
+                                    foreach (var itemSol in itemExp.Estudios)
+                                    {
+                                        itemSol.SolicitudId = itemExp.SolicitudId;
+                                    }
                                 }
                             }
+                            else
+                            {
+                                LstExpedientes = new();
+                            }
+
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            LstExpedientes = new();
+                            //ValidateData = false;
                         }
 
-                    }
-                    catch (Exception ex)
-                    {
-                        //ValidateData = false;
-                    }
 
+                        break;
+                }
 
-                    break;
             }
-
+            
 
             //_picker.Close();
             dataLoaded = false;
@@ -721,6 +815,52 @@ else
 
     }
     #endregion
-    
+    #region Funciones Modales
+
+    private void OpenDialog(DtoResponseMedicoPaciente itemSolicitud)
+    {
+        SolicitudMedicaPrint = new()
+        {
+            ClavePatologica=itemSolicitud.ClavePatologica,
+            Compania = itemSolicitud.Compania,
+            Edad=itemSolicitud.Edad,
+            EnvioCorreo=itemSolicitud.EnvioCorreo,
+            EnvioWhatsapp=itemSolicitud.EnvioWhatsapp,
+            Expediente=itemSolicitud.Expediente,
+            ExpedienteId=itemSolicitud.ExpedienteId,
+            FechaNacimiento=itemSolicitud.FechaNacimiento,
+            Nombre=itemSolicitud.Nombre,
+            Parcialidad=itemSolicitud.Parcialidad,
+            Registro=itemSolicitud.Registro,
+            Saldo=itemSolicitud.Saldo,
+            SaldoPendiente=itemSolicitud.SaldoPendiente,
+            Sexo=itemSolicitud.Sexo,
+            ShowEstudios=itemSolicitud.ShowEstudios,
+            Solicitud=itemSolicitud.Solicitud,
+            SolicitudId=itemSolicitud.SolicitudId,
+            Sucursal=itemSolicitud.Sucursal,
+            Telefono=itemSolicitud.Telefono,
+            Estudios=new()
+        };
+        
+        foreach (var item in itemSolicitud.Estudios)
+        {
+            if (LstEstatusPrint.Contains(item.EstatusId))
+            {
+                SolicitudMedicaPrint.Estudios.Add(item);
+            }
+        }
+        visiblePrintResult = true;
+    }
+
+    private void CancelPrint()
+    {
+        visiblePrintResult = false;
+        selectedItems = new();
+        SolicitudMedicaPrint = new();
+    }
+
+    #endregion
+
 
 }
