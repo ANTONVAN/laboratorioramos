@@ -779,8 +779,30 @@ else
 
     private void OpenDialog(DtoResponseMedicoPaciente itemSolicitud)
     {
-        SolicitudMedicaPrint = itemSolicitud;
-        SolicitudMedicaPrint.Estudios=new();
+        SolicitudMedicaPrint = new()
+            {
+                ClavePatologica = itemSolicitud.ClavePatologica,
+                Compania = itemSolicitud.Compania,
+                Edad = itemSolicitud.Edad,
+                EnvioCorreo = itemSolicitud.EnvioCorreo,
+                EnvioWhatsapp = itemSolicitud.EnvioWhatsapp,
+                Expediente = itemSolicitud.Expediente,
+                ExpedienteId = itemSolicitud.ExpedienteId,
+                FechaNacimiento = itemSolicitud.FechaNacimiento,
+                Nombre = itemSolicitud.Nombre,
+                Parcialidad = itemSolicitud.Parcialidad,
+                Registro = itemSolicitud.Registro,
+                Saldo = itemSolicitud.Saldo,
+                SaldoPendiente = itemSolicitud.SaldoPendiente,
+                Sexo = itemSolicitud.Sexo,
+                ShowEstudios = itemSolicitud.ShowEstudios,
+                Solicitud = itemSolicitud.Solicitud,
+                SolicitudId = itemSolicitud.SolicitudId,
+                Sucursal = itemSolicitud.Sucursal,
+                Telefono = itemSolicitud.Telefono,
+                Estudios = new()
+            };
+
         foreach (var item in itemSolicitud.Estudios)
         {
             if (LstEstatusPrint.Contains(item.EstatusId))

@@ -736,9 +736,9 @@ else
                         {
                             MedicoId = new(),
                             CompañiaId = new(),
-                            Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoPaciente[0].NombrePaciente.Trim() : dtoFiltro.Solicitud.ToString() : dtoMedicoPaciente.Nombre.Trim(),
+                            Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoPaciente[0].NombrePaciente.Trim() : dtoFiltro.Solicitud.ToString() : dtoMedicoPaciente.Nombre.Trim(),
                             TipoFecha = 1,
-                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                         };
 
                 }
