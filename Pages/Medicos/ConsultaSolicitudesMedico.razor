@@ -728,7 +728,7 @@ else
                         CompañiaId = new(),
                         Buscar = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? null : dtoFiltro.Solicitud.ToString(),
                         TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                     };
 
                 Http.DefaultRequestHeaders.Remove("branchid");
