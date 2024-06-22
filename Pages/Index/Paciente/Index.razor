@@ -104,17 +104,29 @@
                             dtoPaciente = await sesPaciente.Content.ReadFromJsonAsync<List<DtoPaciente>>();
                             if (dtoPaciente.Count>0)
                             {
-                                dtoPaciente[0].Token = result.Token;
-                                string json = JsonConvert.SerializeObject(dtoPaciente);
-                                var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
-                                await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
-                                    {
-                                        testsuncretr = Cryp.Encripta(json),
-                                        Type=1
-                                    });
-                                Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
-                                NavigationManager.NavigateTo("/Inicio", true);
-                                ValidateData = false;
+                                var exispas = dtoPaciente.FirstOrDefault(op => op.Expediente.Equals(dtoLoginPaciente.Usuario));
+                                if (exispas !=null)
+                                {
+                                    dtoPaciente[0].Token = result.Token;
+                                    string json = JsonConvert.SerializeObject(dtoPaciente);
+                                    var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+                                    await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+                                        {
+                                            testsuncretr = Cryp.Encripta(json),
+                                            Type = 1
+                                        });
+                                    Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
+                                    NavigationManager.NavigateTo("/Inicio", true);
+                                    ValidateData = false;
+                                }
+                                else
+                                {
+                                    Http.DefaultRequestHeaders.Remove("Authorization");
+                                    Http.DefaultRequestHeaders.Remove("branchid");
+                                    ShowSnack("¡El Paciente no existe, favor de verificar!");
+                                    ValidateData = false;
+                                }
+
                             }
                             else
                             {
