@@ -1,5 +1,6 @@
 ﻿@layout LabRamosLayout
 @page "/"
+@using LaboratorioRamos.Data.DtoDetalleExpedienteSolicitud
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
 @using LaboratorioRamos.Data.DtoStateProvider
@@ -54,6 +55,7 @@
     private DtoLogin dtoLogin = new();
     private DtoLogin dtoLoginPaciente = new();
     private List<DtoPaciente> dtoPaciente = new();
+    private List<DtoDetalleExpedienteSolicitud> dtoDetalleExpedienteSol = new();
     private DtoRequestPaciente dtoEequestPaciente = new();
     private bool ValidateData = false;
     private string UrlAuth = "services/identity/api/profile/login";
@@ -107,23 +109,37 @@
                                 var exispas = dtoPaciente.FirstOrDefault(op => op.Expediente.Equals(dtoLoginPaciente.Usuario));
                                 if (exispas !=null)
                                 {
-                                    dtoPaciente[0].Token = result.Token;
-                                    string json = JsonConvert.SerializeObject(dtoPaciente);
-                                    var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
-                                    await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
-                                        {
-                                            testsuncretr = Cryp.Encripta(json),
-                                            Type = 1
-                                        });
                                     Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
-                                    NavigationManager.NavigateTo("/Inicio", true);
+                                    dtoDetalleExpedienteSol = await Http.GetFromJsonAsync<List<DtoDetalleExpedienteSolicitud>>($"services/records/api/MedicalRecord/requests/{exispas.Id}");
+
+                                    var regpas = dtoDetalleExpedienteSol.FirstOrDefault(op => op.Clave.Equals(dtoLoginPaciente.Contraseña));
+                                    if (regpas!=null)
+                                    {
+                                        dtoPaciente[0].Token = result.Token;
+                                        string json = JsonConvert.SerializeObject(dtoPaciente);
+                                        var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+                                        await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+                                            {
+                                                testsuncretr = Cryp.Encripta(json),
+                                                Type = 1
+                                            });
+
+                                        NavigationManager.NavigateTo("/Inicio", true);
+                                    }
+                                    else
+                                    {
+                                        Http.DefaultRequestHeaders.Remove("Authorization");
+                                        Http.DefaultRequestHeaders.Remove("branchid");
+                                        ShowSnack("¡El Código es incorrecto, favor de verificar!");
+                                    }
+
                                     ValidateData = false;
                                 }
                                 else
                                 {
                                     Http.DefaultRequestHeaders.Remove("Authorization");
                                     Http.DefaultRequestHeaders.Remove("branchid");
-                                    ShowSnack("¡El Paciente no existe, favor de verificar!");
+                                    ShowSnack("¡El Expediente no existe, favor de verificar!");
                                     ValidateData = false;
                                 }
 
