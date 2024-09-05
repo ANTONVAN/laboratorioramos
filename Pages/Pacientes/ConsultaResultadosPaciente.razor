@@ -1,5 +1,6 @@
 ﻿@page "/ConsultaResultadosPaciente/{PostRequiere}/{PostPaciente}"
 
+@using LaboratorioRamos.Data.DtoMedico
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoFiltro
 @using LaboratorioRamos.Data.DtoExpediente
@@ -340,6 +341,7 @@ else
     private List<DtoPaciente> dtoPaciente = new();
     private DtoFiltro dtoFiltro = new();
     private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
+    private DtoMedicoPwd dtoMedico = new();
     private List<DtoResponseMedicoPaciente> LstExpedientes = new();
     private List<int> LstEstatusPrint = new();
     private DtoResponseMedicoPaciente SolicitudMedicaPrint = new();
@@ -394,6 +396,7 @@ else
 
             try
             {
+
                 var estatusSep = _config.GetSection("IdImpresion").Value.Trim().Split(",");
                 Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
                 foreach (var itemST in estatusSep)
@@ -408,6 +411,9 @@ else
                 }
                 else if (PostRequiere == "2")//Medico
                 {
+                    var idenUser = authState.User.Claims.ToList();
+                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                    dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
                     _items = new List<BreadcrumbItem>
                     {
                         new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
@@ -433,13 +439,13 @@ else
                 }
 
                 DtoRequestMedicoPacientes parametrobusqueda = new()
-                    {
-                        MedicoId = new(),
-                        CompañiaId = new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim():dtoMedicoPaciente.Nombre.Trim(),
-                        TipoFecha = 1,
-                        Fecha = new()
-                    };
+                {
+                        MedicoId = PostRequiere == "2"?new() { dtoMedico.IdMedico}:new(),
+                    CompañiaId = new(),
+                    Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
+                    TipoFecha = 1,
+                    Fecha = new()
+                };
 
                 var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
 

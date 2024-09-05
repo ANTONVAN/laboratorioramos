@@ -227,6 +227,7 @@ else
                             TipoFecha = 1,
                             Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                         };
+                    string json1 = JsonConvert.SerializeObject(parametrobusqueda);
                     var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
                     switch (sesPacientes.StatusCode)
                     {
