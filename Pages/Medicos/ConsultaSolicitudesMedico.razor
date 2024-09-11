@@ -705,31 +705,76 @@ else
 
         try
         {
-            if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
+            if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
             {
                 ShowSnack("¡Por favor Ingresa Fecha Inicial, Fecha Final y/o Expediente o Nombre del Paciente!", 4);
             }
-            else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
+            else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
             {
                 ShowSnack("¡Por favor Ingresa Fecha Final!", 4);
             }
-            else if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
+            else if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
             {
                 ShowSnack("¡Por favor Ingresa Fecha Inicial", 4);
             }
             else
             {
-                parametrobusqueda = new()
+                if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                {
+                    parametrobusqueda = new()
                     {
                         MedicoId = new()
                         {
                             dtoMedico.IdMedico
                         },
                         CompañiaId = new(),
-                        Buscar = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? null : dtoFiltro.Solicitud.ToString(),
+                        Buscar = dtoFiltro.Solicitud.ToString(),
                         TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                        Fecha = new() { }
                     };
+                }
+                else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                {
+                    parametrobusqueda = new()
+                        {
+                            MedicoId = new()
+                        {
+                            dtoMedico.IdMedico
+                        },
+                            CompañiaId = new(),
+                            Buscar = null,
+                            TipoFecha = 1,
+                            Fecha = new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") }
+                        };
+                }
+                else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                {
+                    parametrobusqueda = new()
+                        {
+                            MedicoId = new()
+                        {
+                            dtoMedico.IdMedico
+                        },
+                            CompañiaId = new(),
+                            Buscar = dtoFiltro.Solicitud.ToString(),
+                            TipoFecha = 1,
+                            Fecha = new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") }
+                        };
+                }
+                
+                    
+                
+                // parametrobusqueda = new()
+                //     {
+                //         MedicoId = new()
+                //         {
+                //             dtoMedico.IdMedico
+                //         },
+                //         CompañiaId = new(),
+                //         Buscar = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? null : dtoFiltro.Solicitud.ToString(),
+                //         TipoFecha = 1,
+                //         Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                //     };
 
                 Http.DefaultRequestHeaders.Remove("branchid");
                 Http.DefaultRequestHeaders.Add("branchid", Sucursal);
