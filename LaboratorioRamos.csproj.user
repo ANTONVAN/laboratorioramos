@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <NameOfLastUsedPublishProfile>C:\Users\aanto\source\repos\Web\laboratorioramos\Properties\PublishProfiles\labramosweb - Web Deploy1.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\Users\aanto\source\repos\ANTONVAN\laboratorioramos\Properties\PublishProfiles\LaboratorioRamos20240503114932 - Web Deploy.pubxml</NameOfLastUsedPublishProfile>
     <ActiveDebugProfile>LaboratorioRamos</ActiveDebugProfile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
