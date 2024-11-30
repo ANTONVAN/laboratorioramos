@@ -53,12 +53,13 @@ namespace LaboratorioRamos.Data.DtoMedico
         public string IdUsuario { get; set; }
         public List<DtoClinicaMedico> Clinicas { get; set; }
         public string Token { get; set; } = "";
-  
+        public Guid Sucursal { get; set; }
 
 
- 
 
-  
+
+
+
 
     }
 }

@@ -18,6 +18,21 @@ function ViewPDF(iframeID, byteBase64) {
     ifra.style.height = "680%";
     document.getElementById(iframeID).appendChild(ifra);
 }
+function ViewPDFOrder(iframeID, byteBase64) {
+    document.getElementById(iframeID).innerHTML = "";
+    var contentType = 'application/pdf';
+    var blob = b64toBlob(byteBase64, contentType);
+    var blobUrl = URL.createObjectURL(blob);
+    var ifra = document.createElement('iframe');
+    ifra.addEventListener('load', function () {
+        URL.revokeObjectURL(blobUrl);
+    });
+    ifra.setAttribute("src", blobUrl);
+    ifra.setAttribute("loading", "lazy");
+    ifra.style.with = "100%";
+    ifra.style.height = "100%";
+    document.getElementById(iframeID).appendChild(ifra);
+}
 
 function b64toBlob(b64Data, contentType, sliceSize) {
     contentType = contentType || '';

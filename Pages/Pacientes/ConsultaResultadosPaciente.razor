@@ -117,10 +117,10 @@ else
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </MudItem>
                     <MudItem xs="12" sm="12" md="3">
-                        <MudDatePicker Label="Fecha Inicio" @bind-Date="dtoFiltro.DateInicial" />
+                        <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" />
                     </MudItem>
                     <MudItem xs="12" sm="12" md="3">
-                        <MudDatePicker Label="Fecha Final" @bind-Date="dtoFiltro.DateFinal" />
+                                <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" />
                     </MudItem>
                     <MudItem xs="12" sm="12" md="4">
                                 <MudTextField @bind-Value="dtoFiltro.Solicitud" Label="Número de solicitud:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
@@ -260,63 +260,65 @@ else
         
     </MudGrid>
 
-    <MudDialog @bind-IsVisible="visiblePrintResult" Options="diaOptions">
-        <TitleContent>
-            <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center">
-                <MudIcon Icon="@Icons.Material.Filled.Print" Color="Color.Error" Class="mr-3" Size="Size.Large" />Impresión de Resultados
-            </MudText>
-        </TitleContent>
-        <DialogContent>
-            <MudGrid>
-                <MudItem xs="12" sm="12" md="12">
-                    <MudText Typo="Typo.h6" Align="Align.Center">Paciente: <k>@SolicitudMedicaPrint.Nombre</k></MudText>
-                </MudItem>
-                <MudItem xs="12" sm="12" md="6">
-                    <MudText Typo="Typo.h6">Solicitud: @SolicitudMedicaPrint.Solicitud</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="12" md="6">
-                    <MudText Typo="Typo.h6">Fecha Ingreso: @SolicitudMedicaPrint.Registro</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="12" md="6">
-                    <MudText Typo="Typo.h6">Sexo: @SolicitudMedicaPrint.Sexo</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="12" md="6">
-                    <MudText Typo="Typo.h6">Edad: @SolicitudMedicaPrint.Edad</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="12" md="12">
-                    <MudTable MultiSelection="true" @bind-SelectedItems="selectedItems" Items="@SolicitudMedicaPrint.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Elevation="1" Striped="true" HeaderClass="table-head-bordered" Style="width:100%;" Dense="true" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
-                        <HeaderContent>
-                            <MudTh>Estudio</MudTh>
-                            <MudTh>Fecha de Entrega</MudTh>
-                            <MudTh>Estatus</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
-                            <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
-                            <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
-                        </RowTemplate>
-                        <PagerContent>
-                            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
-                        </PagerContent>
-                    </MudTable>
-                </MudItem>
-
-            </MudGrid>
-
-        </DialogContent>
-        <DialogActions>
-            @if (ValidateDataMod)
-            {
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
-            }
-            else
-            {
-                <MudIconButton Icon="@Icons.Material.Filled.Print" aria-label="Imprimir" Color="Color.Error" OnClick="ImprimirExp"></MudIconButton>
-            }
-            <MudIconButton Icon="@Icons.Material.Filled.Cancel" aria-label="Cancelar" Color="Color.Error" OnClick="CancelPrint"></MudIconButton>
-        </DialogActions>
-    </MudDialog>
+   
 }
+
+<MudDialog @bind-Visible="visiblePrintResult" Options="diaOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center">
+            <MudIcon Icon="@Icons.Material.Filled.Print" Color="Color.Error" Class="mr-3" Size="Size.Large" />Impresión de Resultados
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12">
+                <MudText Typo="Typo.h6" Align="Align.Center">Paciente: <k>@SolicitudMedicaPrint.Nombre</k></MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudText Typo="Typo.h6">Solicitud: @SolicitudMedicaPrint.Solicitud</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudText Typo="Typo.h6">Fecha Ingreso: @SolicitudMedicaPrint.Registro</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudText Typo="Typo.h6">Sexo: @SolicitudMedicaPrint.Sexo</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="6">
+                <MudText Typo="Typo.h6">Edad: @SolicitudMedicaPrint.Edad</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12">
+                <MudTable MultiSelection="true" @bind-SelectedItems="selectedItems" Items="@SolicitudMedicaPrint.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Elevation="1" Striped="true" HeaderClass="table-head-bordered" Style="width:100%;" Dense="true" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
+                    <HeaderContent>
+                        <MudTh>Estudio</MudTh>
+                        <MudTh>Fecha de Entrega</MudTh>
+                        <MudTh>Estatus</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
+                        <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
+                        <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                    </PagerContent>
+                </MudTable>
+            </MudItem>
+
+        </MudGrid>
+
+    </DialogContent>
+    <DialogActions>
+        @if (ValidateDataMod)
+        {
+            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+        }
+        else
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Print" aria-label="Imprimir" Color="Color.Error" OnClick="ImprimirExp"></MudIconButton>
+        }
+        <MudIconButton Icon="@Icons.Material.Filled.Cancel" aria-label="Cancelar" Color="Color.Error" OnClick="CancelPrint"></MudIconButton>
+    </DialogActions>
+</MudDialog>
 
 <style>
     .mud-input-input-control {
@@ -331,6 +333,9 @@ else
 @code {
 
     #region Declaración de variables
+
+    [Inject]
+    IDialogService DialogService { get; set; }
 
     [Parameter]
     public string PostRequiere { get; set; }
@@ -352,7 +357,7 @@ else
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Home", href: "#", icon: Icons.Material.Filled.Home),
-        new BreadcrumbItem("Consulta de Resultados", href: "#", disabled: true, icon: Icons.Material.Filled.Badge),
+        new BreadcrumbItem("Consulta de Resultados", href: null, disabled: true, icon: Icons.Material.Filled.Badge),
     };
 
     private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
@@ -378,7 +383,8 @@ else
 
     private bool visiblePrintResult = false;
 
-    DialogOptions diaOptions = new DialogOptions { ClassBackground = "my-custom-class", DisableBackdropClick = true };
+    
+    private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true };
     #endregion
 
     #region Funsiones Página
@@ -416,8 +422,8 @@ else
                     dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
                     _items = new List<BreadcrumbItem>
                     {
-                        new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
-                        new BreadcrumbItem("Consulta de Expedientes", href: "/ConsultaExpedientesMedico", icon: Icons.Material.Filled.Badge),
+                        new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
+                        new BreadcrumbItem("Consulta de Expedientes", href: "#ConsultaExpedientesMedico", icon: Icons.Material.Filled.Badge,disabled:false),
                         new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                     };
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);
@@ -430,7 +436,7 @@ else
                     _items = new List<BreadcrumbItem>
                     {
                         new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
-                        new BreadcrumbItem("Empresa", href: "/ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
+                        new BreadcrumbItem("Empresa", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
                         new BreadcrumbItem("Paciente", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                     };
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);

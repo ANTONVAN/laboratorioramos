@@ -80,10 +80,10 @@
     {
         ValidateData = true;
         dtoLogin = new()
-            {
-                Usuario = _config.GetSection("UsrLoginGral:User").Value,
-                Contraseña = _config.GetSection("UsrLoginGral:Pwd").Value,
-            };
+        {
+            Usuario = _config.GetSection("UsrLoginGral:User").Value,
+            Contraseña = _config.GetSection("UsrLoginGral:Pwd").Value,
+        };
         var ses = await Http.PostAsJsonAsync<DtoLoginMedico>(UrlAuth, dtoLogin);
         Http.DefaultRequestHeaders.Remove("Authorization");
         Http.DefaultRequestHeaders.Remove("branchid");
@@ -119,6 +119,7 @@
                         else
                         {
                             dtoMedicoPWD.Token = result.Token;
+                            dtoMedicoPWD.Sucursal = result.Sucursal;
                             string json = JsonConvert.SerializeObject(dtoMedicoPWD);
                             var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
                             await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
