@@ -42,7 +42,7 @@ else
             <MudItem xs="12" sm="12" md="12" >
                 <MudGrid>
                     <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
-                        <MudText Typo="Typo.h6" style="color: #0d37a8;">Creación y Consulta de Órdenes Médicas</MudText>
+                        <MudText Typo="Typo.h4" style="color: #0d37a8;">Creación y Consulta de Órdenes Médicas</MudText>
                     </MudItem>
                 </MudGrid>
             </MudItem>
@@ -51,30 +51,37 @@ else
                 if (!NewCotizacion)
                 {
                     <MudItem xs="12" sm="12" md="12">
-                        <MudGrid>
-                            <MudItem xs="12" sm="12" md="1">
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="3">
-                                <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" />
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="3">
-                                <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" />
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="4">
-                                <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="1">
-                                <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscarOrdenes()"></MudIconButton>
-                            </MudItem>
-                        </MudGrid>
+                        <EditForm Model="_busquedaCotizacion" OnValidSubmit="@BuscarOrdenes" style="width: 100%;">
+                            <MudGrid>
+                                <MudItem xs="12" sm="12" md="1">
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </MudItem>
+                                <MudItem xs="12" sm="12" md="3">
+                                    <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateInicial" />
+                                </MudItem>
+                                <MudItem xs="12" sm="12" md="3">
+                                    <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateFinal" />
+                                </MudItem>
+                                <MudItem xs="12" sm="12" md="4">
+                                    <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Label="Número de Orden:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
+                                </MudItem>
+                                <MudItem xs="12" sm="12" md="1">
+                                    <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar"></MudIconButton>
+                                </MudItem>
+                            </MudGrid>
+                        </EditForm>
                     </MudItem>
                     <MudItem xs="12" sm="12" md="12" Class="d-flex justify-start">
-                        <MudButton Variant="Variant.Outlined" OnClick="@NewItem" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn">Orden</MudButton>
+                        <MudButton Variant="Variant.Outlined" OnClick="@NewItem" Color="@Color.Info" Class="add-item-btn">Crear Nueva Orden</MudButton>
                     </MudItem>
 
                     <MudItem xs="12" sm="12" md="12">
                         <MudDataGrid Items="@_oCotizaciones" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Filterable="false">
+                            <ToolBarContent>
+                                <MudSpacer />
+                                <MudText Typo="Typo.h6" style="color: #0d37a8;">Historial de Ordenes</MudText>
+                                <MudSpacer />
+                            </ToolBarContent>
                             <Columns>
                                 <PropertyColumn Property="x => x.Clave" Title="Clave"/>
                                 <PropertyColumn Property="x => x.Expediente"/>
@@ -125,12 +132,21 @@ else
                                 <EditForm Model="dtoGeneralesCotizacion" OnValidSubmit="@ContnueProcess" style="width: 100%;">
                                     <MudGrid>
                                         <MudItem xs="12" sm="6" md="6">
-                                            <MudSelect T="string" Label="Ciudad *" Clearable="true" ValueChanged="SelectedCiudad">
+                                            <MudAutocomplete T="string" @bind-Value="dtoGeneralesCotizacion.Ciudad"
+                                                             SearchFunc="SearchCiudad"
+                                                             Label="Ciudad"
+                                                             Clearable="true"/>
+
+                                            @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
+                                            {
+                                                SelectedCiudad(dtoGeneralesCotizacion.Ciudad);
+                                            }
+                                           @*  <MudSelect T="string" Label="Ciudad *" Clearable="true" ValueChanged="SelectedCiudad">
                                                 @foreach (var ocity in _oSucursalByCity)
                                                 {
                                                     <MudSelectItem Value="@ocity.Ciudad">@ocity.Ciudad</MudSelectItem>
                                                 }
-                                            </MudSelect>
+                                            </MudSelect> *@
                                         </MudItem>
                                         <MudItem xs="12" sm="12" md="12">
                                             @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
@@ -170,7 +186,10 @@ else
                                             }
 
                                         </MudItem>
-                                        <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
+                                        <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
+                                            <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" Color="@Color.Error" Class="add-item-btn">Cancelar</MudButton>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
                                             <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Filled.DoubleArrow" Color="@Color.Info" Class="add-item-btn">Continuar</MudButton>
                                         </MudItem>
                                     </MudGrid>
@@ -181,7 +200,9 @@ else
                     }
                     else
                     {
-                        <MudItem xs="12" sm="12" md="8">
+                        <MudItem xs="12" sm="12" md="12">
+                            <MudText Class="p-2" Style="background-color: #0d37a8;color: white;" Align="Align.Center">Cotizacion No.: <b>@CotizacionDraft.clave &nbsp; &nbsp;&nbsp;&nbsp;</b></MudText>
+                            
                             <MudStepper NonLinear ShowResetButton OnPreviewInteraction="OnPreviewInteraction" @bind-ActiveIndex="_index">
                                 <ConnectorTemplate Context="step">
                                     <div class="mud-stepper-nav-connector">
@@ -210,7 +231,7 @@ else
                                             </MudItem>
                                             <MudItem xs="12" sm="6" md="6">
                                                 @* <MudTextField @bind-Value="dtoGeneralesCotizacion.Paciente" T="string" Label="Paciente" Variant="Variant.Outlined" /> *@
-                                                <MudTextField T="string" Label="Paciente" @bind-Value="dtoGeneralesCotizacion.Paciente" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnAdornmentClick="@(() => BuscarPaciente())" />
+                                                <MudTextField T="string" Label="Paciente" @bind-Value="dtoGeneralesCotizacion.Paciente" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnKeyUp="ValidaEnterPaciente" OnAdornmentClick="@(() => BuscarPaciente())" />
                                             </MudItem>
                                             @if (visibleInfoPaciente)
                                             {
@@ -261,45 +282,76 @@ else
                                             else
                                             {
                                                 <MudItem xs="12" sm="6" md="6">
-                                                    <MudTextField T="string" @bind-Value="EstudioSearch" Label="Estudio" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@(searchEstudiosTxt==false ? Icons.Material.Filled.Search:Icons.Material.Filled.LocationSearching)" Disabled="@(searchEstudiosTxt)" AdornmentColor="@(searchEstudiosTxt==false ? Color.Success:Color.Dark)" OnAdornmentClick="@(() => BuscarEstudio())" />
+                                                    <MudTextField T="string" @bind-Value="EstudioSearch" Label="Estudio" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@(searchEstudiosTxt==false ? Icons.Material.Filled.Search:Icons.Material.Filled.LocationSearching)" Disabled="@(searchEstudiosTxt)" AdornmentColor="@(searchEstudiosTxt==false ? Color.Success:Color.Dark)" OnKeyUp="ValidaEnterEstudio" OnAdornmentClick="@(() => BuscarEstudio())" />
                                                 </MudItem>
                                             }
                                             
                                             @if (visibleInfoEstudio)
                                             {
                                                 <MudItem xs="12" sm="12" md="12">
-                                                    <MudTable T="DtoEstudioResponsePrice" Items="@_oEstudioResponsePrice" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTableEstudios"
-                                                              RowClass="cursor-pointer" @bind-SelectedItems="selectedEstudios" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
-                                                        <ToolBarContent>
-                                                            <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Estudios</MudText> <br />
-                                                            @* <MudSpacer /> *@
-                                                        </ToolBarContent>
-                                                        <HeaderContent>
-                                                            <MudTh>Clave</MudTh>
-                                                            <MudTh>Nombre</MudTh>
-                                                            @* <MudTh>Precio</MudTh> *@
-                                                            <MudTh>Días</MudTh>
-                                                            @* <MudTh>Descuento</MudTh>
-                                                            <MudTh>Promoción</MudTh>
-                                                            <MudTh>Precio Final</MudTh> *@
-                                                        </HeaderContent>
-                                                        <RowTemplate>
-                                                            @* <MudTd DataLabel="Codigo">@sucur.Codigo</MudTd> *@
-                                                            <MudTd DataLabel="Clave">@GridEstudio.Clave</MudTd>
-                                                            <MudTd DataLabel="Nombre">@GridEstudio.Nombre</MudTd>
-                                                            @* <MudTd DataLabel="Precio" Style="text-align: right; width:150px;">@GridEstudio.Precio.ToString("$ ###,###,##0.00")</MudTd> *@
-                                                            <MudTd DataLabel="Días">@GridEstudio.Dias</MudTd>
-                                                            @* <MudTd DataLabel="Descuento" Style="text-align: right;width:150px;">@GridEstudio.Descuento.ToString("$ ###,###,##0.00")</MudTd>
-                                                            <MudTd DataLabel="Promoción">@GridEstudio.Promocion</MudTd>
-                                                            <MudTd DataLabel="Precio Final" Style="text-align: right;width:150px;">@GridEstudio.PrecioFinal.ToString("$ ###,###,##0.00")</MudTd> *@
-                                                        </RowTemplate>
-                                                        <NoRecordsContent>
-                                                            <MudText>Sin Registros para mostrar</MudText>
-                                                        </NoRecordsContent>
-                                                        <PagerContent>
-                                                            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
-                                                        </PagerContent>
-                                                    </MudTable>
+                                                    <MudForm Spacing="2">
+                                                        <MudDataGrid T="DtoEstudioResponsePrice" Items="@selectedEstudios" Filterable="false" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true" StartedEditingItem="@StartedEditingItem">
+                                                            <ToolBarContent>
+                                                                <MudSpacer />
+                                                                <MudText Typo="Typo.h6" style="color: #0d37a8;">Estudios Seleccionados</MudText>
+                                                                <MudSpacer />
+                                                                
+                                                            </ToolBarContent>
+                                                            <Columns>
+                                                                <TemplateColumn>
+                                                                    <CellTemplate>
+                                                                        <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="(()=> StartedEditingItem(context.Item))" />
+                                                                    </CellTemplate>
+                                                                </TemplateColumn>
+                                                                <PropertyColumn Property="x => x.Clave" Editable="false" />
+                                                                <PropertyColumn Property="x => x.Nombre" />
+                                                                <PropertyColumn Property="x => x.Dias" />
+                                                                @* <FooterTemplate>
+                                            Total:
+                                            </FooterTemplate>
+                                            </PropertyColumn> *@
+                                                                @* <PropertyColumn Property="x => x.PrecioFinal" Format="C" >
+                                            <FooterTemplate>
+                                            @{
+                                            string totalgral = selectedEstudios.Sum((e) => e.PrecioFinal).ToString("$ ###,###,##0.00");
+                                            }
+                                            @totalgral
+                                            </FooterTemplate>
+                                            </PropertyColumn> *@
+                                                            </Columns>
+                                                            <PagerContent>
+                                                                <MudDataGridPager T="DtoEstudioResponsePrice" />
+                                                            </PagerContent>
+                                                        </MudDataGrid>
+                                                        @* <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudios" Hover="true" Breakpoint="Breakpoint.Sm"
+                                    RowClass="cursor-pointer" Context="GridEstudioSel" CustomFooter="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
+                                    <ToolBarContent>
+                                    <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Estudios</MudText> <br />
+                                    </ToolBarContent>
+                                    <HeaderContent>
+                                    <MudTh>Clave</MudTh>
+                                    <MudTh>Nombre</MudTh>
+                                    <MudTh>Precio Final</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate>
+                                    <MudTd DataLabel="Clave">@GridEstudioSel.Clave</MudTd>
+                                    <MudTd DataLabel="Nombre" Style="width:150px;">@GridEstudioSel.Nombre</MudTd>
+                                    <MudTd DataLabel="Precio Final" Style="text-align: right !important;width:170px;">@GridEstudioSel.PrecioFinal.ToString("$ ###,###,##0.00")</MudTd>
+                                    </RowTemplate>
+                                    <FooterContent>
+                                    <MudTFootRow Checkable="false">
+                                    <MudTd colspan="2" Style="text-align: right;"><b>Total:</b></MudTd>
+                                    <MudTd colspan="1" Style="text-align: right;width:170px;"><b>@selectedEstudios.Sum((e) => e.PrecioFinal).ToString("$ ###,###,##0.00")</b></MudTd>
+                                    </MudTFootRow></FooterContent>
+
+                                    <NoRecordsContent>
+                                    <MudText>Sin estudios seleccionados</MudText>
+                                    </NoRecordsContent>
+                                    <PagerContent>
+                                    <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                                    </PagerContent>
+                                    </MudTable> *@
+                                                    </MudForm>
                                                 </MudItem>
                                             }
                                         </MudGrid>
@@ -326,12 +378,13 @@ else
                                             <MudItem xs="12" sm="12" md="12" Class="justify-start"></MudItem>
                                         </MudGrid>
                                     </MudStep>
-                                    <MudStep Title="Recibo" SecondaryText="Doble Clic">
+                                    <MudStep Title="Recibo" SecondaryText="">
                                         <MudGrid>
                                             <MudItem xs="12" sm="7" md="12">
                                                 <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Recibo</MudText><MudSpacer />
                                             </MudItem>
                                             <MudItem xs="12" sm="7" md="12" id="iFrameId" Style="display: inline-table;height: 35.5rem;">
+                                                &nbsp;
                                             </MudItem>
                                         </MudGrid>
                                     </MudStep>
@@ -348,10 +401,19 @@ else
                                 </ActionContent>
                             </MudStepper>
 
-
+                            <MudForm Spacing="2">
+                                <MudGrid>
+                                    <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
+                                        <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" Color="@Color.Error" Class="add-item-btn">Cancelar</MudButton>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
+                                        <MudButton OnClick="@AddItem" StartIcon="@Icons.Material.Filled.Save" Color="@Color.Info" Class="add-item-btn">Crear órden</MudButton>
+                                    </MudItem>
+                                </MudGrid>
+                            </MudForm>
                             
                         </MudItem>
-                        <MudItem xs="12" sm="12" md="4">
+                        @* <MudItem xs="12" sm="12" md="4">
                             <MudCard>
                                 <MudCardContent>
                                     <MudText Class="p-2" Style="background-color: #0d37a8;color: white;" Align="Align.Center">Cotizacion No.: <b>@CotizacionDraft.clave &nbsp; &nbsp;&nbsp;&nbsp; <MudIconButton Variant="Variant.Outlined" Icon="@Icons.Material.Outlined.Print" title="Imprimir" Color="Color.Inherit" Size="Size.Medium" aria-label="Imprimir"></MudIconButton></b></MudText>
@@ -365,48 +427,10 @@ else
                                                 </TemplateColumn>
                                                 <PropertyColumn Property="x => x.Clave" Editable="false"/>
                                                 <PropertyColumn Property="x => x.Nombre" />
-                                                    @* <FooterTemplate>
-                                                        Total:
-                                                    </FooterTemplate>
-                                                </PropertyColumn> *@
-                                                @* <PropertyColumn Property="x => x.PrecioFinal" Format="C" >
-                                                    <FooterTemplate>
-                                                        @{
-                                                            string totalgral = selectedEstudios.Sum((e) => e.PrecioFinal).ToString("$ ###,###,##0.00");
-                                                        }
-                                                        @totalgral
-                                                    </FooterTemplate>
-                                                </PropertyColumn> *@
+                                                   
                                             </Columns>
                                         </MudDataGrid>
-                                        @* <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudios" Hover="true" Breakpoint="Breakpoint.Sm"
-                                                  RowClass="cursor-pointer" Context="GridEstudioSel" CustomFooter="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
-                                            <ToolBarContent>
-                                                <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Estudios</MudText> <br />
-                                            </ToolBarContent>
-                                            <HeaderContent>
-                                                <MudTh>Clave</MudTh>
-                                                <MudTh>Nombre</MudTh>
-                                                <MudTh>Precio Final</MudTh>
-                                            </HeaderContent>
-                                            <RowTemplate>
-                                                <MudTd DataLabel="Clave">@GridEstudioSel.Clave</MudTd>
-                                                <MudTd DataLabel="Nombre" Style="width:150px;">@GridEstudioSel.Nombre</MudTd>
-                                                <MudTd DataLabel="Precio Final" Style="text-align: right !important;width:170px;">@GridEstudioSel.PrecioFinal.ToString("$ ###,###,##0.00")</MudTd>
-                                            </RowTemplate>
-                                            <FooterContent>
-                                                <MudTFootRow Checkable="false">
-                                                    <MudTd colspan="2" Style="text-align: right;"><b>Total:</b></MudTd>
-                                                    <MudTd colspan="1" Style="text-align: right;width:170px;"><b>@selectedEstudios.Sum((e) => e.PrecioFinal).ToString("$ ###,###,##0.00")</b></MudTd>
-                                                </MudTFootRow></FooterContent>
-                                            
-                                            <NoRecordsContent>
-                                                <MudText>Sin estudios seleccionados</MudText>
-                                            </NoRecordsContent>
-                                            <PagerContent>
-                                                <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
-                                            </PagerContent>
-                                        </MudTable> *@
+                                       
                                         <MudForm Spacing="2">
                                             <MudGrid>
                                                 <MudItem xs="12" sm="12" md="6" Class="d-flex justify-end">
@@ -423,7 +447,7 @@ else
 
                                 </MudCardActions>
                             </MudCard>
-                        </MudItem>
+                        </MudItem> *@
                     }
                 }
             }
@@ -462,6 +486,54 @@ else
     </DialogActions>
 </MudDialog>
 
+<MudDialog @bind-Visible="visibleInfoEstudios" Options="diaOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center">
+            <MudIcon Icon="@Icons.Material.Filled.MedicalInformation" Color="Color.Success" Class="mr-3" Size="Size.Large" />Estudios Encontrados
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+
+            <MudItem xs="12" sm="12" md="12">
+                <MudTable T="DtoEstudioResponsePrice" Items="@_oEstudioResponsePrice" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTableEstudios"
+                          RowClass="cursor-pointer" @bind-SelectedItems="selectedEstudios" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
+                    <HeaderContent>
+                        <MudTh>Clave</MudTh>
+                        <MudTh>Nombre</MudTh>
+                        @* <MudTh>Precio</MudTh> *@
+                        <MudTh>Días</MudTh>
+                        @* <MudTh>Descuento</MudTh>
+                        <MudTh>Promoción</MudTh>
+                        <MudTh>Precio Final</MudTh> *@
+                    </HeaderContent>
+                    <RowTemplate>
+                        @* <MudTd DataLabel="Codigo">@sucur.Codigo</MudTd> *@
+                        <MudTd DataLabel="Clave">@GridEstudio.Clave</MudTd>
+                        <MudTd DataLabel="Nombre">@GridEstudio.Nombre</MudTd>
+                        @* <MudTd DataLabel="Precio" Style="text-align: right; width:150px;">@GridEstudio.Precio.ToString("$ ###,###,##0.00")</MudTd> *@
+                        <MudTd DataLabel="Días">@GridEstudio.Dias</MudTd>
+                        @* <MudTd DataLabel="Descuento" Style="text-align: right;width:150px;">@GridEstudio.Descuento.ToString("$ ###,###,##0.00")</MudTd>
+                        <MudTd DataLabel="Promoción">@GridEstudio.Promocion</MudTd>
+                        <MudTd DataLabel="Precio Final" Style="text-align: right;width:150px;">@GridEstudio.PrecioFinal.ToString("$ ###,###,##0.00")</MudTd> *@
+                    </RowTemplate>
+                    <NoRecordsContent>
+                        <MudText>Sin Registros para mostrar</MudText>
+                    </NoRecordsContent>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                    </PagerContent>
+                </MudTable>
+            </MudItem>
+
+        </MudGrid>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="AgregarEstudio" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn">Aceptar</MudButton>
+    </DialogActions>
+</MudDialog>
+
 
 <style>
     .selected {
@@ -497,7 +569,7 @@ else
         new BreadcrumbItem("Home", href: "/ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
         new BreadcrumbItem("Creación de Órden Médica", href: null,disabled: true, icon: Icons.Material.Filled.Badge),
     };
-    private readonly DialogOptions diaOptions = new(){ BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+    private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true, CloseButton = true };
     private string UrlOrdenes = "services/records/api/Quotation/filter";
     private string UrlOrdenesDraft = "services/records/api/Quotation";
     private string UrlOrdenesDraftNo = "services/records/api/Quotation/";
@@ -510,9 +582,8 @@ else
 
     private DtoCotizacion CotizacionDraft = new();
     private DtoMedicoPwd dtoMedico = new();
-    private string searchString1 = "";
-    DateTime? dateInicial = DateTime.Today;
-    DateTime? dateFinal = DateTime.Today;
+
+    private DtoBusquedaCotizacion _busquedaCotizacion = new();
 
     private List<DtoCotizacionResponse> _oCotizaciones = new();
     private List<DtoCotizacionEstudios> _oCotizacionEstudios = new();
@@ -533,6 +604,7 @@ else
     private bool searchEstudiosTxt = false;
     private bool ShowOrdenes = false;
     private bool visibleInfoCotizacion = false;
+    private bool visibleInfoEstudios = false;
     private bool visibleInfoPaciente= false;
     private bool visibleInfoEstudio= false;
     private bool NewCotizacion = false;
@@ -550,6 +622,7 @@ else
     private bool? _step1Complete;
     private string _step2TextInput;
     private int _index;
+    private int llamado =0;
     PDFGenerator _PdfGenerator = new();
 
 
@@ -744,7 +817,7 @@ else
                         },
                 //Buscar = searchString1,
                 CompañiaId = new(),
-                Fecha = new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") }
+                Fecha = new() { DateTime.Parse(_busquedaCotizacion.dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_busquedaCotizacion.dateFinal.ToString()).ToString("yyyy-MM-dd") }
             };
         string json1 = JsonConvert.SerializeObject(parametrobusqueda);
         var sesOrdenes = await Http.PostAsJsonAsync<DtoCotizacionRequest>(UrlOrdenes, parametrobusqueda);
@@ -847,16 +920,28 @@ else
         //if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
         if (!String.IsNullOrEmpty(value))
         {
-            dtoGeneralesCotizacion.Ciudad = value;
+            //dtoGeneralesCotizacion.Ciudad = value;
             _oSucursalForCity = _oSucursalByCity.FirstOrDefault(e => e.Ciudad.Equals(value)).Sucursales.ToList();
         }
         else
         {
-            dtoGeneralesCotizacion.Ciudad = null;
+            //dtoGeneralesCotizacion.Ciudad = null;
             _oSucursalForCity = new();
             SucursalID = "";
             SucursalName = "";
         }
+    }
+
+    private async Task<IEnumerable<string>> SearchCiudad(string value, CancellationToken token)
+    {
+        // In real life use an asynchronous function for fetching data from an api.
+        await Task.Delay(5, token);
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return _oSucursalByCity.Select(x=>x.Ciudad).ToList();
+
+        return _oSucursalByCity.Select(x=>x.Ciudad).Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
     }
 
     private string SelectedRowSucursal(DtoSucursal element, int rowNumber)
@@ -1018,28 +1103,33 @@ else
             {
                 foreach (var itemEstudio in sesEstudio)
                 {
-                    DtoEstudioRequestPrice oPriceStudio = new()
-                        {
-                            SucursalId = SucursalID,
-                            CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                            MedicoId = dtoMedico.IdMedico,
-                            EstudioId = itemEstudio.Id
-                        };
-                    string json1 = JsonConvert.SerializeObject(oPriceStudio);
-                    var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
-                    if (responseDraft.IsSuccessStatusCode)
+                    var studioagregado = selectedEstudios.FirstOrDefault(x=>x.Clave.Equals(itemEstudio.Clave));
+                    if (studioagregado==null)
                     {
-                        var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                        _oEstudioResponsePrice.Add(ostudioResponse);
+                        DtoEstudioRequestPrice oPriceStudio = new()
+                            {
+                                SucursalId = SucursalID,
+                                CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                                MedicoId = dtoMedico.IdMedico,
+                                EstudioId = itemEstudio.Id
+                            };
+                        string json1 = JsonConvert.SerializeObject(oPriceStudio);
+                        var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
+                        if (responseDraft.IsSuccessStatusCode)
+                        {
+                            var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                            _oEstudioResponsePrice.Add(ostudioResponse);
+                        }
+                        // else
+                        // {
+                        //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
+                        //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
+                        // }
                     }
-                    // else
-                    // {
-                    //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
-                    //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
-                    // }
                 }
+                visibleInfoEstudios = true;
                 searchEstudiosTxt=false;
-                visibleInfoEstudio = true;
+                //visibleInfoEstudio = true;
                 //StateHasChanged();
             }
 
@@ -1047,6 +1137,22 @@ else
         //dataLoaded = false;
     }
 
+    public async Task ValidaEnterPaciente(KeyboardEventArgs e)
+    {
+        if (e.Code.Equals("Enter"))
+        {
+            await BuscarPaciente();
+        }
+
+    }
+    public async Task ValidaEnterEstudio(KeyboardEventArgs e)
+    {
+        if (e.Code.Equals("Enter"))
+        {
+            await BuscarEstudio();
+        }
+
+    }
 
     void OnRowClickEstudio(TableRowClickEventArgs<DtoEstudioResponsePrice> args)
     {
@@ -1062,9 +1168,29 @@ else
 
     private async Task CreatePdfOrder(DtoGeneralesCotizacion _dtoGeneralesCotizacion, DtoPaciente _dtoPaciente, HashSet<DtoEstudioResponsePrice> _dtoEstudioResponsePrices, DtoCotizacion _cotizacionDraft)
     {
-        MemoryStream archivopdf = await _PdfGenerator.CreatePDFOrder(_dtoGeneralesCotizacion, _dtoPaciente, _dtoEstudioResponsePrices,_cotizacionDraft);
-        _PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", archivopdf);
+
+        MemoryStream archivopdf = await _PdfGenerator.CreatePDFOrder(_dtoGeneralesCotizacion, _dtoPaciente, _dtoEstudioResponsePrices, _cotizacionDraft);
+        _PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", new());
+        try
+        {
+
+            await Task.Delay(2000);
+            _PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", archivopdf);
+        }
+        catch (Exception ex)
+        {
+            await _PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", archivopdf);            
+        }
+
         StateHasChanged();
+        if (llamado==0)
+        {
+            llamado++;
+            CreatePdfOrder(_dtoGeneralesCotizacion, _dtoPaciente, _dtoEstudioResponsePrices, _cotizacionDraft);
+        }else{
+            llamado = 0;
+        }
+        
     }
 
     #endregion
@@ -1098,6 +1224,12 @@ else
     private void CancelPrint()
     {
         visibleInfoCotizacion = false;
+
+    }
+    private void AgregarEstudio()
+    {
+        visibleInfoEstudios = false;
+        visibleInfoEstudio = true;
 
     }
 

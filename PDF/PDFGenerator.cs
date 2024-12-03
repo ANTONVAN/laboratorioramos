@@ -33,7 +33,7 @@ namespace LaboratorioRamos.PDF
         public void ViewPDF(IJSRuntime js, string idIFrame, MemoryStream archivo) {
             js.InvokeVoidAsync("ViewPDF", idIFrame, Convert.ToBase64String(archivo.ToArray()));
         }
-        public void ViewPDFOrder(IJSRuntime js, string idIFrame, MemoryStream archivo) {
+        public async Task ViewPDFOrder(IJSRuntime js, string idIFrame, MemoryStream archivo) {
             js.InvokeVoidAsync("ViewPDFOrder", idIFrame, Convert.ToBase64String(archivo.ToArray()));
         }
         public async Task<MemoryStream> CreatePDF(IConfiguration _config,IJSRuntime js,HttpClient Http, List<DtoResponseMedicoPacienteStudios> StudioSelect)

@@ -63,4 +63,11 @@ namespace LaboratorioRamos.Data.DtoCotizacion
         public string? Observaciones { get; set; }
         public string? Paciente { get; set; }
     }
+
+    public class DtoBusquedaCotizacion
+    {
+        public string? searchString1 { get; set; }
+        public DateTime? dateInicial { get; set; } = DateTime.Today;
+        public DateTime? dateFinal { get; set; } = DateTime.Today;
+    }
 }
