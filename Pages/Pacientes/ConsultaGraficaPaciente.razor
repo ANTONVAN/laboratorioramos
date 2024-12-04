@@ -19,7 +19,11 @@
         <MudText Align="MudBlazor.Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Consulta Gráfica del Paciente</MudText>
     </MudItem>
     <MudItem xs="12" sm="7" md="4">
-        <MudSelect T="string" Label="Estudio" Variant="Variant.Outlined" @bind-Value="ValEstudio">
+        <MudAutocomplete T="string" @bind-Value="ValEstudio"
+                         SearchFunc="SearchEstudio"
+                         Label="Estudio"
+                         Clearable="true" />
+        @* <MudSelect T="string" Label="Estudio" Variant="Variant.Outlined" @bind-Value="ValEstudio">
             <MudSelectItem Value="@("GLUCOSA")" />
             <MudSelectItem Value="@("UREA")" />
             <MudSelectItem Value="@("CREATININA")" />
@@ -41,7 +45,7 @@
             <MudSelectItem Value="@("KEPPRA (LEVETIRACETAM)")" />
             <MudSelectItem Value="@("CARBAMAZEPINA")" />
             <MudSelectItem Value="@("DIFENILHIDANTOINA (EPAMIN)")" />
-        </MudSelect>
+        </MudSelect> *@
     </MudItem>
     <MudItem xs="12" sm="5" md="3">
         @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange" /> *@
@@ -128,6 +132,14 @@
 
     DateTime? dateInicial = DateTime.Today;
     DateTime? dateFinal = DateTime.Today;
+
+    private string[] _estudios =
+    {
+        "GLUCOSA","UREA","CREATININA","ACIDO URICO","COLESTEROL HDL","COLESTEROL LDL","COLESTEROL TOTAL","TRIGLICERIDOS","HEMOGLOBINA GLICOSILADA",
+        "HEMOGLOBINA","PLAQUETAS","ANTÍGENO PROSTATICO ESPECÍFICO","CA125","ALFA FETO PROTEÍNA","ANTÍGENO CARINOEMBRIONARIO","CA 19-9","ACIDO VALPROICO SERICO",
+        "TOPIRAMATO","KEPPRA (LEVETIRACETAM)","CARBAMAZEPINA","DIFENILHIDANTOINA (EPAMIN)"
+    };
+
     #endregion
 
     #region Funsiones Página
@@ -374,6 +386,18 @@
         ValidateData = false;
         StateHasChanged();
 
+    }
+
+    private async Task<IEnumerable<string>> SearchEstudio(string value, CancellationToken token)
+    {
+        // In real life use an asynchronous function for fetching data from an api.
+        await Task.Delay(5, token);
+
+        // if text is null or empty, show complete list
+        if (string.IsNullOrEmpty(value))
+            return _estudios;
+
+        return _estudios.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
     }
     #endregion
     

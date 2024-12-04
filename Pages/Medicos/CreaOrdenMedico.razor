@@ -201,7 +201,7 @@ else
                     else
                     {
                         <MudItem xs="12" sm="12" md="12">
-                            <MudText Class="p-2" Style="background-color: #0d37a8;color: white;" Align="Align.Center">Cotizacion No.: <b>@CotizacionDraft.clave &nbsp; &nbsp;&nbsp;&nbsp;</b></MudText>
+                            <MudText Class="p-2" Style="background-color: #0d37a8;color: white;" Align="Align.Center">Órden No.: <b>@CotizacionDraft.clave &nbsp; &nbsp;&nbsp;&nbsp;</b></MudText>
                             
                             <MudStepper NonLinear ShowResetButton OnPreviewInteraction="OnPreviewInteraction" @bind-ActiveIndex="_index">
                                 <ConnectorTemplate Context="step">
@@ -273,19 +273,9 @@ else
                                     <MudStep Title="Estudios" SecondaryText="Agregar Estudios" HasError="@(selectedEstudios.Count()==0)">
                                         <MudDivider />
                                         <MudGrid Class="mt-2">
-                                            @if (searchEstudiosTxt)
-                                            {
-                                                <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
-                                                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
-                                                </MudItem>
-                                            }
-                                            else
-                                            {
-                                                <MudItem xs="12" sm="6" md="6">
-                                                    <MudTextField T="string" @bind-Value="EstudioSearch" Label="Estudio" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@(searchEstudiosTxt==false ? Icons.Material.Filled.Search:Icons.Material.Filled.LocationSearching)" Disabled="@(searchEstudiosTxt)" AdornmentColor="@(searchEstudiosTxt==false ? Color.Success:Color.Dark)" OnKeyUp="ValidaEnterEstudio" OnAdornmentClick="@(() => BuscarEstudio())" />
-                                                </MudItem>
-                                            }
-                                            
+                                            <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
+                                                <MudButton Variant="Variant.Outlined" OnClick="@AbrirModalEstudios" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn">Agregar Estudios</MudButton>
+                                            </MudItem>                                            
                                             @if (visibleInfoEstudio)
                                             {
                                                 <MudItem xs="12" sm="12" md="12">
@@ -383,8 +373,10 @@ else
                                             <MudItem xs="12" sm="7" md="12">
                                                 <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Recibo</MudText><MudSpacer />
                                             </MudItem>
-                                            <MudItem xs="12" sm="7" md="12" id="iFrameId" Style="display: inline-table;height: 35.5rem;">
-                                                &nbsp;
+                                            <MudItem xs="12" sm="7" md="12" id="iFrameId" Style="height: 35.5rem;">
+                                                <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
+                                                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                                                </MudItem>
                                             </MudItem>
                                         </MudGrid>
                                     </MudStep>
@@ -468,7 +460,7 @@ else
                 <MudDataGrid Items="@_oCotizacionEstudios" Hover="true" Dense="true" Striped="true" Bordered="true">
                     <Columns>
                         <PropertyColumn Property="x => x.Id" Title="ID" CellClass="justify-center" />
-                        <PropertyColumn Property="x => x.EstudioId" CellClass="justify-center" />
+                        @* <PropertyColumn Property="x => x.EstudioId" CellClass="justify-center" /> *@
                         <PropertyColumn Property="x => x.Clave" CellClass="justify-center" />
                         <PropertyColumn Property="x => x.Nombre" CellClass="justify-center" />
                     </Columns>
@@ -489,13 +481,24 @@ else
 <MudDialog @bind-Visible="visibleInfoEstudios" Options="diaOptions">
     <TitleContent>
         <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center">
-            <MudIcon Icon="@Icons.Material.Filled.MedicalInformation" Color="Color.Success" Class="mr-3" Size="Size.Large" />Estudios Encontrados
+            <MudIcon Icon="@Icons.Material.Filled.MedicalInformation" Color="Color.Success" Class="mr-3" Size="Size.Large" />Agregar Estudios
         </MudText>
     </TitleContent>
     <DialogContent>
         <MudGrid>
+            @if (searchEstudiosTxt)
+            {
+                <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
+                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+                </MudItem>
+            }
+            else
+            {
+                <MudItem xs="12" sm="6" md="6">
+                    <MudTextField T="string" @bind-Value="EstudioSearch" Label="Estudio" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@(searchEstudiosTxt==false ? Icons.Material.Filled.Search:Icons.Material.Filled.LocationSearching)" Disabled="@(searchEstudiosTxt)" AdornmentColor="@(searchEstudiosTxt==false ? Color.Success:Color.Dark)" OnKeyUp="ValidaEnterEstudio" OnAdornmentClick="@(() => BuscarEstudio())" />
+                </MudItem>
 
-            <MudItem xs="12" sm="12" md="12">
+                <MudItem xs="12" sm="12" md="12">
                 <MudTable T="DtoEstudioResponsePrice" Items="@_oEstudioResponsePrice" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTableEstudios"
                           RowClass="cursor-pointer" @bind-SelectedItems="selectedEstudios" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
                     <HeaderContent>
@@ -525,6 +528,9 @@ else
                     </PagerContent>
                 </MudTable>
             </MudItem>
+            }
+
+            
 
         </MudGrid>
 
@@ -571,6 +577,7 @@ else
     };
     private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true, CloseButton = true };
     private string UrlOrdenes = "services/records/api/Quotation/filter";
+    private string UrlOrdenesNew = "services/records/api/Quotation/studies";
     private string UrlOrdenesDraft = "services/records/api/Quotation";
     private string UrlOrdenesDraftNo = "services/records/api/Quotation/";
     private string UrlSucursalByCity = "services/catalogo/api/Branch/getSucursalByCity";
@@ -624,6 +631,7 @@ else
     private int _index;
     private int llamado =0;
     PDFGenerator _PdfGenerator = new();
+    DtoCotizacionRequest parametrobusqueda = new();
 
 
     #endregion
@@ -646,12 +654,12 @@ else
                     var idenUser = authState.User.Claims.ToList();
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
                     dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
-                    DtoCotizacionRequest parametrobusqueda = new()
+                    parametrobusqueda = new()
                     {
-                        SucursalId = new()
-                        {
-                            dtoMedico.Sucursal.ToString()
-                        },
+                        SucursalId = new(),
+                        // {
+                        //     dtoMedico.Sucursal.ToString()
+                        // },
                         MedicoId = new()
                         {
                             dtoMedico.IdMedico
@@ -807,10 +815,10 @@ else
         ShowOrdenes = false;
         DtoCotizacionRequest parametrobusqueda = new()
             {
-                SucursalId = new()
-                        {
-                            dtoMedico.Sucursal.ToString()
-                        },
+                SucursalId = new(),
+                        // {
+                        //     dtoMedico.Sucursal.ToString()
+                        // },
                 MedicoId = new()
                         {
                             dtoMedico.IdMedico
@@ -864,9 +872,119 @@ else
 
 
     }
-    void AddItem()
+
+    async Task AddItem()
     {
-        NewCotizacion = true;
+        dataLoaded = true;
+
+        List<Estudios> NewEstudios = new();
+        List<Promociones> NewPromociones = new();
+        // List<Parametros> NewParametros = new();
+        List<Indicaciones> NewIndicaciones= new();
+
+        foreach (var item in selectedEstudios)
+        {
+            foreach (var itemPromo in item.Promociones)
+            {
+                Promociones RowPromo= new()
+                {
+                    Descuento=itemPromo.Descuento,
+                    DescuentoPorcentaje=itemPromo.DescuentoPorcentaje,
+                    EstudioId=itemPromo.EstudioId,
+                    PaqueteId=itemPromo.PaqueteId,
+                    Promocion=itemPromo.Promocion,
+                    PromocionId=itemPromo.PromocionId,
+                };
+                NewPromociones.Add(RowPromo);
+            }
+            //             foreach (var itemParam in item.Parametros)
+            //             {
+            //                 Parametros RowParam = new()
+            //                 {
+            // Activo=itemParam.Activo,
+            // Area=itemParam.Area,
+            // Asignado=true,
+            // Clave=itemParam.Clave,
+            // CriticoMaximo=itemParam.
+            //                 };
+            //                 NewParametros.Add(RowParam);
+            //             }
+            foreach (var itemIndica in item.Indicaciones)
+            {
+                Indicaciones RowIndica = new()
+                {
+                    Activo=itemIndica.Activo,
+                    Clave=itemIndica.Clave,
+                    Descripcion=itemIndica.Descripcion,
+                    Id=itemIndica.Id,
+                    Nombre=itemIndica.Nombre
+                };
+                NewIndicaciones.Add(RowIndica);
+            }
+            Estudios _Estudio = new()
+            {
+                Id=0,
+                Clave=item.Clave,
+                CotizacionId=CotizacionDraft.CotizacionId,
+                Descuento=0,
+                DescuentoManual=false,
+                DescuentoPorcentaje=0,
+                Dias=item.Dias,
+                EstudioId=item.EstudioId,
+                Horas=item.Horas,
+                ListaPrecio=item.ListaPrecio,
+                ListaPrecioId=item.ListaPrecioId,
+                Nombre=item.Nombre,
+                //Paquete=null,
+                //PaqueteId=0,
+                Precio=item.Precio,
+                PrecioFinal=item.PrecioFinal,
+                Promocion=item.Promocion,
+                PromocionId=item.PromocionId,
+                TipoMuestra=item.TipoMuestra,
+                //Parametros=new(NewParametros),
+                Promociones = new(NewPromociones),
+                Indicaciones=new(NewIndicaciones),
+
+            };
+            NewEstudios.Add(_Estudio);
+        }
+
+        DtoNewEstudiosByOrden newOrden = new()
+            {
+                CotizacionId=CotizacionDraft.CotizacionId,
+                Estudios = new(NewEstudios),
+                Paquetes=new(),
+                Total= new(){
+                    CotizacionId = CotizacionDraft.CotizacionId,
+                    Descuento=0,
+                    Total=0,
+                    TotalEstudios=selectedEstudios.Count()
+                }
+            };
+        string json1 = JsonConvert.SerializeObject(newOrden);
+        var sesOrdenes = await Http.PostAsJsonAsync<DtoNewEstudiosByOrden>(UrlOrdenesNew, newOrden);
+        switch (sesOrdenes.StatusCode)
+        {
+            case System.Net.HttpStatusCode.OK:
+                try
+                {
+                    ShowSnack("¡La órden se ha creado con éxito!", 2);                    
+                }
+                catch (Exception ex)
+                {
+                    //ValidateData = false;
+                }
+
+
+                break;
+            case System.Net.HttpStatusCode.InternalServerError:
+                //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
+                break;
+        }
+
+        dataLoaded = false;
+        StateHasChanged();
     }
     void CancelItem()
     {
@@ -877,6 +995,7 @@ else
         _oSucursalForCity = new();
         SucursalID = "";
         SucursalName = "";
+        selectedEstudios = new();
         _index = 0;
     }
 
@@ -1127,7 +1246,7 @@ else
                         // }
                     }
                 }
-                visibleInfoEstudios = true;
+                
                 searchEstudiosTxt=false;
                 //visibleInfoEstudio = true;
                 //StateHasChanged();
@@ -1230,6 +1349,12 @@ else
     {
         visibleInfoEstudios = false;
         visibleInfoEstudio = true;
+
+    }
+
+    private void AbrirModalEstudios()
+    {
+        visibleInfoEstudios = true;
 
     }
 
