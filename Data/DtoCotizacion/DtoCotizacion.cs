@@ -27,6 +27,7 @@ namespace LaboratorioRamos.Data.DtoCotizacion
         public string Buscar { get; set; }
         public string Ciudad { get; set; }
         public List<string> Fecha { get; set; }
+        public int TipoFecha { get; set; } = 1;
     }
 
     public class DtoCotizacionResponse

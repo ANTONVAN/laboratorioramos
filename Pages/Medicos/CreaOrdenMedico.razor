@@ -664,6 +664,7 @@ else
                         {
                             dtoMedico.IdMedico
                         },
+                            Buscar = _busquedaCotizacion.searchString1,
                         CompañiaId = new(),
                         Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                     };
@@ -823,7 +824,7 @@ else
                         {
                             dtoMedico.IdMedico
                         },
-                //Buscar = searchString1,
+                Buscar = _busquedaCotizacion.searchString1,
                 CompañiaId = new(),
                 Fecha = new() { DateTime.Parse(_busquedaCotizacion.dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_busquedaCotizacion.dateFinal.ToString()).ToString("yyyy-MM-dd") }
             };
