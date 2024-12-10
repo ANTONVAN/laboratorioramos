@@ -24,7 +24,7 @@ namespace LaboratorioRamos.Data.DtoCotizacion
         public List<string> SucursalId { get; set; }
         public List<string> MedicoId { get; set; }
         public List<string> CompañiaId { get; set; }
-        public string Buscar { get; set; }
+        public string Expediente { get; set; }
         public string Ciudad { get; set; }
         public List<string> Fecha { get; set; }
         public int TipoFecha { get; set; } = 1;

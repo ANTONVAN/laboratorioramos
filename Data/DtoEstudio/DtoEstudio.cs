@@ -188,6 +188,32 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public List<Indicaciones> Indicaciones { get; set; }
     }
 
+    public class EstudiosOrden
+    {
+        public int Id { get; set; }
+        public string CotizacionId { get; set; }
+        public int EstudioId { get; set; }
+        public string Clave { get; set; }
+        public string Nombre { get; set; }
+        //public int PaqueteId { get; set; }
+        //public string Paquete { get; set; }
+        public string ListaPrecioId { get; set; }
+        public string ListaPrecio { get; set; }
+        public int? PromocionId { get; set; }
+        public string Promocion { get; set; }
+        public double Dias { get; set; }
+        public int Horas { get; set; }
+        public double Precio { get; set; }
+        public bool DescuentoManual { get; set; }
+        public double Descuento { get; set; }
+        public double DescuentoPorcentaje { get; set; }
+        public double PrecioFinal { get; set; }
+        public string TipoMuestra { get; set; }
+        public List<Promociones> Promociones { get; set; }
+        //public List<Parametros> Parametros { get; set; }
+        public List<Indicaciones> Indicaciones { get; set; }
+    }
+
     public class Indicaciones
     {
         public int Id { get; set; }
@@ -276,6 +302,13 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public List<Paquetes> Paquetes { get; set; }
         public TotalGral Total { get; set; }
     }
+    public class DtoEstudiosByOrdenActual
+    {
+        public string CotizacionId { get; set; }
+        public List<EstudiosOrden> Estudios { get; set; }
+        public List<Paquetes> Paquetes { get; set; }
+        public TotalGralOrdenActual Total { get; set; }
+    }
 
     public class TipoValores
     {
@@ -316,5 +349,12 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public int TotalEstudios { get; set; }
         public int Descuento { get; set; }
         public int Total { get; set; }
+    }
+    public class TotalGralOrdenActual
+    {
+        public string CotizacionId { get; set; }
+        public double TotalEstudios { get; set; }
+        public double Descuento { get; set; }
+        public double Total { get; set; }
     }
 }
