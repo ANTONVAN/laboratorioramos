@@ -210,7 +210,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public double PrecioFinal { get; set; }
         public string TipoMuestra { get; set; }
         public List<Promociones> Promociones { get; set; }
-        //public List<Parametros> Parametros { get; set; }
+        public List<Parametros> Parametros { get; set; }
         public List<Indicaciones> Indicaciones { get; set; }
     }
 
