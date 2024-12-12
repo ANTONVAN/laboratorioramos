@@ -201,7 +201,7 @@ else
 
     private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true };
 
-    
+
     #endregion
 
     #region Funsiones Página
@@ -296,11 +296,23 @@ else
                                 estuido = estuido[..^1];
                                 dtoResponseMedicoPacienteStudios = JsonConvert.DeserializeObject<DtoResponseMedicoPacienteStudios>(estuido);
                                 var studioselec = dtoResultadosEstudiosGral.Estudios.FirstOrDefault(e => e.Id.Equals(dtoResponseMedicoPacienteStudios.EstudioId));
-                                dtoResultadosEstudios.Estudios = new() { studioselec};
+                                if (studioselec.EstatusId == 7 || studioselec.EstatusId==10)
+                                {
+                                    dtoResultadosEstudios.Estudios = new() { studioselec };
+                                }
+
                             }
                             else
                             {
-                                dtoResultadosEstudios = dtoResultadosEstudiosGral;
+                                dtoResultadosEstudios.Estudios = new();
+                                foreach (var itemStudiosgr in dtoResultadosEstudiosGral.Estudios)
+                                {
+                                    if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 10)
+                                    {
+                                        dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
+                                    }
+                                }
+                                //dtoResultadosEstudios = dtoResultadosEstudiosGral;
 
                             }
 
