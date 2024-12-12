@@ -1,0 +1,363 @@
+﻿@page "/ResultadoEstudios/{PostRequiere}/{PostSolicitud}"
+@using LaboratorioRamos.Data.DtoEstudio
+@using LaboratorioRamos.Data.DtoMedico
+@using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
+@using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
+@using LaboratorioRamos.Data.DtoResultadosEstudios
+@using LaboratorioRamos.Data.DtoPaciente
+
+
+@inject HttpClient Http;
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider _authStateProvider
+@inject Cryp Cryp;
+@inject ISnackbar Snackbar
+@inject IJSRuntime IJSRuntime
+@inject IConfiguration _config;
+
+<PageTitle>Resultado de Estudios Médicos</PageTitle>
+
+@if (dataLoaded)
+{
+    <Loading></Loading>
+}
+else
+{
+    <MudGrid>
+        @* <MudItem xs="1" sm="1" md="1">
+            <MudLink OnClick="NavigationInicio" Underline="Underline.Always"><MudIconButton Icon="@Icons.Material.Filled.ArrowCircleLeft" aria-label="Atras" Color="Color.Dark"></MudIconButton> </MudLink>
+        </MudItem> *@
+        <MudItem xs="12" sm="12" md="12">
+            <MudText Align="Align.Center" Typo="Typo.h4" style="color: #0d37a8;">Resultados Médicos</MudText>
+        </MudItem>
+    </MudGrid>
+    <MudPaper Class="pa-4" Elevation="4" Style="width:100%;">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12" Style="padding-top: 12px;">
+                <MudText Align="Align.Left" Typo="Typo.h6" style="color: #66686c;"><b style="color: #0d37a8;">Solicitud: @LstExpedientes[0].Solicitud</b>&nbsp;&nbsp;<b style="font-size:small;">Registro: @LstExpedientes[0].Registro</b></MudText>
+            </MudItem>
+            <MudItem xs="3" sm="6" md="3" Style="padding-top: 0px;">
+                <MudText Align="Align.Left" Typo="Typo.subtitle1">
+                    @{
+                        if (LstExpedientes[0].Sexo == "Masculino")
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Man2" Color="Color.Primary" />
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Woman2" Color="Color.Secondary" />
+                        }
+                    }
+                    &nbsp;<b>@LstExpedientes[0].Nombre</b>
+                    
+                </MudText>
+            </MudItem>
+            <MudItem xs="3" sm="6" md="3" Style="padding-top: 0px;">
+                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.MedicalServices" Color="Color.Primary" />&nbsp;<b>Médico:</b>&nbsp; @dtoMedicoSolicitud.Nombre&nbsp;@dtoMedicoSolicitud.PrimerApellido&nbsp;@dtoMedicoSolicitud.SegundoApellido </MudText>
+            </MudItem>
+            <MudItem xs="3" sm="6" md="3" Style="padding-top: 0px;">
+                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.Business" Color="Color.Primary" />&nbsp;<b>Compañia:</b> &nbsp; @LstExpedientes[0].Compania</MudText>
+            </MudItem>
+            <MudItem xs="3" sm="6" md="3" Style="padding-top: 0px;">
+                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.FolderShared" Color="Color.Primary" />&nbsp;<b>Expediente:</b> &nbsp; @LstExpedientes[0].Expediente</MudText>
+            </MudItem>
+
+            <MudItem xs="3" sm="6" md="3" Style="padding-top: 0px;">
+                <MudText Align="Align.Center" Typo="Typo.subtitle2"><b>@LstExpedientes[0].Edad&nbsp;años</b>
+                </MudText>
+            </MudItem>
+            <MudItem xs="3" sm="6" md="3" Style="padding-top: 0px;">
+                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" />&nbsp;<b>Fecha Nac.:</b> &nbsp; @LstExpedientes[0].FechaNacimiento</MudText>
+            </MudItem>
+            <MudItem xs="3" sm="6" md="3" Style="padding-top: 0px;">
+                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.Phone" Color="Color.Primary" />&nbsp;<b>Teléfono:</b> &nbsp; @LstExpedientes[0].Telefono</MudText>
+            </MudItem>
+            <MudItem xs="3" sm="6" md="3" Style="padding-top: 0px;">
+                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.PhoneAndroid" Color="Color.Primary" />&nbsp;<b>Celular:</b> &nbsp; @LstExpedientes[0].EnvioWhatsapp</MudText>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%;">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12">
+                <MudExpansionPanels MultiExpansion="true">
+                    @foreach (var item in dtoResultadosEstudios.Estudios)
+                    {
+                        <MudExpansionPanel Text="Panel One" Class="mt-2" Dense="false" Gutters="false" Expanded="true" HideIcon="true">
+                            <TitleContent>
+                                <div class="d-flex" style="color:#1096b5;">
+                                    @{
+                                        var nombreCaptura = String.IsNullOrEmpty(item.SucursalCaptura) ? "" : $"(Capturado en: {item.SucursalCaptura})";
+                                    }
+                                    <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.PlaylistAdd" class="mr-3"></MudIcon>&nbsp;@item.Clave-<strong>@item.Nombre</strong> @nombreCaptura</MudText>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <MudGrid>
+                                    <MudItem xs="12" sm="12" md="4">
+                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">Examen</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="4">
+                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">Resultado</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="4">
+                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">Unidades</MudText>
+                                    </MudItem>
+                                    @foreach (var itemParam in item.Parametros)
+                                    {
+                                        <MudItem xs="12" sm="12" md="4">
+                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Nombre</MudText>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="12" md="4">
+                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="12" md="4">
+                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.UnidadNombre</MudText>
+                                        </MudItem>
+                                    }
+                                </MudGrid>
+                                
+                            </ChildContent>
+                        </MudExpansionPanel>
+                    }
+                </MudExpansionPanels>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+}
+
+<style>
+
+    .mud-expand-panel .mud-expand-panel-header {
+        width: 100%;
+        align-items: center;
+        display: flex;
+        font-size: .9375rem;
+        line-height: 1;
+        min-height: 48px;
+        outline: none;
+        padding: 0px 9px;
+        position: relative;
+        transition: min-height .3s cubic-bezier(0.25, 0.8, 0.5, 1);
+        user-select: none;
+        background-color: #9deafd63;
+        color: #0d37a8;
+    }
+
+</style>
+
+@code {
+
+    #region Declaración de variables
+
+    [Inject]
+    IDialogService DialogService { get; set; }
+
+    [Parameter]
+    public string PostRequiere { get; set; }
+    [Parameter]
+    public string PostSolicitud { get; set; }
+    [Parameter]
+    public string PostEstudio { get; set; }
+
+    public string resDecrip { get; set; }
+
+
+    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    {
+        new BreadcrumbItem("Home", href: "#", icon: Icons.Material.Filled.Home),
+        new BreadcrumbItem("Consulta de Resultados", href: null, disabled: true, icon: Icons.Material.Filled.Badge),
+    };
+
+
+    private List<DtoPaciente> dtoPaciente = new();
+    private DtoMedicoPwd dtoMedico = new();
+    private DtoMedicoPwd dtoMedicoSolicitud = new();
+    private DtoResultadosEstudios dtoResultadosEstudiosGral = new();
+    private DtoResultadosEstudios dtoResultadosEstudios = new();
+    private DtoResponseMedicoPacienteStudios dtoResponseMedicoPacienteStudios = new();
+
+
+
+    private List<DtoResponseMedicoPaciente> LstExpedientes = new();
+
+    private bool dataLoaded = true;
+
+    private string UrlUsuario = "services/records/api/ClinicResults/getList";
+    private string UrlPaciente = "services/records/api/MassSearch/GetAllCaptureResults";
+    private string UrlImprimeResultados = "services/records/api/ClinicResults/printResultFile";
+    private string UrlSolicitudInfoGral = "services/records/api/Request/general/";
+    private string UrlMedicoInfoGral = "services/catalogo/api/Medic/";
+    private string UrlClinicResultados = "services/records/api/ClinicResults/studies_params/";
+
+
+    DateTime? dateInicial = DateTime.Today;
+    DateTime? dateFinal = DateTime.Today;
+    private string Sucursal = "";
+
+    private bool visiblePrintResult = false;
+
+
+    private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+
+    
+    #endregion
+
+    #region Funsiones Página
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var authState = await _authStateProvider.GetAuthenticationStateAsync();
+        if (!authState.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/", true);
+        }
+        else
+        {
+
+            try
+            {
+
+                Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
+                var resPacDecripInicial = Cryp.Desencripta(PostSolicitud);
+                var resPacDecrip = resPacDecripInicial.Split("!"); //0=solicitud, 1=Estudio
+                if (PostRequiere == "1") //Paciente
+                {
+                    var idenUser = authState.User.Claims.ToList();
+                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                    dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
+
+
+                }
+                else if (PostRequiere == "2")//Medico
+                {
+                    var idenUser = authState.User.Claims.ToList();
+                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                    dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
+                    // _items = new List<BreadcrumbItem>
+                    // {
+                    //     new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
+                    //     new BreadcrumbItem("Consulta de Solicitudes", href: "#ConsultaSolicitudesMedico", icon: Icons.Material.Filled.Badge,disabled:false),
+                    //     new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                    // };
+                    // var resPacDecrip = Cryp.Desencripta(PostPaciente);
+                    // dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+                    // ShowNombre = true;
+
+                }
+                else if (PostRequiere == "3")//Compañia
+                {
+                    // _items = new List<BreadcrumbItem>
+                    // {
+                    //     new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
+                    //     new BreadcrumbItem("Empresa", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
+                    //     new BreadcrumbItem("Paciente", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                    // };
+                    // var resPacDecrip = Cryp.Desencripta(PostPaciente);
+                    // dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+                    // ShowNombre = true;
+                }
+
+                DtoRequestMedicoPacientes parametrobusqueda = new()
+                    {
+                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                        CompañiaId = new(),
+                        Buscar = resPacDecrip[0].Replace("\"",""),
+                        TipoFecha = 1,
+                        Fecha = new()
+                    };
+
+                string json1 = JsonConvert.SerializeObject(parametrobusqueda);
+                var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
+
+                switch (sesExpediente.StatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                        try
+                        {
+                            LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                            foreach (var itemExp in LstExpedientes)
+                            {
+                                foreach (var itemSol in itemExp.Estudios)
+                                {
+                                    itemSol.SolicitudId = itemExp.SolicitudId;
+                                }
+                            }
+
+                            var sesEstudiosInfoGral = await Http.GetFromJsonAsync<DtoResponseEstudioInfoGral>($"{UrlSolicitudInfoGral}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
+                            dtoMedicoSolicitud = await Http.GetFromJsonAsync<DtoMedicoPwd>($"{UrlMedicoInfoGral}{sesEstudiosInfoGral.MedicoId}");
+                            dtoResultadosEstudiosGral = await Http.GetFromJsonAsync<DtoResultadosEstudios>($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
+                            //var ddtoResultadosEstudiosGral = await Http.GetFromJsonAsync<DtoResultadosEstudios>($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
+
+                            if (resPacDecrip.Count()>1)
+                            {
+                                var estuido = resPacDecrip[1].Replace("\\", "");
+                                estuido = estuido[..^1];
+                                dtoResponseMedicoPacienteStudios = JsonConvert.DeserializeObject<DtoResponseMedicoPacienteStudios>(estuido);
+                                var studioselec = dtoResultadosEstudiosGral.Estudios.FirstOrDefault(e => e.Id.Equals(dtoResponseMedicoPacienteStudios.EstudioId));
+                                dtoResultadosEstudios.Estudios = new() { studioselec};
+                            }
+                            else
+                            {
+                                dtoResultadosEstudios = dtoResultadosEstudiosGral;
+
+                            }
+
+
+                        }
+                        catch (Exception ex)
+                        {
+                            //ValidateData = false;
+                        }
+
+
+                        break;
+                }
+
+                dataLoaded = false;
+            }
+            catch (Exception ex)
+            {
+
+                var t = "";
+            }
+
+
+        }
+        StateHasChanged();
+
+    }
+
+    void ShowSnack(string message, int sev)
+    {
+        switch (sev)
+        {
+            case 0:
+                Snackbar.Add($"Atención: {message}", Severity.Normal);
+                break;
+            case 1:
+                Snackbar.Add($"Atención: {message}", Severity.Info);
+                break;
+            case 2:
+                Snackbar.Add($"Atención: {message}", Severity.Success);
+                break;
+            case 3:
+                Snackbar.Add($"Atención: {message}", Severity.Warning);
+                break;
+            case 4:
+                Snackbar.Add($"Atención: {message}", Severity.Error);
+                break;
+
+        }
+
+    }
+
+    private void NavigationInicio()
+    {
+        
+    }
+
+    #endregion
+
+}

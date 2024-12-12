@@ -23,19 +23,7 @@
 
 @if (dataLoaded)
 {
-    <MudSkeleton SkeletonType="SkeletonType.Rectangle" Height="600px" />
-    <MudCardContent>
-        <MudSkeleton Width="30%" Height="42px;" />
-        <MudSkeleton Width="80%" />
-        <MudSkeleton Width="100%" />
-    </MudCardContent>
-    <MudCardActions>
-        <MudSkeleton Width="64px" Height="40px" Class="ml-2" />
-        <MudSkeleton Width="105px" Height="40px" Class="ml-3" />
-    </MudCardActions>
-    <MudOverlay Visible="true" DarkBackground="true" Absolute="true" ZIndex="9999" AutoClose="true">
-        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-    </MudOverlay>
+    <Loading></Loading>
 }
 else
 {
@@ -186,7 +174,7 @@ else
                                 }
                             </MudTd>
 
-                            <MudTd DataLabel=">Número de Órden">@context.Solicitud</MudTd>
+                            <MudTd DataLabel=">Número de Órden"> <MudLink OnClick="@(() => NavigationResultado(context,null))" Underline="Underline.Always">@context.Solicitud</MudLink></MudTd>
                             <MudTd DataLabel="Fecha de Ingreso">@context.Registro</MudTd>
                             <MudTd DataLabel="Nombre">@context.Nombre</MudTd>
                             <MudTd DataLabel="Sexo">@context.Sexo</MudTd>
@@ -239,7 +227,7 @@ else
                                             {
                                                 <MudTd DataLabel="Nombre">&nbsp;</MudTd>
                                             } *@
-                                            <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
+                                            <MudTd DataLabel="Nombre"><MudLink OnClick="@(() => NavigationResultado(context,EstContext))" Underline="Underline.Always">@EstContext.Estudio</MudLink></MudTd>
                                             <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
                                             <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
                                         </RowTemplate>
@@ -821,6 +809,15 @@ else
         StateHasChanged();
 
     }
+
+
+    private void NavigationResultado(DtoResponseMedicoPaciente args, DtoResponseMedicoPacienteStudios _estudio)
+    {
+        string json = JsonConvert.SerializeObject(_estudio);
+        string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args.Solicitud}" : $"{args.Solicitud}!{json}");
+        NavigationManager.NavigateTo($"ResultadoEstudios/2/{Cryp.Encripta(json1)}", true);
+    }
+    
     #endregion
 
     #region Funciones Modales

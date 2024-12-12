@@ -357,4 +357,22 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public double Descuento { get; set; }
         public double Total { get; set; }
     }
+
+    public class DtoResponseEstudioInfoGral
+    {
+        public string SolicitudId { get; set; }
+        public string ExpedienteId { get; set; }
+        public int Procedencia { get; set; }
+        public string? Afiliacion { get; set; }
+        public string CompaiaId { get; set; }
+        public string MedicoId { get; set; }
+        public int Urgencia { get; set; }
+        public string? Observaciones { get; set; }
+        public bool GuardadoAutomatico { get; set; }
+        public string Correo { get; set; }
+        public string Whatsapp { get; set; }
+        public bool EnvioMedico { get; set; }
+        public bool Activo { get; set; }
+        public string? ClaveUsuario { get; set; }
+    }
 }
