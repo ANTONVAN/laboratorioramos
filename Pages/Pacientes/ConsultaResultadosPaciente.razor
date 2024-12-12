@@ -172,7 +172,7 @@ else
                                 }
                             </MudTd>
 
-                            <MudTd DataLabel=">Número de Órden"><MudLink OnClick="@(() => NavigationResultado(context))" Underline="Underline.Always">@context.Solicitud</MudLink></MudTd>
+                            <MudTd DataLabel=">Número de Órden"><MudLink OnClick="@(() => NavigationResultado(context,null))" Underline="Underline.Always">@context.Solicitud</MudLink></MudTd>
                             <MudTd DataLabel="Fecha de Ingreso">@context.Registro</MudTd>
                             <MudTd DataLabel="Sucursal">@context.Sucursal</MudTd>
                             <MudTd DataLabel="Imprimir">
@@ -226,7 +226,7 @@ else
                                             {
                                                 <MudTd DataLabel="Nombre">&nbsp;</MudTd>
                                             } *@
-                                            <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
+                                            <MudTd DataLabel="Nombre"><MudLink OnClick="@(() => NavigationResultado(context,EstContext))" Underline="Underline.Always">@EstContext.Estudio</MudLink></MudTd>
                                             <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
                                             <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
                                         </RowTemplate>
@@ -815,10 +815,11 @@ else
 
     }
 
-    private void NavigationResultado(DtoResponseMedicoPaciente args)
+    private void NavigationResultado(DtoResponseMedicoPaciente args, DtoResponseMedicoPacienteStudios _estudio)
     {
-        string json = JsonConvert.SerializeObject(args.Solicitud);
-        NavigationManager.NavigateTo($"ResultadoEstudios/1/{Cryp.Encripta(json)}", true);
+        string json = JsonConvert.SerializeObject(_estudio);
+        string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args.Solicitud}" : $"{args.Solicitud}!{json}");
+        NavigationManager.NavigateTo($"ResultadoEstudios/1/{Cryp.Encripta(json1)}", true);
     }
     #endregion
     #region Funciones Modales

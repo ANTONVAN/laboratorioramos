@@ -83,9 +83,9 @@ else
                 <MudExpansionPanels MultiExpansion="true">
                     @foreach (var item in dtoResultadosEstudios.Estudios)
                     {
-                        <MudExpansionPanel Text="Panel One" Class="mt-2" Dense="false" Gutters="false" Expanded="true" HideIcon="true">
+                        <MudExpansionPanel Class="mt-2" Dense="false" Gutters="false" Expanded="true" HideIcon="true">
                             <TitleContent>
-                                <div class="d-flex" style="color:#1096b5;">
+                                <div class="d-flex" style="color:#1d2223;">
                                     @{
                                         var nombreCaptura = String.IsNullOrEmpty(item.SucursalCaptura) ? "" : $"(Capturado en: {item.SucursalCaptura})";
                                     }
@@ -141,7 +141,7 @@ else
         position: relative;
         transition: min-height .3s cubic-bezier(0.25, 0.8, 0.5, 1);
         user-select: none;
-        background-color: #9deafd63;
+        background-color: #b4c3c6;
         color: #0d37a8;
     }
 
