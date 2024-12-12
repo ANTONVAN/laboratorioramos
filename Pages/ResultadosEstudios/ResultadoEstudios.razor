@@ -296,7 +296,7 @@ else
                                 estuido = estuido[..^1];
                                 dtoResponseMedicoPacienteStudios = JsonConvert.DeserializeObject<DtoResponseMedicoPacienteStudios>(estuido);
                                 var studioselec = dtoResultadosEstudiosGral.Estudios.FirstOrDefault(e => e.Id.Equals(dtoResponseMedicoPacienteStudios.EstudioId));
-                                if (studioselec.EstatusId == 7 || studioselec.EstatusId==10)
+                                if (studioselec.EstatusId == 7 || studioselec.EstatusId==6)
                                 {
                                     dtoResultadosEstudios.Estudios = new() { studioselec };
                                 }
@@ -307,8 +307,7 @@ else
                                 dtoResultadosEstudios.Estudios = new();
                                 foreach (var itemStudiosgr in dtoResultadosEstudiosGral.Estudios)
                                 {
-                                    if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 10)
-                                    {
+                                    if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 6)                                    {
                                         dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
                                     }
                                 }

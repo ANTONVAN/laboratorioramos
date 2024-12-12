@@ -246,7 +246,14 @@ else
                                                     <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
                                                 }
                                                 <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
-                                                <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
+                                                <MudTd DataLabel="Estatus">
+                                                    @if (EstContext.EstatusId == 7 || EstContext.EstatusId == 6)
+                                                    {
+                                                        <MudText Align="Align.Center" Typo="Typo.subtitle2">Liberado</MudText>
+                                                    }else{
+                                                        <MudText Align="Align.Center" Typo="Typo.subtitle2">En Proceso</MudText>
+                                                    }
+                                                </MudTd>
                                             }
 
 
