@@ -189,7 +189,7 @@ else
                         {
                             MedicoId = new(),
                             CompañiaId = new() {dtoEmpresa.Id},
-                            Buscar = "",
+                            Buscar = null,
                             TipoFecha = 1,
                             Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                         };
@@ -281,7 +281,7 @@ else
         {
             MedicoId = new(),
             CompañiaId = new() {dtoEmpresa.Id},
-                Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? "" : searchString1.ToString(),
+                Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? null : searchString1.ToString(),
             TipoFecha = 1,
                 Fecha = String.IsNullOrEmpty(searchString1.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") }:new()
         };

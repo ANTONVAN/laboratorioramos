@@ -211,7 +211,7 @@ else
                             dtoMedico.IdMedico
                         },
                             CompañiaId = new(),
-                            Buscar = "",
+                            Buscar = null,
                             TipoFecha = 1,
                             Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                         };
@@ -363,7 +363,7 @@ else
                             dtoMedico.IdMedico
                         },
                         CompañiaId = new(),
-                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? "" : dtoFiltro.ExpedienteNombre,
+                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre,
                         TipoFecha = 1,
                         Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
                     };
