@@ -174,37 +174,49 @@ else
                                 }
                             </MudTd>
 
-                            <MudTd DataLabel=">Número de Órden"> <MudLink OnClick="@(() => NavigationResultado(context,null))" Underline="Underline.Always">@context.Solicitud</MudLink></MudTd>
-                            <MudTd DataLabel="Fecha de Ingreso">@context.Registro</MudTd>
-                            <MudTd DataLabel="Nombre">@context.Nombre</MudTd>
-                            <MudTd DataLabel="Sexo">@context.Sexo</MudTd>
-                            <MudTd DataLabel="Edad">@context.Edad</MudTd>
-                            <MudTd DataLabel="Sucursal">@context.Sucursal</MudTd>
-                            <MudTd DataLabel="Imprimir">
-                                @{
-                                    int countStudi = 0;
-                                    foreach (var itemStd in context.Estudios)
+                            @{
+                                int countStudi = 0;
+                                foreach (var itemStd in context.Estudios)
+                                {
+                                    if (itemStd.EstatusId == 7 || itemStd.EstatusId == 6)
                                     {
-                                        @if (LstEstatusPrint.Contains(itemStd.EstatusId))
-                                        {
-                                            countStudi++;
-                                        }
-                                    }
-                                    if (countStudi>0)
-                                    {
-                                        if (ValidateData)
-                                        {
-                                            <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Medium" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
-                                        }
-                                        else
-                                        {
-                                            // <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => ImprimirExp()"></MudIconButton>
-                                            <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => OpenDialog(context)"></MudIconButton>
-                                        }
+                                        countStudi++;
                                     }
                                 }
-                                
-                            </MudTd>
+                                if (countStudi > 0)
+                                {
+                                    <MudTd DataLabel=">Número de Órden"> <MudLink OnClick="@(() => NavigationResultado(context,null))" Underline="Underline.Always">@context.Solicitud</MudLink></MudTd>
+                                }
+                                else
+                                {
+                                    <MudTd DataLabel=">Número de Órden">@context.Solicitud</MudTd>
+                                }
+                                <MudTd DataLabel="Fecha de Ingreso">@context.Registro</MudTd>
+                                <MudTd DataLabel="Nombre">@context.Nombre</MudTd>
+                                <MudTd DataLabel="Sexo">@context.Sexo</MudTd>
+                                <MudTd DataLabel="Edad">@context.Edad</MudTd>
+                                <MudTd DataLabel="Sucursal">@context.Sucursal</MudTd>
+                                <MudTd DataLabel="Imprimir">
+                                    @{
+                                        if (countStudi > 0)
+                                        {
+                                            if (ValidateData)
+                                            {
+                                                <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Medium" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
+                                            }
+                                            else
+                                            {
+                                                // <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => ImprimirExp()"></MudIconButton>
+                                                <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => OpenDialog(context)"></MudIconButton>
+                                            }
+                                        }
+                                    }
+
+                                </MudTd>
+                            }
+
+                            
+                            
                         </RowTemplate>
                         <ChildRowContent>
                             @if (context.ShowEstudios)
@@ -227,9 +239,20 @@ else
                                             {
                                                 <MudTd DataLabel="Nombre">&nbsp;</MudTd>
                                             } *@
-                                            <MudTd DataLabel="Nombre"><MudLink OnClick="@(() => NavigationResultado(context,EstContext))" Underline="Underline.Always">@EstContext.Estudio</MudLink></MudTd>
-                                            <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
-                                            <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
+                                            @{
+                                                if (EstContext.EstatusId == 7 || EstContext.EstatusId == 6)
+                                                {
+                                                    <MudTd DataLabel="Nombre"><MudLink OnClick="@(() => NavigationResultado(context,EstContext))" Underline="Underline.Always">@EstContext.Estudio</MudLink></MudTd>
+                                                }
+                                                else
+                                                {
+                                                    <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
+                                                }
+                                                <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
+                                                <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
+                                            }
+                                            
+                                            
                                         </RowTemplate>
                                     </MudTable>
                                 </td>
