@@ -94,26 +94,108 @@ else
                             </TitleContent>
                             <ChildContent>
                                 <MudGrid>
-                                    <MudItem xs="12" sm="12" md="4">
+                                    <MudItem xs="12" sm="12" md="3">
                                         <MudText Align="Align.Center" Typo="Typo.subtitle1">Examen</MudText>
                                     </MudItem>
-                                    <MudItem xs="12" sm="12" md="4">
+                                    <MudItem xs="12" sm="12" md="3">
                                         <MudText Align="Align.Center" Typo="Typo.subtitle1">Resultado</MudText>
                                     </MudItem>
-                                    <MudItem xs="12" sm="12" md="4">
+                                    <MudItem xs="12" sm="12" md="3">
                                         <MudText Align="Align.Center" Typo="Typo.subtitle1">Unidades</MudText>
+                                    </MudItem>
+                                    <MudItem xs="12" sm="12" md="3">
+                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">Referencia</MudText>
                                     </MudItem>
                                     @foreach (var itemParam in item.Parametros)
                                     {
-                                        <MudItem xs="12" sm="12" md="4">
+                                        <MudItem xs="12" sm="12" md="3">
                                             <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Nombre</MudText>
                                         </MudItem>
-                                        <MudItem xs="12" sm="12" md="4">
+                                        <MudItem xs="12" sm="12" md="3">
                                             <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                         </MudItem>
-                                        <MudItem xs="12" sm="12" md="4">
+                                        <MudItem xs="12" sm="12" md="3">
                                             <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.UnidadNombre</MudText>
                                         </MudItem>
+                                        @if(itemParam.TipoValor=="1")
+                                        {
+                                            var valini = itemParam.ValorInicial == null ? "" : itemParam.ValorInicial;
+                                            var valFinal = itemParam.ValorFinal == null ? "" : itemParam.ValorFinal;
+                                            <MudItem xs="12" sm="12" md="3">
+                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                            </MudItem>
+                                        }
+                                        else if(itemParam.TipoValor == "2")
+                                        {
+                                            //var regcoincide = itemParam.TipoValores.FirstOrDefault(e => e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
+                                            var regcoincide = itemParam.TipoValores[0];
+                                            var valini = SexoPaciente == "Femenino" ? regcoincide.MujerValorInicial : regcoincide.HombreValorInicial;
+                                            var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal : regcoincide.HombreValorFinal;
+                                            <MudItem xs="12" sm="12" md="3">
+                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                            </MudItem>
+                                        }
+                                        else if(itemParam.TipoValor == "3")
+                                        {
+                                            var regcoincideEdad = itemParam.TipoValores.FirstOrDefault(e => EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal);
+                                            var valini = regcoincideEdad.ValorInicial == null ? "" : regcoincideEdad.ValorInicial;
+                                            var valFinal = regcoincideEdad.ValorFinal == null ? "" : regcoincideEdad.ValorFinal;
+                                            <MudItem xs="12" sm="12" md="3">
+                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                            </MudItem>
+                                        }
+                                        else if(itemParam.TipoValor == "4")
+                                        {
+                                            var regcoincideSexoEdad = itemParam.TipoValores.FirstOrDefault(e => (EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal) && e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
+                                            var valini = regcoincideSexoEdad.ValorInicialNumerico == null ? "": regcoincideSexoEdad.ValorInicialNumerico;
+                                            var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "" : regcoincideSexoEdad.ValorFinalNumerico;
+                                            <MudItem xs="12" sm="12" md="3">
+                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                            </MudItem>
+                                        }
+                                        else if (itemParam.TipoValor == "5" || itemParam.TipoValor == "7" || itemParam.TipoValor == "8" || itemParam.TipoValor == "10")
+                                        {
+                                            var regcoincidePrimero = itemParam.TipoValores[0];
+                                            var ValOpcion = regcoincidePrimero.Opcion == null ? "" : regcoincidePrimero.Opcion;
+                                            <MudItem xs="12" sm="12" md="3">
+                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@ValOpcion</MudText>
+                                            </MudItem>
+                                        }
+                                        else if (itemParam.TipoValor == "9")
+                                        {
+                                            <MudItem xs="12" sm="12" md="3">
+                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
+                                            </MudItem>
+                                        }
+                                        else if (itemParam.TipoValor == "6" || itemParam.TipoValor == "11" || itemParam.TipoValor == "12" || itemParam.TipoValor == "13" || itemParam.TipoValor == "14")
+                                        {
+                                            if (itemParam.TipoValores.Count>0)
+                                            {
+                                                <MudItem xs="12" sm="12" md="3">
+                                                    <MudTable Class="mt-4" Items="@itemParam.TipoValores" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="2" Style="width:100%;">
+                                                        <ColGroup>
+                                                            <col />
+                                                        </ColGroup>
+                                                        <RowTemplate>
+                                                            <MudTd DataLabel="" Style="font-weight:bolder">@context.PrimeraColumna &nbsp; @context.SegundaColumna</MudTd>
+                                                        </RowTemplate>
+                                                        <NoRecordsContent>
+                                                            <MudText></MudText>
+                                                        </NoRecordsContent>
+                                                    </MudTable>
+                                                </MudItem>
+                                            }
+                                            else
+                                            {
+                                                <MudItem xs="12" sm="12" md="3">
+                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
+                                                </MudItem>
+                                            }
+                                            
+                                            
+                                        }
+                                        @* aqui tomar en cuenta las reglas de negocio que manda Antonio *@
+                                        
                                     }
                                 </MudGrid>
                                 
@@ -195,6 +277,8 @@ else
     DateTime? dateInicial = DateTime.Today;
     DateTime? dateFinal = DateTime.Today;
     private string Sucursal = "";
+    private string SexoPaciente = "";
+    private int EdadPaciente = 0;
 
     private bool visiblePrintResult = false;
 
@@ -284,7 +368,8 @@ else
                                     itemSol.SolicitudId = itemExp.SolicitudId;
                                 }
                             }
-
+                            SexoPaciente = LstExpedientes[0].Sexo;
+                            EdadPaciente = LstExpedientes[0].Edad;
                             var sesEstudiosInfoGral = await Http.GetFromJsonAsync<DtoResponseEstudioInfoGral>($"{UrlSolicitudInfoGral}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
                             dtoMedicoSolicitud = await Http.GetFromJsonAsync<DtoMedicoPwd>($"{UrlMedicoInfoGral}{sesEstudiosInfoGral.MedicoId}");
                             dtoResultadosEstudiosGral = await Http.GetFromJsonAsync<DtoResultadosEstudios>($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
