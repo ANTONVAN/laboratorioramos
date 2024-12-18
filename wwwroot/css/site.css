@@ -24,17 +24,17 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    text-align:center !important;
+    /*text-align:center !important;*/
 }
 .mud-table-root .mud-table-body .mud-table-cell {
     color: var(--mud-palette-text-primary);
-    text-align: center !important;
+    /*text-align: center !important;*/
 }
 .mud-table-root .mud-table-head .mud-table-cell {
     color: var(--mud-palette-text-primary);
     font-weight: 500;
     line-height: 1.5rem;
-    text-align: center !important;
+    /*text-align: center !important;*/
 }
 
 .footer-cell {

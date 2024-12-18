@@ -111,7 +111,7 @@ else
                                 <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" />
                     </MudItem>
                     <MudItem xs="12" sm="12" md="4">
-                                <MudTextField @bind-Value="dtoFiltro.Solicitud" Label="Número de solicitud:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
+                                <MudTextField @bind-Value="dtoFiltro.Solicitud" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
                         @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
                     </MudItem>
                     <MudItem xs="12" sm="12" md="1">
@@ -344,6 +344,17 @@ else
     }
     .mud-toolbar mud-toolbar-gutters mud-table-toolbar{
         margin-bottom: 20px;
+    }
+
+    .mud-link.mud-link-underline-always {
+        text-decoration: underline;
+        font-family: auto;
+    }
+
+    .mud-typography {
+        margin: 0;
+        font-family: auto !important;
+        font-weight: bold !important;
     }
 </style>
 
@@ -849,7 +860,7 @@ else
     {
         string json = JsonConvert.SerializeObject(_estudio);
         string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args.Solicitud}" : $"{args.Solicitud}!{json}");
-        NavigationManager.NavigateTo($"ResultadoEstudios/1/{Cryp.Encripta(json1)}", true);
+        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(json1)}", true);
 
 
     }

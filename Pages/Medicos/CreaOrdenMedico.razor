@@ -51,7 +51,7 @@ else
                                     <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateFinal" />
                                 </MudItem>
                                 <MudItem xs="12" sm="12" md="4">
-                                    <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Label="Número de Orden:" Variant="Variant.Outlined" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
+                                    <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Label="Número de Orden:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
                                 </MudItem>
                                 <MudItem xs="12" sm="12" md="1">
                                     <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar"></MudIconButton>
