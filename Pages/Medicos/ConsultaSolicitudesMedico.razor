@@ -103,15 +103,15 @@ else
                     <MudItem xs="12" sm="12" md="1">
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     </MudItem>
-                    <MudItem xs="12" sm="12" md="3">
-                                <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" />
-                    </MudItem>
-                    <MudItem xs="12" sm="12" md="3">
-                                <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" />
-                    </MudItem>
                     <MudItem xs="12" sm="12" md="4">
-                                <MudTextField @bind-Value="dtoFiltro.Solicitud" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
+                        <MudTextField @bind-Value="dtoFiltro.Solicitud" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
                         @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" />
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
+                        <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" />
                     </MudItem>
                     <MudItem xs="12" sm="12" md="1">
                         @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
@@ -350,13 +350,15 @@ else
 
     .mud-link.mud-link-underline-always {
         text-decoration: underline;
-        font-family: auto;
+        font-family: Arial;
+        font-size: .875rem;
     }
 
     .mud-typography {
         margin: 0;
-        font-family: auto !important;
+        font-family: Arial !important;
         font-weight: bold !important;
+        font-size: .875rem;
     }
 </style>
 

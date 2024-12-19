@@ -108,7 +108,7 @@ else
                                     </MudItem>
                                     @foreach (var itemParam in item.Parametros)
                                     {
-                                        <MudItem xs="12" sm="12" md="3">
+                                        <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                             <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Nombre</MudText>
                                         </MudItem>
                                         @if(itemParam.TipoValor=="1")
@@ -119,20 +119,20 @@ else
                                             {
                                                 if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
                                                 {
-                                                    <MudItem xs="12" sm="12" md="3">
+                                                    <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                         <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
                                                     </MudItem>
                                                 }
                                                 else
                                                 {
-                                                    <MudItem xs="12" sm="12" md="3">
+                                                    <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                         <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                     </MudItem>
                                                 }
                                             }
                                             else
                                                 {
-                                                    <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                         <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                     </MudItem>
                                                 }
@@ -146,13 +146,13 @@ else
                                             var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal : regcoincide.HombreValorFinal;
                                             if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
                                             {
-                                                <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
                                                 </MudItem>
                                             }
                                             else
                                             {
-                                                <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                 </MudItem>
                                             }
@@ -164,13 +164,13 @@ else
                                             var valFinal = regcoincideEdad.ValorFinalNumerico == null ? "0" : regcoincideEdad.ValorFinalNumerico;
                                             if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
                                             {
-                                                <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
                                                 </MudItem>
                                             }
                                             else
                                             {
-                                                <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                 </MudItem>
                                             }
@@ -182,13 +182,13 @@ else
                                             var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "0" : regcoincideSexoEdad.ValorFinalNumerico;
                                             if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
                                             {
-                                                <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
                                                 </MudItem>
                                             }
                                             else
                                             {
-                                                <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                 </MudItem>
                                             }
@@ -196,19 +196,19 @@ else
                                         }
                                         else
                                         {
-                                            <MudItem xs="12" sm="12" md="3">
+                                            <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                 <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                             </MudItem>
                                         }
 
-                                        <MudItem xs="12" sm="12" md="3">
+                                        <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                             <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.UnidadNombre</MudText>
                                         </MudItem>
                                         @if(itemParam.TipoValor=="1")
                                         {
                                             var valini = itemParam.ValorInicial == null ? "" : itemParam.ValorInicial;
                                             var valFinal = itemParam.ValorFinal == null ? "" : itemParam.ValorFinal;
-                                            <MudItem xs="12" sm="12" md="3">
+                                            <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                 <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
                                             </MudItem>
                                             
@@ -219,7 +219,7 @@ else
                                             var regcoincide = itemParam.TipoValores[0];
                                             var valini = SexoPaciente == "Femenino" ? regcoincide.MujerValorInicial : regcoincide.HombreValorInicial;
                                             var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal : regcoincide.HombreValorFinal;
-                                            <MudItem xs="12" sm="12" md="3">
+                                            <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                 <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
                                             </MudItem>
                                         }
@@ -228,7 +228,7 @@ else
                                             var regcoincideEdad = itemParam.TipoValores.FirstOrDefault(e => EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal);
                                             var valini = regcoincideEdad.ValorInicialNumerico == null ? "" : regcoincideEdad.ValorInicialNumerico;
                                             var valFinal = regcoincideEdad.ValorFinalNumerico == null ? "" : regcoincideEdad.ValorFinalNumerico;
-                                            <MudItem xs="12" sm="12" md="3">
+                                            <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                 <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
                                             </MudItem>
                                         }
@@ -237,7 +237,7 @@ else
                                             var regcoincideSexoEdad = itemParam.TipoValores.FirstOrDefault(e => (EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal) && e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
                                             var valini = regcoincideSexoEdad.ValorInicialNumerico == null ? "": regcoincideSexoEdad.ValorInicialNumerico;
                                             var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "" : regcoincideSexoEdad.ValorFinalNumerico;
-                                            <MudItem xs="12" sm="12" md="3">
+                                            <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                 <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
                                             </MudItem>
                                             
@@ -248,12 +248,12 @@ else
                                             {
                                                 var regcoincidePrimero = itemParam.TipoValores[0];
                                                 var ValOpcion = regcoincidePrimero.Opcion == null ? "" : regcoincidePrimero.Opcion;
-                                                <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudText Align="Align.Center" Typo="Typo.subtitle1">@ValOpcion</MudText>
                                                 </MudItem>
                                             }else
                                             {
-                                                <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
                                                 </MudItem>
                                             }
@@ -261,7 +261,7 @@ else
                                         }
                                         else if (itemParam.TipoValor == "9")
                                         {
-                                            <MudItem xs="12" sm="12" md="3">
+                                            <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                 <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
                                             </MudItem>
                                         }
@@ -269,7 +269,7 @@ else
                                         {
                                             if (itemParam.TipoValores.Count>0)
                                             {
-                                                <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudTable Class="mt-4" Items="@itemParam.TipoValores" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="2" Style="width:100%;">
                                                         <ColGroup>
                                                             <col />
@@ -285,14 +285,14 @@ else
                                             }
                                             else
                                             {
-                                                <MudItem xs="12" sm="12" md="3">
+                                                <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
                                                 </MudItem>
                                             }
                                             
                                             
                                         }else{
-                                            <MudItem xs="12" sm="12" md="3">
+                                            <MudItem xs="12" sm="12" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                     <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
                                                 </MudItem>
                                         }
