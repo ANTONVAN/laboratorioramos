@@ -111,7 +111,7 @@ else
                         <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" />
                     </MudItem>
                     <MudItem xs="12" sm="12" md="3">
-                        <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" />
+                                <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" DateChanged="OnDateChange" />
                     </MudItem>
                     <MudItem xs="12" sm="12" md="1">
                         @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
@@ -528,6 +528,20 @@ else
 
     }
 
+    void OnDateChange(DateTime? newDate)
+    {
+        if (newDate < dtoFiltro.DateInicial)
+        {
+            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!", 4);
+        }
+        else
+        {
+            dtoFiltro.DateInicial = newDate;
+        }
+
+    }
+
+
     #endregion
 
     #region Funsiones TABLA
@@ -740,7 +754,11 @@ else
 
         try
         {
-            if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+            if (dtoFiltro.DateFinal < dtoFiltro.DateInicial)
+            {
+                ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!", 4);
+            }
+            else if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
             {
                 ShowSnack("¡Por favor Ingresa Fecha Inicial, Fecha Final y/o Expediente o Nombre del Paciente!", 4);
             }

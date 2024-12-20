@@ -52,7 +52,7 @@
         <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" />
     </MudItem>
     <MudItem xs="12" sm="5" md="3">        
-        <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" />
+        <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" DateChanged="OnDateChange" />
     </MudItem>
     <MudItem xs="12" sm="7" md="1">
         @if (ValidateData)
@@ -244,6 +244,10 @@
         {
             ShowSnack("¡Por favor Seleccione un Estudio!");
         }
+        else if (dateFinal < dateInicial)
+        {
+            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!");
+        }
         else
         {
             ValidateData = true;
@@ -399,6 +403,20 @@
 
         return _estudios.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
     }
+
+    void OnDateChange(DateTime? newDate)
+    {
+        if (newDate < dateInicial)
+        {
+            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!");
+        }
+        else
+        {
+            dateInicial = newDate;
+        }
+
+    }
+
     #endregion
     
     

@@ -66,7 +66,7 @@ else
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" />
                         </MudItem>
                         <MudItem xs="12" sm="12" md="3">
-                            <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" />
+                            <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" DateChanged="OnDateChange" />
                         </MudItem>
                         <MudItem xs="12" sm="12" md="1">
                             <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
@@ -184,7 +184,7 @@ else
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
                     dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
                     dtoEmpresaInfo = await Http.GetFromJsonAsync<DtoEmpresaInfo>(UrlMedicoInfo+dtoEmpresa.Id);
-                    
+
                     DtoRequestMedicoPacientes parametrobusqueda = new()
                         {
                             MedicoId = new(),
@@ -219,7 +219,7 @@ else
 
                             break;
                     }
-                    
+
 
                     dataLoaded = false;
                 }
@@ -246,6 +246,20 @@ else
     {
         Snackbar.Add($"Atención: {message}", Severity.Warning);
     }
+
+    void OnDateChange(DateTime? newDate)
+    {
+        if (newDate < dateInicial)
+        {
+            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!");
+        }
+        else
+        {
+            dateInicial = newDate;
+        }
+
+    }
+
     #endregion
 
     #region Funsiones GRID
@@ -277,27 +291,35 @@ else
     async Task BuscaFecha()
     {
         dataLoaded = true;
-        DtoRequestMedicoPacientes parametrobusqueda = new()
+        if (dateFinal < dateInicial)
         {
-            MedicoId = new(),
-            CompañiaId = new() {dtoEmpresa.Id},
-                Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? null : searchString1.ToString(),
-            TipoFecha = 1,
-                Fecha = String.IsNullOrEmpty(searchString1.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") }:new()
-        };
-        var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
-        dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-        foreach (var item in dtoMedicoPaciente)
-        {
-            List<string> refExpe = new();
-            refExpe.Add(item.ExpedienteId.ToString());
-            string json = JsonConvert.SerializeObject(refExpe);
-            var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
-            var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
-            item.Expediente = sesExpediente[0].Expediente;
+            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!");
         }
+        else
+        {
+            DtoRequestMedicoPacientes parametrobusqueda = new()
+                {
+                    MedicoId = new(),
+                    CompañiaId = new() { dtoEmpresa.Id },
+                    Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? null : searchString1.ToString(),
+                    TipoFecha = 1,
+                    Fecha = String.IsNullOrEmpty(searchString1.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
+                };
+            var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
+            dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+            foreach (var item in dtoMedicoPaciente)
+            {
+                List<string> refExpe = new();
+                refExpe.Add(item.ExpedienteId.ToString());
+                string json = JsonConvert.SerializeObject(refExpe);
+                var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                item.Expediente = sesExpediente[0].Expediente;
+            }
 
-                    dataLoaded = false;
+        }
+       
+        dataLoaded = false;
 
         StateHasChanged();
 

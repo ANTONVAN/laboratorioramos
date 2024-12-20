@@ -51,7 +51,7 @@ else
                                     <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateInicial" />
                                 </MudItem>
                                 <MudItem xs="12" sm="12" md="3">
-                                    <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateFinal" />
+                                    <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" DateChanged="OnDateChange" />
                                 </MudItem>
                                 
                                 <MudItem xs="12" sm="12" md="1">
@@ -65,19 +65,19 @@ else
                     </MudItem>
 
                     <MudItem xs="12" sm="12" md="12">
-                        <MudDataGrid Items="@_oCotizaciones" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Filterable="false">
+                        <MudDataGrid Items="@_oCotizaciones" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" FixedHeader="true" Filterable="false">
                             <ToolBarContent>
                                 <MudSpacer />
                                 <MudText Typo="Typo.h6" style="color: #0d37a8;">Historial de Ordenes</MudText>
                                 <MudSpacer />
                             </ToolBarContent>
                             <Columns>
-                                <PropertyColumn Property="x => x.Clave" Title="Clave"/>
-                                <PropertyColumn Property="x => x.Expediente"/>
-                                <PropertyColumn Property="x => x.Paciente" />
-                                <PropertyColumn Property="x => x.Correo"  />
-                                <PropertyColumn Property="x => x.Fecha" Title="Fecha de Creación"/>
-                                <TemplateColumn Title="Activo">
+                                <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Clave" Title="Clave" />
+                                <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Expediente"/>
+                                <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Paciente" />
+                                <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Correo"  />
+                                <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Fecha" Title="Fecha de Creación"/>
+                                <TemplateColumn HeaderStyle="color:#921313" Title="Activo">
                                     <CellTemplate>
                                         @{
                                             var actilbl = context.Item.Activo == true ? "SI" : "NO";
@@ -85,12 +85,12 @@ else
                                         @actilbl
                                     </CellTemplate>
                                 </TemplateColumn>
-                                <TemplateColumn Title="Estudios">
+                                <TemplateColumn HeaderStyle="color:#921313" Title="Estudios">
                                     <CellTemplate>
                                         <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" OnClick="@(()=>OpenDialog(context.Item))" />
                                     </CellTemplate>
                                 </TemplateColumn>
-                                <TemplateColumn Title="Acciones">
+                                <TemplateColumn HeaderStyle="color:#921313" Title="Acciones">
                                     <CellTemplate>
                                         <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" Color="Color.Info" OnClick="@(()=>EditOrden(context.Item))" />
                                     </CellTemplate>
@@ -150,11 +150,11 @@ else
                                                     </ToolBarContent>
                                                     <HeaderContent>
                                                         @* <MudTh>Código</MudTh> *@
-                                                        <MudTh>Clave</MudTh>
-                                                        <MudTh>Nombre</MudTh>
-                                                        <MudTh>Ubicacion</MudTh>
-                                                        <MudTh>Telefono</MudTh>
-                                                        <MudTh>Correo</MudTh>
+                                                        <MudTh Style="color:#921313">Clave</MudTh>
+                                                        <MudTh Style="color:#921313">Nombre</MudTh>
+                                                        <MudTh Style="color:#921313">Ubicacion</MudTh>
+                                                        <MudTh Style="color:#921313">Telefono</MudTh>
+                                                        <MudTh Style="color:#921313">Correo</MudTh>
                                                     </HeaderContent>
                                                     <RowTemplate>
                                                         @* <MudTd DataLabel="Codigo">@sucur.Codigo</MudTd> *@
@@ -233,11 +233,11 @@ else
                                                             @* <MudSpacer /> *@
                                                         </ToolBarContent>
                                                         <HeaderContent>
-                                                            <MudTh>Expediente</MudTh>
-                                                            <MudTh>Nombre</MudTh>
-                                                            <MudTh>Sexo</MudTh>
-                                                            <MudTh>Edad</MudTh>
-                                                            <MudTh>FechaNacimiento</MudTh>
+                                                            <MudTh Style="color:#921313">Expediente</MudTh>
+                                                            <MudTh Style="color:#921313">Nombre</MudTh>
+                                                            <MudTh Style="color:#921313">Sexo</MudTh>
+                                                            <MudTh Style="color:#921313">Edad</MudTh>
+                                                            <MudTh Style="color:#921313">FechaNacimiento</MudTh>
                                                         </HeaderContent>
                                                         <RowTemplate>
                                                             @* <MudTd DataLabel="Codigo">@sucur.Codigo</MudTd> *@
@@ -829,52 +829,60 @@ else
 
     async Task BuscarOrdenes()
     {
-        dataLoaded = true;
-        ShowOrdenes = false;
-        DtoCotizacionRequest parametrobusqueda = new()
-            {
-                SucursalId = new(),
-                        // {
-                        //     dtoMedico.Sucursal.ToString()
-                        // },
-                MedicoId = new()
-                        {
-                            dtoMedico.IdMedico
-                        },
-                Expediente = (String.IsNullOrEmpty(_busquedaCotizacion.searchString1) ? null : _busquedaCotizacion.searchString1),
-                CompañiaId = new(),
-                Fecha = new() { DateTime.Parse(_busquedaCotizacion.dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_busquedaCotizacion.dateFinal.ToString()).ToString("yyyy-MM-dd") }
-            };
-        string json1 = JsonConvert.SerializeObject(parametrobusqueda);
-        var sesOrdenes = await Http.PostAsJsonAsync<DtoCotizacionRequest>(UrlOrdenes, parametrobusqueda);
-        if (sesOrdenes.IsSuccessStatusCode)
+        if (_busquedaCotizacion.dateFinal < _busquedaCotizacion.dateInicial)
         {
-
+            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!", 4);
         }
         else
         {
-            var ter = "";
-        }
-        switch (sesOrdenes.StatusCode)
-        {
-            case System.Net.HttpStatusCode.OK:
-                try
+            dataLoaded = true;
+            ShowOrdenes = false;
+            DtoCotizacionRequest parametrobusqueda = new()
                 {
+                    SucursalId = new(),
+                    // {
+                    //     dtoMedico.Sucursal.ToString()
+                    // },
+                    MedicoId = new()
+                        {
+                            dtoMedico.IdMedico
+                        },
+                    Expediente = (String.IsNullOrEmpty(_busquedaCotizacion.searchString1) ? null : _busquedaCotizacion.searchString1),
+                    CompañiaId = new(),
+                    Fecha = new() { DateTime.Parse(_busquedaCotizacion.dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_busquedaCotizacion.dateFinal.ToString()).ToString("yyyy-MM-dd") }
+                };
+            string json1 = JsonConvert.SerializeObject(parametrobusqueda);
+            var sesOrdenes = await Http.PostAsJsonAsync<DtoCotizacionRequest>(UrlOrdenes, parametrobusqueda);
+            if (sesOrdenes.IsSuccessStatusCode)
+            {
 
-                    _oCotizaciones = await sesOrdenes.Content.ReadFromJsonAsync<List<DtoCotizacionResponse>>();
-                    ShowOrdenes = true;
-                }
-                catch (Exception ex)
-                {
-                    //ValidateData = false;
-                }
+            }
+            else
+            {
+                var ter = "";
+            }
+            switch (sesOrdenes.StatusCode)
+            {
+                case System.Net.HttpStatusCode.OK:
+                    try
+                    {
+
+                        _oCotizaciones = await sesOrdenes.Content.ReadFromJsonAsync<List<DtoCotizacionResponse>>();
+                        ShowOrdenes = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        //ValidateData = false;
+                    }
 
 
-                break;
-            case System.Net.HttpStatusCode.InternalServerError:
-                //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
-                break;
+                    break;
+                case System.Net.HttpStatusCode.InternalServerError:
+                    //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
+                    break;
+            }
         }
+        
 
 
         dataLoaded = false;
@@ -1698,6 +1706,19 @@ else
             CreatePdfOrder(_dtoGeneralesCotizacion, _dtoPaciente, _dtoEstudioResponsePrices, _cotizacionDraft);
         }else{
             llamado = 0;
+        }
+
+    }
+
+    void OnDateChange(DateTime? newDate)
+    {
+        if (newDate < _busquedaCotizacion.dateInicial)
+        {
+            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!", 4);
+        }
+        else
+        {
+            _busquedaCotizacion.dateFinal = newDate;
         }
 
     }
