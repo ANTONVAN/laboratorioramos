@@ -1,10 +1,11 @@
-﻿@page "/CreaOrdenMedico"
+﻿@page "/CreaOrden/{PostRequiere}"
 @using LaboratorioRamos.Data.DtoEstudio
 @using LaboratorioRamos.Data.DtoMedico
 @using LaboratorioRamos.Data.DtoCotizacion
 @using LaboratorioRamos.Data.DtoSucursal
 @using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
 @using LaboratorioRamos.Data.DtoPaciente
+@using LaboratorioRamos.Data.DtoEmpresa
 @using LaboratorioRamos.PDF;
 
 
@@ -51,7 +52,7 @@ else
                                     <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateInicial" />
                                 </MudItem>
                                 <MudItem xs="12" sm="12" md="3">
-                                    <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" DateChanged="OnDateChange" />
+                                    <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateFinal" />
                                 </MudItem>
                                 
                                 <MudItem xs="12" sm="12" md="1">
@@ -201,6 +202,12 @@ else
                                         }
                                     </div>
                                 </ConnectorTemplate>
+                                @* <LabelTemplate>
+                                    @if (context.IsActive && _index==3 && CreandoPDF ==true) {
+                                        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+                                    }
+                                    
+                                </LabelTemplate> *@
                                 <ChildContent>
                                     <MudStep Title="Generales Paciente" SecondaryText="(Opcional)">
                                         <MudDivider />
@@ -216,11 +223,11 @@ else
                                             }
 
                                             <MudItem xs="12" sm="12" md="12">
-                                                <MudTextField @bind-Value="dtoGeneralesCotizacion.Observaciones" T="string" Label="Observaciones" Variant="Variant.Outlined" Lines="3" />
+                                                <MudTextField @bind-Value="dtoGeneralesCotizacion.Observaciones" T="string" Label="Observaciones" Lines="3" />
                                             </MudItem>
                                             <MudItem xs="12" sm="6" md="6">
-                                                @* <MudTextField @bind-Value="dtoGeneralesCotizacion.Paciente" T="string" Label="Paciente" Variant="Variant.Outlined" /> *@
-                                                <MudTextField T="string" Label="Paciente" @bind-Value="dtoGeneralesCotizacion.Paciente" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnKeyUp="ValidaEnterPaciente" OnAdornmentClick="@(() => BuscarPaciente())" />
+                                                @* <MudTextField T="string" Label="Paciente" @bind-Value="dtoGeneralesCotizacion.Paciente" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnKeyUp="ValidaEnterPaciente" OnAdornmentClick="@(() => BuscarPaciente())" /> *@
+                                                <MudTextField T="string" Label="Paciente" @bind-Value="dtoGeneralesCotizacion.Paciente"/>
                                             </MudItem>
                                             @if (visibleInfoPaciente)
                                             {
@@ -384,12 +391,12 @@ else
 
                             <MudForm Spacing="2">
                                 <MudGrid>
-                                    <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
+                                    <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
                                         <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" Color="@Color.Error" Class="add-item-btn">Cancelar</MudButton>
                                     </MudItem>
-                                    <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
+                                    @* <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
                                         <MudButton OnClick="@AddItem" StartIcon="@Icons.Material.Filled.Save" Color="@Color.Info" Class="add-item-btn">Crear órden</MudButton>
-                                    </MudItem>
+                                    </MudItem> *@
                                 </MudGrid>
                             </MudForm>
                             
@@ -503,7 +510,7 @@ else
             else
             {
                 <MudItem xs="12" sm="6" md="6">
-                    <MudTextField T="string" @bind-Value="EstudioSearch" Label="Estudio" Variant="Variant.Outlined" Adornment="Adornment.End" AdornmentIcon="@(searchEstudiosTxt==false ? Icons.Material.Filled.Search:Icons.Material.Filled.LocationSearching)" Disabled="@(searchEstudiosTxt)" AdornmentColor="@(searchEstudiosTxt==false ? Color.Success:Color.Dark)" OnKeyUp="ValidaEnterEstudio" OnAdornmentClick="@(() => BuscarEstudio())" />
+                    <MudTextField T="string" @bind-Value="EstudioSearch" Label="Estudio" Adornment="Adornment.End" AdornmentIcon="@(searchEstudiosTxt==false ? Icons.Material.Filled.Search:Icons.Material.Filled.LocationSearching)" Disabled="@(searchEstudiosTxt)" AdornmentColor="@(searchEstudiosTxt==false ? Color.Success:Color.Dark)" OnKeyUp="ValidaEnterEstudio" OnAdornmentClick="@(() => BuscarEstudio())" />
                 </MudItem>
 
                 <MudItem xs="12" sm="12" md="12">
@@ -580,6 +587,9 @@ else
     [Inject]
     IDialogService DialogService { get; set; }
 
+    [Parameter]
+    public string PostRequiere { get; set; }
+
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Home", href: "/ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
@@ -605,6 +615,7 @@ else
     private DtoBusquedaCotizacion _busquedaCotizacion = new();
 
     private List<DtoCotizacionResponse> _oCotizaciones = new();
+    private List<DtoCotizacionResponse> _oCotizacionesDelete = new();
     private DtoCotizacionResponse _RowEditOrden = new();
     private List<DtoCotizacionEstudios> _oCotizacionEstudios = new();
     private List<DtoSucursalByCity> _oSucursalByCity = new();
@@ -631,6 +642,7 @@ else
     private bool NewCotizacion = false;
     private bool ContinuarCotizacion = false;
     private bool IsEdition = false;
+    private bool CreandoPDF = false;
 
     private int selectedRowNumber = -1;
     private int selectedRowNumberPaciente = -1;
@@ -649,6 +661,8 @@ else
     private int llamado =0;
     PDFGenerator _PdfGenerator = new();
     DtoCotizacionRequest parametrobusqueda = new();
+
+    private DtoEmpresa dtoEmpresa = new();
 
 
     #endregion
@@ -670,21 +684,29 @@ else
                 {
                     var idenUser = authState.User.Claims.ToList();
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
-                    dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
+
+                    if (PostRequiere == "2")
+                    {
+                        dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
+
+                    }
+                    else if (PostRequiere == "3")
+                    {
+                        dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
+                    }
+
                     parametrobusqueda = new()
                     {
                         SucursalId = new(),
-                        // {
-                        //     dtoMedico.Sucursal.ToString()
-                        // },
-                        MedicoId = new()
-                        {
-                            dtoMedico.IdMedico
-                        },
+                        MedicoId = PostRequiere == "2" ? new(){dtoMedico.IdMedico}:new(),
                         Expediente = _busquedaCotizacion.searchString1,
-                        CompañiaId = new(),
+                        CompañiaId = PostRequiere == "2" ? new(): new(){dtoEmpresa.Id},
                         Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                     };
+
+
+
+
                     string json1 = JsonConvert.SerializeObject(parametrobusqueda);
                     var sesOrdenes = await Http.PostAsJsonAsync<DtoCotizacionRequest>(UrlOrdenes, parametrobusqueda);
                     switch (sesOrdenes.StatusCode)
@@ -774,7 +796,10 @@ else
 
                 break;
             case 3:
+                //CreandoPDF = true;
                 await CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudios, CotizacionDraft);
+                _index = 3;
+                //CreandoPDF = false;
                 break;
         }
     }
@@ -798,7 +823,10 @@ else
                 }
                 break;
             case 3:
+                //CreandoPDF = true;
                 await CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudios, CotizacionDraft);
+                _index = 3;
+                //CreandoPDF = false;
                 break;
         }
     }
@@ -838,19 +866,17 @@ else
             dataLoaded = true;
             ShowOrdenes = false;
             DtoCotizacionRequest parametrobusqueda = new()
-                {
-                    SucursalId = new(),
-                    // {
-                    //     dtoMedico.Sucursal.ToString()
-                    // },
-                    MedicoId = new()
-                        {
-                            dtoMedico.IdMedico
-                        },
-                    Expediente = (String.IsNullOrEmpty(_busquedaCotizacion.searchString1) ? null : _busquedaCotizacion.searchString1),
-                    CompañiaId = new(),
-                    Fecha = new() { DateTime.Parse(_busquedaCotizacion.dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_busquedaCotizacion.dateFinal.ToString()).ToString("yyyy-MM-dd") }
-                };
+            {
+                SucursalId = new(),
+                // {
+                //     dtoMedico.Sucursal.ToString()
+                // },
+                MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                Expediente = (String.IsNullOrEmpty(_busquedaCotizacion.searchString1) ? null : _busquedaCotizacion.searchString1),
+                CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                Fecha = new() { DateTime.Parse(_busquedaCotizacion.dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_busquedaCotizacion.dateFinal.ToString()).ToString("yyyy-MM-dd") }
+            };
+
             string json1 = JsonConvert.SerializeObject(parametrobusqueda);
             var sesOrdenes = await Http.PostAsJsonAsync<DtoCotizacionRequest>(UrlOrdenes, parametrobusqueda);
             if (sesOrdenes.IsSuccessStatusCode)
@@ -882,7 +908,7 @@ else
                     break;
             }
         }
-        
+
 
 
         dataLoaded = false;
@@ -999,7 +1025,7 @@ else
                 case System.Net.HttpStatusCode.OK:
                     try
                     {
-                        ShowSnack("¡La órden se ha creado con éxito!", 2);
+                        ShowSnack("¡Los Estudios se han agregado correctamente!", 2);
                         var sesOrdenes1 = await Http.PostAsJsonAsync<DtoCotizacionRequest>(UrlOrdenes, parametrobusqueda);
                         _oCotizaciones = await sesOrdenes1.Content.ReadFromJsonAsync<List<DtoCotizacionResponse>>();
                     }
@@ -1018,358 +1044,118 @@ else
         else
         {
             NewEstudios = new();
-            if (selectedEstudiosEliminar.Count>0)
+
+            try
             {
-                foreach (var item in selectedEstudiosEliminar)
+                NewEstudios = new();
+                foreach (var item in selectedEstudios)
                 {
-                    foreach (var itemPromo in item.Promociones)
+                    var existeOrden = selectedEstudiosOriginal.FirstOrDefault(op => op.Clave.Equals(item.Clave));
+                    if (existeOrden == null)
                     {
-                        Promociones RowPromo = new()
-                            {
-                                Descuento = itemPromo.Descuento,
-                                DescuentoPorcentaje = itemPromo.DescuentoPorcentaje,
-                                EstudioId = itemPromo.EstudioId,
-                                PaqueteId = itemPromo.PaqueteId,
-                                Promocion = itemPromo.Promocion,
-                                PromocionId = itemPromo.PromocionId,
-                            };
-                        NewPromociones.Add(RowPromo);
-                    }
-
-                    foreach (var itemIndica in item.Indicaciones)
-                    {
-                        Indicaciones RowIndica = new()
-                            {
-                                Activo = itemIndica.Activo,
-                                Clave = itemIndica.Clave,
-                                Descripcion = itemIndica.Descripcion,
-                                Id = itemIndica.Id,
-                                Nombre = itemIndica.Nombre
-                            };
-                        NewIndicaciones.Add(RowIndica);
-                    }
-
-                    foreach (var itemParam in item.Parametros)
-                    {
-                        Parametros RowParam = new()
+                        foreach (var itemPromo in item.Promociones)
                         {
-                            Activo= itemParam.Activo,
-                            Area=itemParam.Area,
-                            Asignado=false,
-                            Clave=itemParam.Clave,
-                            CriticoMaximo=null,
-                            CriticoMinimo=null,
-                            DeltaCheck=false,
-                            Departamento=itemParam.Departamento,
-                            EstudioId=0,
-                            Fcsi=null,
-                            Formula=null,
-                            HasHistory=false,
-                            Id=itemParam.Id,
-                            MostrarFormato=false,
-                            Nombre=itemParam.Nombre,
-                            NombreCorto=itemParam.NombreCorto,
-                            ObservacionesId=null,
-                            OcultarSiNulo=false,
-                            Orden=0,
-                            Requerido=false,
-                            Resultado=null,
-                            ResultadoId=null,
-                            SolicitudEstudioId=0,
-                            TipoValor=itemParam.TipoValor,
-                            TipoValores=null,
-                            UltimaSolicitud=null,
-                            UltimaSolicitudId=null,
-                            UltimoExpedienteId=null,
-                            UltimoResultado=null,
-                            Unidades=0,
-                            UnidadNombre=null,
-                            ValorFinal=null,
-                            ValorInicial=null,
-                        };
-                        NewParametros.Add(RowParam);
-                    }
-                    EstudiosOrden _Estudio = new()
-                        {
-                            Id = _RowEditOrden.Estudios.FirstOrDefault(e=>e.Clave.Equals(item.Clave)).Id,
-                            Clave = item.Clave,
-                            CotizacionId = CotizacionDraft.CotizacionId,
-                            Descuento = 0,
-                            DescuentoManual = false,
-                            DescuentoPorcentaje = 0,
-                            Dias = item.Dias,
-                            EstudioId = item.EstudioId,
-                            Horas = item.Horas,
-                            ListaPrecio = item.ListaPrecio,
-                            ListaPrecioId = item.ListaPrecioId,
-                            Nombre = item.Nombre,
-                            //Paquete=null,
-                            //PaqueteId=0,
-                            Precio = item.Precio,
-                            PrecioFinal = item.PrecioFinal,
-                            Promocion = item.Promocion,
-                            PromocionId = item.PromocionId,
-                            TipoMuestra = item.TipoMuestra,
-                            Parametros=new(NewParametros),
-                            Promociones = new(NewPromociones),
-                            Indicaciones = new(NewIndicaciones),
-
-                        };
-                    NewEstudiosOrden.Add(_Estudio);
-                }
-
-                DtoEstudiosByOrdenActual newOrden = new()
-                {
-                    CotizacionId = CotizacionDraft.CotizacionId,
-                        Estudios = new(NewEstudiosOrden),
-                    Paquetes = new(),
-                    Total = new()
-                    {
-                        CotizacionId = CotizacionDraft.CotizacionId,
-                        Descuento = 0,
-                        Total = 0,
-                        TotalEstudios = selectedEstudios.Count()
-                    }
-                };
-
-                string json1 = JsonConvert.SerializeObject(newOrden);
-                var sesOrdenes = await Http.PutAsJsonAsync<DtoEstudiosByOrdenActual>(UrlOrdenesStudyCancel, newOrden);
-                switch (sesOrdenes.StatusCode)
-                {
-                    case System.Net.HttpStatusCode.OK:
-                        try
-                        {
-                            NewEstudios = new();
-                            foreach (var item in selectedEstudios)
-                            {
-                                var existeOrden = selectedEstudiosOriginal.FirstOrDefault(op => op.Clave.Equals(item.Clave));
-                                if (existeOrden == null)
+                            Promociones RowPromo = new()
                                 {
-                                    foreach (var itemPromo in item.Promociones)
-                                    {
-                                        Promociones RowPromo = new()
-                                            {
-                                                Descuento = itemPromo.Descuento,
-                                                DescuentoPorcentaje = itemPromo.DescuentoPorcentaje,
-                                                EstudioId = itemPromo.EstudioId,
-                                                PaqueteId = itemPromo.PaqueteId,
-                                                Promocion = itemPromo.Promocion,
-                                                PromocionId = itemPromo.PromocionId,
-                                            };
-                                        NewPromociones.Add(RowPromo);
-                                    }
-
-                                    foreach (var itemIndica in item.Indicaciones)
-                                    {
-                                        Indicaciones RowIndica = new()
-                                            {
-                                                Activo = itemIndica.Activo,
-                                                Clave = itemIndica.Clave,
-                                                Descripcion = itemIndica.Descripcion,
-                                                Id = itemIndica.Id,
-                                                Nombre = itemIndica.Nombre
-                                            };
-                                        NewIndicaciones.Add(RowIndica);
-                                    }
-                                    Estudios _Estudio = new()
-                                        {
-                                            Id = 0,
-                                            Clave = item.Clave,
-                                            CotizacionId = CotizacionDraft.CotizacionId,
-                                            Descuento = 0,
-                                            DescuentoManual = false,
-                                            DescuentoPorcentaje = 0,
-                                            Dias = item.Dias,
-                                            EstudioId = item.EstudioId,
-                                            Horas = item.Horas,
-                                            ListaPrecio = item.ListaPrecio,
-                                            ListaPrecioId = item.ListaPrecioId,
-                                            Nombre = item.Nombre,
-                                            //Paquete=null,
-                                            //PaqueteId=0,
-                                            Precio = item.Precio,
-                                            PrecioFinal = item.PrecioFinal,
-                                            Promocion = item.Promocion,
-                                            PromocionId = item.PromocionId,
-                                            TipoMuestra = item.TipoMuestra,
-                                            //Parametros=new(NewParametros),
-                                            Promociones = new(NewPromociones),
-                                            Indicaciones = new(NewIndicaciones),
-
-                                        };
-                                    NewEstudios.Add(_Estudio);
-                                }
-
-                            }
-
-                            DtoNewEstudiosByOrden newOrdenUpd = new()
-                                {
-                                    CotizacionId = CotizacionDraft.CotizacionId,
-                                    Estudios = new(NewEstudios),
-                                    Paquetes = new(),
-                                    Total = new()
-                                    {
-                                        CotizacionId = CotizacionDraft.CotizacionId,
-                                        Descuento = 0,
-                                        Total = 0,
-                                        TotalEstudios = selectedEstudios.Count()
-                                    }
+                                    Descuento = itemPromo.Descuento,
+                                    DescuentoPorcentaje = itemPromo.DescuentoPorcentaje,
+                                    EstudioId = itemPromo.EstudioId,
+                                    PaqueteId = itemPromo.PaqueteId,
+                                    Promocion = itemPromo.Promocion,
+                                    PromocionId = itemPromo.PromocionId,
                                 };
-
-                            if (NewEstudios.Count > 0)
-                            {
-                                string jsonupd = JsonConvert.SerializeObject(newOrdenUpd);
-                                var sesOrdenesupd = await Http.PostAsJsonAsync<DtoNewEstudiosByOrden>(UrlOrdenesNew, newOrdenUpd);
-                                switch (sesOrdenesupd.StatusCode)
-                                {
-                                    case System.Net.HttpStatusCode.OK:
-                                        try
-                                        {
-                                            ShowSnack("¡La órden se ha actualizado con éxito!", 2);
-                                            var sesOrdenes2 = await Http.PostAsJsonAsync<DtoCotizacionRequest>(UrlOrdenes, parametrobusqueda);
-                                            _oCotizaciones = await sesOrdenes2.Content.ReadFromJsonAsync<List<DtoCotizacionResponse>>();
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            //ValidateData = false;
-                                        }
-
-
-                                        break;
-                                    case System.Net.HttpStatusCode.InternalServerError:
-                                        //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
-                                        break;
-                                }
-                            }
-
-                        }
-                        catch (Exception ex)
-                        {
-                            //ValidateData = false;
+                            NewPromociones.Add(RowPromo);
                         }
 
-
-                        break;
-                    case System.Net.HttpStatusCode.InternalServerError:
-                        //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
-                        break;
-                }
-
-
-            }
-            else
-            {
-                try
-                {
-                    NewEstudios = new();
-                    foreach (var item in selectedEstudios)
-                    {
-                        var existeOrden = selectedEstudiosOriginal.FirstOrDefault(op => op.Clave.Equals(item.Clave));
-                        if (existeOrden == null)
+                        foreach (var itemIndica in item.Indicaciones)
                         {
-                            foreach (var itemPromo in item.Promociones)
-                            {
-                                Promociones RowPromo = new()
-                                    {
-                                        Descuento = itemPromo.Descuento,
-                                        DescuentoPorcentaje = itemPromo.DescuentoPorcentaje,
-                                        EstudioId = itemPromo.EstudioId,
-                                        PaqueteId = itemPromo.PaqueteId,
-                                        Promocion = itemPromo.Promocion,
-                                        PromocionId = itemPromo.PromocionId,
-                                    };
-                                NewPromociones.Add(RowPromo);
-                            }
-
-                            foreach (var itemIndica in item.Indicaciones)
-                            {
-                                Indicaciones RowIndica = new()
-                                    {
-                                        Activo = itemIndica.Activo,
-                                        Clave = itemIndica.Clave,
-                                        Descripcion = itemIndica.Descripcion,
-                                        Id = itemIndica.Id,
-                                        Nombre = itemIndica.Nombre
-                                    };
-                                NewIndicaciones.Add(RowIndica);
-                            }
-                            Estudios _Estudio = new()
+                            Indicaciones RowIndica = new()
                                 {
-                                    Id = 0,
-                                    Clave = item.Clave,
-                                    CotizacionId = CotizacionDraft.CotizacionId,
-                                    Descuento = 0,
-                                    DescuentoManual = false,
-                                    DescuentoPorcentaje = 0,
-                                    Dias = item.Dias,
-                                    EstudioId = item.EstudioId,
-                                    Horas = item.Horas,
-                                    ListaPrecio = item.ListaPrecio,
-                                    ListaPrecioId = item.ListaPrecioId,
-                                    Nombre = item.Nombre,
-                                    //Paquete=null,
-                                    //PaqueteId=0,
-                                    Precio = item.Precio,
-                                    PrecioFinal = item.PrecioFinal,
-                                    Promocion = item.Promocion,
-                                    PromocionId = item.PromocionId,
-                                    TipoMuestra = item.TipoMuestra,
-                                    //Parametros=new(NewParametros),
-                                    Promociones = new(NewPromociones),
-                                    Indicaciones = new(NewIndicaciones),
-
+                                    Activo = itemIndica.Activo,
+                                    Clave = itemIndica.Clave,
+                                    Descripcion = itemIndica.Descripcion,
+                                    Id = itemIndica.Id,
+                                    Nombre = itemIndica.Nombre
                                 };
-                            NewEstudios.Add(_Estudio);
+                            NewIndicaciones.Add(RowIndica);
                         }
-
-                    }
-
-                    DtoNewEstudiosByOrden newOrdenUpd = new()
-                        {
-                            CotizacionId = CotizacionDraft.CotizacionId,
-                            Estudios = new(NewEstudios),
-                            Paquetes = new(),
-                            Total = new()
+                        Estudios _Estudio = new()
                             {
+                                Id = 0,
+                                Clave = item.Clave,
                                 CotizacionId = CotizacionDraft.CotizacionId,
                                 Descuento = 0,
-                                Total = 0,
-                                TotalEstudios = selectedEstudios.Count()
-                            }
-                        };
+                                DescuentoManual = false,
+                                DescuentoPorcentaje = 0,
+                                Dias = item.Dias,
+                                EstudioId = item.EstudioId,
+                                Horas = item.Horas,
+                                ListaPrecio = item.ListaPrecio,
+                                ListaPrecioId = item.ListaPrecioId,
+                                Nombre = item.Nombre,
+                                //Paquete=null,
+                                //PaqueteId=0,
+                                Precio = item.Precio,
+                                PrecioFinal = item.PrecioFinal,
+                                Promocion = item.Promocion,
+                                PromocionId = item.PromocionId,
+                                TipoMuestra = item.TipoMuestra,
+                                //Parametros=new(NewParametros),
+                                Promociones = new(NewPromociones),
+                                Indicaciones = new(NewIndicaciones),
 
-                    if (NewEstudios.Count > 0)
-                    {
-                        string jsonupd = JsonConvert.SerializeObject(newOrdenUpd);
-                        var sesOrdenesupd = await Http.PostAsJsonAsync<DtoNewEstudiosByOrden>(UrlOrdenesNew, newOrdenUpd);
-                        switch (sesOrdenesupd.StatusCode)
-                        {
-                            case System.Net.HttpStatusCode.OK:
-                                try
-                                {
-                                    ShowSnack("¡La órden se ha actualizado con éxito!", 2);
-                                    var sesOrdenes = await Http.PostAsJsonAsync<DtoCotizacionRequest>(UrlOrdenes, parametrobusqueda);
-                                    _oCotizaciones = await sesOrdenes.Content.ReadFromJsonAsync<List<DtoCotizacionResponse>>();
-                                }
-                                catch (Exception ex)
-                                {
-                                    //ValidateData = false;
-                                }
-
-
-                                break;
-                            case System.Net.HttpStatusCode.InternalServerError:
-                                //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
-                                break;
-                        }
+                            };
+                        NewEstudios.Add(_Estudio);
                     }
 
                 }
-                catch (Exception ex)
+
+                DtoNewEstudiosByOrden newOrdenUpd = new()
+                    {
+                        CotizacionId = CotizacionDraft.CotizacionId,
+                        Estudios = new(NewEstudios),
+                        Paquetes = new(),
+                        Total = new()
+                        {
+                            CotizacionId = CotizacionDraft.CotizacionId,
+                            Descuento = 0,
+                            Total = 0,
+                            TotalEstudios = selectedEstudios.Count()
+                        }
+                    };
+
+                if (NewEstudios.Count > 0)
                 {
-                    //ValidateData = false;
+                    string jsonupd = JsonConvert.SerializeObject(newOrdenUpd);
+                    var sesOrdenesupd = await Http.PostAsJsonAsync<DtoNewEstudiosByOrden>(UrlOrdenesNew, newOrdenUpd);
+                    switch (sesOrdenesupd.StatusCode)
+                    {
+                        case System.Net.HttpStatusCode.OK:
+                            try
+                            {
+                                ShowSnack("¡Los Estudios se han agregado correctamente!", 2);
+                                var sesOrdenes = await Http.PostAsJsonAsync<DtoCotizacionRequest>(UrlOrdenes, parametrobusqueda);
+                                _oCotizaciones = await sesOrdenes.Content.ReadFromJsonAsync<List<DtoCotizacionResponse>>();
+                            }
+                            catch (Exception ex)
+                            {
+                                //ValidateData = false;
+                            }
+
+
+                            break;
+                        case System.Net.HttpStatusCode.InternalServerError:
+                            //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
+                            break;
+                    }
                 }
+
             }
+            catch (Exception ex)
+            {
+                //ValidateData = false;
+            }
+
 
 
         }
@@ -1377,6 +1163,7 @@ else
 
 
         dataLoaded = false;
+        _index = 1;
         StateHasChanged();
     }
     void CancelItem()
@@ -1421,7 +1208,7 @@ else
             else
             {
                 ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
-                ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
+                //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
             }
 
             ContinuarCotizacion = true;
@@ -1625,8 +1412,9 @@ else
                         DtoEstudioRequestPrice oPriceStudio = new()
                             {
                                 SucursalId = SucursalID,
+                                //CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
                                 CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                                MedicoId = dtoMedico.IdMedico,
+                                MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
                                 EstudioId = itemEstudio.Id
                             };
                         string json1 = JsonConvert.SerializeObject(oPriceStudio);
@@ -1677,10 +1465,185 @@ else
         var g = "";
     }
 
-    void StartedEditingItem(DtoEstudioResponsePrice item)
+    public async Task StartedEditingItem(DtoEstudioResponsePrice item)
     {
         selectedEstudios.Remove(item);
         selectedEstudiosEliminar.Add(item);
+        List<Estudios> NewEstudios = new();
+        List<EstudiosOrden> NewEstudiosOrden = new();
+        List<Promociones> NewPromociones = new();
+        List<Parametros> NewParametros = new();
+        List<Indicaciones> NewIndicaciones = new();
+
+        DtoCotizacionRequest parametrobusqueda = new()
+        {
+            SucursalId = new(),
+            // {
+            //     dtoMedico.Sucursal.ToString()
+            // },
+            MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+            Expediente = CotizacionDraft.clave,
+            CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+            Fecha = new() { DateTime.Parse(_busquedaCotizacion.dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_busquedaCotizacion.dateFinal.ToString()).ToString("yyyy-MM-dd") }
+        };
+
+        string json11 = JsonConvert.SerializeObject(parametrobusqueda);
+        var sesOrdenes1 = await Http.PostAsJsonAsync<DtoCotizacionRequest>(UrlOrdenes, parametrobusqueda);
+        switch (sesOrdenes1.StatusCode)
+        {
+            case System.Net.HttpStatusCode.OK:
+                try
+                {
+
+                    _oCotizacionesDelete = await sesOrdenes1.Content.ReadFromJsonAsync<List<DtoCotizacionResponse>>();
+                    //ShowOrdenes = true;
+                }
+                catch (Exception ex)
+                {
+                    //ValidateData = false;
+                }
+
+
+                break;
+            case System.Net.HttpStatusCode.InternalServerError:
+                //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
+                break;
+        }
+
+        foreach (var item1 in selectedEstudiosEliminar)
+        {
+            foreach (var itemPromo in item1.Promociones)
+            {
+                Promociones RowPromo = new()
+                    {
+                        Descuento = itemPromo.Descuento,
+                        DescuentoPorcentaje = itemPromo.DescuentoPorcentaje,
+                        EstudioId = itemPromo.EstudioId,
+                        PaqueteId = itemPromo.PaqueteId,
+                        Promocion = itemPromo.Promocion,
+                        PromocionId = itemPromo.PromocionId,
+                    };
+                NewPromociones.Add(RowPromo);
+            }
+
+            foreach (var itemIndica in item1.Indicaciones)
+            {
+                Indicaciones RowIndica = new()
+                    {
+                        Activo = itemIndica.Activo,
+                        Clave = itemIndica.Clave,
+                        Descripcion = itemIndica.Descripcion,
+                        Id = itemIndica.Id,
+                        Nombre = itemIndica.Nombre
+                    };
+                NewIndicaciones.Add(RowIndica);
+            }
+
+            foreach (var itemParam in item1.Parametros)
+            {
+                Parametros RowParam = new()
+                    {
+                        Activo = itemParam.Activo,
+                        Area = itemParam.Area,
+                        Asignado = false,
+                        Clave = itemParam.Clave,
+                        CriticoMaximo = null,
+                        CriticoMinimo = null,
+                        DeltaCheck = false,
+                        Departamento = itemParam.Departamento,
+                        EstudioId = 0,
+                        Fcsi = null,
+                        Formula = null,
+                        HasHistory = false,
+                        Id = itemParam.Id,
+                        MostrarFormato = false,
+                        Nombre = itemParam.Nombre,
+                        NombreCorto = itemParam.NombreCorto,
+                        ObservacionesId = null,
+                        OcultarSiNulo = false,
+                        Orden = 0,
+                        Requerido = false,
+                        Resultado = null,
+                        ResultadoId = null,
+                        SolicitudEstudioId = 0,
+                        TipoValor = itemParam.TipoValor,
+                        TipoValores = null,
+                        UltimaSolicitud = null,
+                        UltimaSolicitudId = null,
+                        UltimoExpedienteId = null,
+                        UltimoResultado = null,
+                        Unidades = 0,
+                        UnidadNombre = null,
+                        ValorFinal = null,
+                        ValorInicial = null,
+                    };
+                NewParametros.Add(RowParam);
+            }
+            EstudiosOrden _Estudio = new()
+                {
+                    Id = _oCotizacionesDelete[0].Estudios.FirstOrDefault(e => e.Clave.Equals(item1.Clave)).Id,
+                    Clave = item1.Clave,
+                    CotizacionId = CotizacionDraft.CotizacionId,
+                    Descuento = 0,
+                    DescuentoManual = false,
+                    DescuentoPorcentaje = 0,
+                    Dias = item1.Dias,
+                    EstudioId = item1.EstudioId,
+                    Horas = item1.Horas,
+                    ListaPrecio = item1.ListaPrecio,
+                    ListaPrecioId = item1.ListaPrecioId,
+                    Nombre = item1.Nombre,
+                    //Paquete=null,
+                    //PaqueteId=0,
+                    Precio = item1.Precio,
+                    PrecioFinal = item1.PrecioFinal,
+                    Promocion = item1.Promocion,
+                    PromocionId = item1.PromocionId,
+                    TipoMuestra = item1.TipoMuestra,
+                    Parametros = new(NewParametros),
+                    Promociones = new(NewPromociones),
+                    Indicaciones = new(NewIndicaciones),
+
+                };
+            NewEstudiosOrden.Add(_Estudio);
+        }
+
+        DtoEstudiosByOrdenActual newOrden = new()
+            {
+                CotizacionId = CotizacionDraft.CotizacionId,
+                Estudios = new(NewEstudiosOrden),
+                Paquetes = new(),
+                Total = new()
+                {
+                    CotizacionId = CotizacionDraft.CotizacionId,
+                    Descuento = 0,
+                    Total = 0,
+                    TotalEstudios = selectedEstudios.Count()
+                }
+            };
+
+        string json1 = JsonConvert.SerializeObject(newOrden);
+        var sesOrdenes = await Http.PutAsJsonAsync<DtoEstudiosByOrdenActual>(UrlOrdenesStudyCancel, newOrden);
+        switch (sesOrdenes.StatusCode)
+        {
+            case System.Net.HttpStatusCode.OK:
+                try
+                {
+                    ShowSnack("¡Los Estudios se han CANCELADO correctamente!", 2);
+
+                }
+                catch (Exception ex)
+                {
+                    //ValidateData = false;
+                }
+
+
+                break;
+            case System.Net.HttpStatusCode.InternalServerError:
+                //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
+                break;
+        }
+
     }
 
     private async Task CreatePdfOrder(DtoGeneralesCotizacion _dtoGeneralesCotizacion, DtoPaciente _dtoPaciente, HashSet<DtoEstudioResponsePrice> _dtoEstudioResponsePrices, DtoCotizacion _cotizacionDraft)
@@ -1691,7 +1654,7 @@ else
         try
         {
 
-            await Task.Delay(2000);
+            await Task.Delay(1500);
             _PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", archivopdf);
         }
         catch (Exception ex)
@@ -1716,10 +1679,7 @@ else
         {
             ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!", 4);
         }
-        else
-        {
-            _busquedaCotizacion.dateFinal = newDate;
-        }
+        _busquedaCotizacion.dateFinal = newDate;
 
     }
 
@@ -1774,12 +1734,13 @@ else
             //_oCotizacionEstudios.Add(itemEstudio);
             var studioActualOrden = studiogral.Estudios.FirstOrDefault(op => op.Id.Equals(itemEstudio.Id));
             DtoEstudioRequestPrice oPriceStudio = new()
-                {
-                    SucursalId = sucursalResponse.sucursalId,
-                    CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                    MedicoId = dtoMedico.IdMedico,
-                    EstudioId = studioActualOrden.EstudioId
-                };
+            {
+                SucursalId = SucursalID,
+                //CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                EstudioId = studioActualOrden.EstudioId
+            };
             string json1 = JsonConvert.SerializeObject(oPriceStudio);
             var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
             if (responseDraft.IsSuccessStatusCode)
@@ -1826,6 +1787,7 @@ else
     private void AgregarEstudio()
     {
         visibleInfoEstudios = false;
+        AddItem();
         visibleInfoEstudio = true;
 
     }

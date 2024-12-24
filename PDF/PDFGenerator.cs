@@ -212,7 +212,7 @@ namespace LaboratorioRamos.PDF
             paragra.Format.Font.Size = 12;
             paragra.AddText($"Fecha: {DateTime.Now.ToString("dd/MM/yyyy")}");
             paragra.AddLineBreak();
-            paragra.AddText($"Paciente: {(_dtoPaciente==null ? "" :_dtoPaciente.NombrePaciente)}");
+            paragra.AddText($"Paciente: {(_dtoGeneralesCotizacion.Paciente == null ? "" : _dtoGeneralesCotizacion.Paciente)}");
             paragra.AddLineBreak();
             paragra.Format.SpaceAfter = 10;
 

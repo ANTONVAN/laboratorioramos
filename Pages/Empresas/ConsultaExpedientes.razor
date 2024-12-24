@@ -66,7 +66,7 @@ else
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" />
                         </MudItem>
                         <MudItem xs="12" sm="12" md="3">
-                            <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" DateChanged="OnDateChange" />
+                            <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" />
                         </MudItem>
                         <MudItem xs="12" sm="12" md="1">
                             <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
@@ -253,10 +253,7 @@ else
         {
             ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!");
         }
-        else
-        {
-            dateInicial = newDate;
-        }
+        dateFinal = newDate;
 
     }
 

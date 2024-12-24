@@ -1,9 +1,10 @@
-﻿@page "/ConsultaSolicitudesMedico"
+﻿@page "/ConsultaSolicitudes/{PostRequiere}"
 
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoMedico
 @using LaboratorioRamos.Data.DtoFiltro
 @using LaboratorioRamos.Data.DtoExpediente
+@using LaboratorioRamos.Data.DtoEmpresa
 @using LaboratorioRamos.Data.DtoExpediente.DtoRequestExpedientes
 @using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
@@ -111,7 +112,7 @@ else
                         <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" />
                     </MudItem>
                     <MudItem xs="12" sm="12" md="3">
-                                <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" DateChanged="OnDateChange" />
+                                <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" />
                     </MudItem>
                     <MudItem xs="12" sm="12" md="1">
                         @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
@@ -152,7 +153,7 @@ else
                         </ColGroup>
                         <HeaderContent>
                             <MudTh></MudTh>
-                            <MudTh Style="color:#921313">Número de Órden</MudTh>
+                            <MudTh Style="color:#921313">Número de Solicitud</MudTh>
                             <MudTh Style="color:#921313">Fecha de Ingreso</MudTh>
                             <MudTh Style="color:#921313">Nombre</MudTh>
                             <MudTh Style="color:#921313">Sexo</MudTh>
@@ -369,6 +370,9 @@ else
     [Inject]
     IDialogService DialogService { get; set; }
 
+    [Parameter]
+    public string PostRequiere { get; set; }
+
     public string resDecrip { get; set; }
     private DtoMedicoPwd dtoMedico = new();
     private List<DtoPaciente> dtoPaciente = new();
@@ -383,8 +387,8 @@ else
     private string searchEstudios = "";
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
-        new BreadcrumbItem("Home", href: "#", icon: Icons.Material.Filled.Home),
-        new BreadcrumbItem("Consulta de Resultadoseeeeee", href: "#", disabled: true, icon: Icons.Material.Filled.Badge),
+        new BreadcrumbItem("Home", href: "Inicio/", icon: Icons.Material.Filled.Home),
+        new BreadcrumbItem("Consulta de Resultados", href: null, disabled: true, icon: Icons.Material.Filled.Badge),
     };
 
     private DateRange _dateRange = new DateRange(DateTime.Now.Date, DateTime.Now.AddDays(5).Date);
@@ -413,6 +417,8 @@ else
 
     private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true };
 
+    private DtoEmpresa dtoEmpresa = new();
+
     #endregion
 
     #region Funsiones Página
@@ -437,25 +443,36 @@ else
                     LstEstatusPrint.Add(int.Parse(itemST));
                 }
                 _items = new List<BreadcrumbItem>
-                    {
-                        new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
-                        new BreadcrumbItem("Consulta de Solicitudes", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
-                    };
+                {
+                    new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
+                    new BreadcrumbItem("Consulta de Solicitudes", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                };
 
                 var idenUser = authState.User.Claims.ToList();
                 var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
-                dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
-                DtoRequestMedicoPacientes parametrobusqueda = new()
-                    {
-                        MedicoId = new()
-                        {
-                            dtoMedico.IdMedico
-                        },
-                        CompañiaId = new(),
-                        Buscar = null,
-                        TipoFecha = 1,
-                        Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
-                    };
+                DtoRequestMedicoPacientes parametrobusqueda = new();
+
+                if (PostRequiere=="2")
+                {
+                    dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
+                   
+
+                }
+                else if (PostRequiere=="3")
+                {
+                    dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
+                }
+
+                parametrobusqueda = new()
+                {
+                    MedicoId = PostRequiere == "2" ? new(){dtoMedico.IdMedico}:new(),
+                    CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                    Buscar = null,
+                    TipoFecha = 1,
+                    Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
+                };
+
+                string json1 = JsonConvert.SerializeObject(parametrobusqueda);
                 var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
 
                 switch (sesPacientes.StatusCode)
@@ -534,10 +551,7 @@ else
         {
             ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!", 4);
         }
-        else
-        {
-            dtoFiltro.DateInicial = newDate;
-        }
+        dtoFiltro.DateFinal = newDate;
 
     }
 
@@ -776,11 +790,8 @@ else
                 {
                     parametrobusqueda = new()
                     {
-                        MedicoId = new()
-                        {
-                            dtoMedico.IdMedico
-                        },
-                        CompañiaId = new(),
+                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                        CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
                         Buscar = dtoFiltro.Solicitud.ToString(),
                         TipoFecha = 1,
                         Fecha = new() { }
@@ -789,30 +800,24 @@ else
                 else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
                     parametrobusqueda = new()
-                        {
-                            MedicoId = new()
-                        {
-                            dtoMedico.IdMedico
-                        },
-                            CompañiaId = new(),
-                            Buscar = null,
-                            TipoFecha = 1,
-                            Fecha = new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") }
-                        };
+                    {
+                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                        CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                        Buscar = null,
+                        TipoFecha = 1,
+                        Fecha = new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") }
+                    };
                 }
                 else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
                     parametrobusqueda = new()
-                        {
-                            MedicoId = new()
-                        {
-                            dtoMedico.IdMedico
-                        },
-                            CompañiaId = new(),
-                            Buscar = dtoFiltro.Solicitud.ToString(),
-                            TipoFecha = 1,
-                            Fecha = new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") }
-                        };
+                    {
+                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                        CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                        Buscar = dtoFiltro.Solicitud.ToString(),
+                        TipoFecha = 1,
+                        Fecha = new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") }
+                    };
                 }
                 
                     
@@ -877,7 +882,7 @@ else
     {
         string json = JsonConvert.SerializeObject(_estudio);
         string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args.Solicitud}" : $"{args.Solicitud}!{json}");
-        NavigationManager.NavigateTo($"ResultadoEstudios/2/{Cryp.Encripta(json1)}", true);
+        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(json1)}", true);
     }
     
     #endregion

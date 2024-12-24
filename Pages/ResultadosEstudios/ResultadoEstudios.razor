@@ -1,6 +1,7 @@
 ﻿@page "/ResultadoEstudios/{PostRequiere}/{PostSolicitud}"
 @using LaboratorioRamos.Data.DtoEstudio
 @using LaboratorioRamos.Data.DtoMedico
+@using LaboratorioRamos.Data.DtoEmpresa
 @using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
 @using LaboratorioRamos.Data.DtoResultadosEstudios
@@ -15,7 +16,7 @@
 @inject IJSRuntime IJSRuntime
 @inject IConfiguration _config;
 
-<PageTitle>Resultado de Estudios Médicos</PageTitle>
+<PageTitle>Resultados</PageTitle>
 
 @if (dataLoaded)
 {
@@ -383,6 +384,7 @@ else
     private int EdadPaciente = 0;
 
     private bool visiblePrintResult = false;
+    private DtoEmpresa dtoEmpresa = new();
 
 
     private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true };
@@ -408,9 +410,9 @@ else
                 Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
                 var resPacDecripInicial = Cryp.Desencripta(PostSolicitud);
                 var resPacDecrip = resPacDecripInicial.Split("!"); //0=solicitud, 1=Estudio
+                var idenUser = authState.User.Claims.ToList();
                 if (PostRequiere == "1") //Paciente
                 {
-                    var idenUser = authState.User.Claims.ToList();
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
                     dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
 
@@ -418,7 +420,7 @@ else
                 }
                 else if (PostRequiere == "2")//Medico
                 {
-                    var idenUser = authState.User.Claims.ToList();
+
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
                     dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
                     // _items = new List<BreadcrumbItem>
@@ -440,15 +442,15 @@ else
                     //     new BreadcrumbItem("Empresa", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
                     //     new BreadcrumbItem("Paciente", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                     // };
-                    // var resPacDecrip = Cryp.Desencripta(PostPaciente);
-                    // dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
-                    // ShowNombre = true;
+                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                    dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
+                    //ShowNombre = true;
                 }
 
                 DtoRequestMedicoPacientes parametrobusqueda = new()
                     {
-                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                        CompañiaId = new(),
+                        MedicoId = PostRequiere == "1" ? new() : PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                        CompañiaId = PostRequiere == "1" ? new() : PostRequiere == "2" ? new():new() { dtoEmpresa.Id },
                         Buscar = resPacDecrip[0].Replace("\"",""),
                         TipoFecha = 1,
                         Fecha = new()

@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Pages\Medicos\ConsultaSolicitudesMedico.razor">
+    <Content Update="Pages\Components\ConsultaSolicitudes.razor">
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
     </Content>
   </ItemGroup>
