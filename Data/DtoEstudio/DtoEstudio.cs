@@ -175,13 +175,13 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public string ListaPrecio { get; set; }
         public int? PromocionId { get; set; }
         public string Promocion { get; set; }
-        public int Dias { get; set; }
-        public int Horas { get; set; }
-        public double Precio { get; set; }
+        public double? Dias { get; set; } = 0;
+        public double? Horas { get; set; } = 0;
+        public double Precio { get; set; } = 0;
         public bool DescuentoManual { get; set; }
-        public int Descuento { get; set; }
-        public int DescuentoPorcentaje { get; set; }
-        public double PrecioFinal { get; set; }
+        public double? Descuento { get; set; } = 0;
+        public double? DescuentoPorcentaje { get; set; } = 0;
+        public double? PrecioFinal { get; set; } = 0;
         public string TipoMuestra { get; set; }
         public List<Promociones> Promociones { get; set; }
         //public List<Parametros> Parametros { get; set; }
@@ -232,18 +232,18 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public string Nombre { get; set; }
         public string ListaPrecioId { get; set; }
         public string ListaPrecio { get; set; }
-        public int PromocionId { get; set; }
+        public int? PromocionId { get; set; } = 0;
         public string Promocion { get; set; }
-        public int Dias { get; set; }
-        public int Horas { get; set; }
-        public int PrecioEstudios { get; set; }
-        public int PaqueteDescuento { get; set; }
-        public int PaqueteDescuentoPorcentaje { get; set; }
-        public int Precio { get; set; }
+        public double? Dias { get; set; } = 0;
+        public double? Horas { get; set; } = 0;
+        public double? PrecioEstudios { get; set; } = 0;
+        public double? PaqueteDescuento { get; set; } = 0;
+        public double? PaqueteDescuentoPorcentaje { get; set; } = 0;
+        public double? Precio { get; set; } = 0;
         public bool DescuentoManual { get; set; }
-        public int Descuento { get; set; }
-        public int DescuentoPorcentaje { get; set; }
-        public int PrecioFinal { get; set; }
+        public double? Descuento { get; set; } = 0;
+        public double? DescuentoPorcentaje { get; set; } = 0;
+        public double? PrecioFinal { get; set; } = 0;
         public List<Promociones> Promociones { get; set; }
         public List<Estudios> Estudios { get; set; }
     }
@@ -260,7 +260,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public bool Requerido { get; set; }
         public bool DeltaCheck { get; set; }
         public bool MostrarFormato { get; set; }
-        public int Unidades { get; set; }
+        public int? Unidades { get; set; } = 0;
         public string UnidadNombre { get; set; }
         public string TipoValor { get; set; }
         public string ValorInicial { get; set; }
@@ -268,15 +268,15 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public string CriticoMinimo { get; set; }
         public string CriticoMaximo { get; set; }
         public string Resultado { get; set; }
-        public int EstudioId { get; set; }
-        public int SolicitudEstudioId { get; set; }
+        public int? EstudioId { get; set; } = 0;
+        public int? SolicitudEstudioId { get; set; } = 0;
         public string ResultadoId { get; set; }
         public string UltimoResultado { get; set; }
         public string UltimaSolicitud { get; set; }
         public string UltimaSolicitudId { get; set; }
         public string UltimoExpedienteId { get; set; }
         public string Formula { get; set; }
-        public int Orden { get; set; }
+        public int? Orden { get; set; } = 0;
         public string Fcsi { get; set; }
         public string ObservacionesId { get; set; }
         public bool Asignado { get; set; }

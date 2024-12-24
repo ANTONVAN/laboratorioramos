@@ -1733,6 +1733,10 @@ else
         {
             //_oCotizacionEstudios.Add(itemEstudio);
             var studioActualOrden = studiogral.Estudios.FirstOrDefault(op => op.Id.Equals(itemEstudio.Id));
+            
+            ///// aqui validar los temas de paquetes
+            //var studioPaquetesActualOrden = studiogral.Paquetes.FirstOrDefault(op => op.Id.Equals(itemEstudio.Id));
+
             DtoEstudioRequestPrice oPriceStudio = new()
             {
                 SucursalId = SucursalID,
