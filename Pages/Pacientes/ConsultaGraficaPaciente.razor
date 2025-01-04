@@ -18,6 +18,12 @@
     <MudItem xs="12" sm="7" md="12">
         <MudText Align="MudBlazor.Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Consulta Gráfica del Paciente</MudText>
     </MudItem>
+    <MudItem xs="12" sm="7" md="6">
+        <MudText Align="MudBlazor.Align.Center" Typo="Typo.h5" style="color: #0d37a8;">Expediente: @dtoMedicoPaciente.Expediente</MudText>
+    </MudItem>
+    <MudItem xs="12" sm="7" md="6">
+        <MudText Align="MudBlazor.Align.Center" Typo="Typo.h5" style="color: #0d37a8;">Paciente: @dtoMedicoPaciente.Nombre</MudText>
+    </MudItem>
     <MudItem xs="12" sm="7" md="4">
         <MudAutocomplete T="string" @bind-Value="ValEstudio"
                          SearchFunc="SearchEstudio"
@@ -230,7 +236,7 @@
 
                 };
         }
-
+        StateHasChanged();
     }
 
     void ShowSnack(string message)
