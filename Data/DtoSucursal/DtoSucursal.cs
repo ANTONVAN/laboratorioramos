@@ -1,5 +1,4 @@
-﻿using static MudBlazor.Colors;
-using System;
+﻿using System;
 
 namespace LaboratorioRamos.Data.DtoSucursal
 {
