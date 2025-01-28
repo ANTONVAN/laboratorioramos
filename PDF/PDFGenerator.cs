@@ -23,6 +23,8 @@ using LaboratorioRamos.Data.DtoEstudio;
 using LaboratorioRamos.Data.DtoPaciente;
 using System.Collections.Generic;
 using MigraDoc.DocumentObjectModel.Visitors;
+using Microsoft.AspNetCore.DataProtection;
+using Table = MigraDoc.DocumentObjectModel.Tables.Table;
 namespace LaboratorioRamos.PDF
 {
     public class PDFGenerator
@@ -226,22 +228,90 @@ namespace LaboratorioRamos.PDF
             
             foreach (var item in _dtoEstudioResponsePrices)
             {
+                //Row rowt = table1.AddRow();
+                //rowt.BottomPadding = 0;
+                //rowt.Format.LineSpacing = 1;
+                ////rowt.Format.Font.Size = 12;
+                //rowt.Format.Font.Bold = true;
+                //rowt.Cells[0].AddParagraph($"Clave: {item.Clave}");
+                ////rowt.Format.Font.Size = 15;
+                //rowt.Cells[1].AddParagraph(item.Nombre);
+                ////rowt = table1.AddRow();
+                ////rowt.Format.Font.Bold = false;
+                //rowt.Cells[0].AddParagraph($"Indicaciones");
+                //foreach (var itemindi in item.Indicaciones)
+                //{
+                //    rowt.Cells[1].AddParagraph(itemindi.Descripcion);
+                //}
+
+
+
+
+
+
                 Row rowt = table1.AddRow();
                 rowt.BottomPadding = 0;
                 rowt.Format.LineSpacing = 1;
                 //rowt.Format.Font.Size = 12;
                 rowt.Format.Font.Bold = true;
-                rowt.Cells[0].AddParagraph($"Clave: {item.Clave}");
+                rowt.Cells[0].AddParagraph($"{(item.Estudios != null?"Pack: ":"Clave: ")} {item.Clave}");
                 //rowt.Format.Font.Size = 15;
                 rowt.Cells[1].AddParagraph(item.Nombre);
-                //rowt = table1.AddRow();
-                //rowt.Format.Font.Bold = false;
-                rowt.Cells[0].AddParagraph($"Indicaciones");
-                foreach (var itemindi in item.Indicaciones)
+
+                if (item.Estudios != null)
                 {
-                    rowt.Cells[1].AddParagraph(itemindi.Descripcion);
+                    rowt.Cells[0].AddParagraph("ESTUDIOS");
+                    rowt.Cells[1].AddParagraph("");
+                    //rowt.Cells[1].AddParagraph("");
+                    //tabrow.Table.Columns.AddColumn();
+                    //tabrow.Cells.Table.AddColumn("10cm");
+                    //AddParagraph("Holaasdsadasdsad");
+                    //rowt.Cells[1].AddParagraph("Hola");
+                    //Document docpack = new();
+                    //Section Sec1Pack = doc.AddSection();
+                    //var paragrapack = Sec1Pack.Headers.Primary.AddParagraph();
+                    //paragrapack = Sec1Pack.AddParagraph();
+                    //paragrapack.AddText(" ");
+                    //paragrapack.AddLineBreak();
+
+
+                    //var tablePack = docpack.LastSection.AddTable();
+                    //tablePack.Borders.Width = 0.5;
+
+                    //tablePack.AddColumn("3cm");
+                    //tablePack.AddColumn("10cm");
+
+
+
+                    foreach (var itemEstudiopack in item.Estudios)
+                    {
+                        
+                        //Row rowtPack = tablePack.AddRow();
+                        //rowtPack.BottomPadding = 0;
+                        //rowtPack.Format.LineSpacing = 1;
+                        ////rowt.Format.Font.Size = 12;
+                        //rowtPack.Format.Font.Bold = true;
+                        
+                        rowt.Cells[0].AddParagraph($"Clave: {itemEstudiopack.Clave}");
+                        
+                        //rowt.Format.Font.Size = 15;
+                        rowt.Cells[1].AddParagraph($"{itemEstudiopack.Nombre}");
+                        rowt.Cells[0].AddParagraph($"Indicaciones");
+                        foreach (var itemindipack in itemEstudiopack.Indicaciones)
+                        {
+                            rowt.Cells[1].AddParagraph($"{itemindipack.Descripcion}");
+                        }
+                    }
                 }
-                
+                else
+                {
+                    
+                    rowt.Cells[0].AddParagraph($"Indicaciones");
+                    foreach (var itemindi in item.Indicaciones)
+                    {
+                        rowt.Cells[1].AddParagraph(itemindi.Descripcion);
+                    }
+                }
             }
             table1.Format.SpaceAfter = 10;
 

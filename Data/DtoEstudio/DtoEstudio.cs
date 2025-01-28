@@ -60,12 +60,44 @@ namespace LaboratorioRamos.Data.DtoEstudio
         //public object ack { get; set; }
     }
 
+
+    public class DtoPackEstudio
+    {
+        public int Id { get; set; }
+        public string Clave { get; set; }
+        public string Nombre { get; set; }
+        public string Area { get; set; }
+        public bool Activo { get; set; }
+    }
+
+    public class DtoPackEstudioOrden
+    {
+        public int Id { get; set; }
+        public string Clave { get; set; }
+        public string Nombre { get; set; }
+        public string NombreLargo { get; set; }
+        public bool Activo { get; set; }
+        public List<DtoPackEstudio> Pack { get; set; }
+        public string Departamento { get; set; }
+        public string Area { get; set; }
+        public int DepartamentoId { get; set; }
+        public int AreaId { get; set; }
+    }
+
     public class DtoEstudioRequestPrice
     {
         public string SucursalId { get; set; }
         public string MedicoId { get; set; }
         public string CompañiaId { get; set; }
-        public int EstudioId { get; set; }
+        public int? EstudioId { get; set; }
+
+    }
+    public class DtoPaqueteEstudioRequestPrice
+    {
+        public string SucursalId { get; set; }
+        public string MedicoId { get; set; }
+        public string CompañiaId { get; set; }
+        public int? PaqueteId { get; set; }
 
     }
 
@@ -116,17 +148,48 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public string? Tipo { get; set; }
     }
 
-    public class DtoPromocion
+    public class DtoEstudioResponsePrice
     {
-        public int EstudioId { get; set; }
-        public int PaqueteId { get; set; }
-        public int PromocionId { get; set; }
+        public string? Identificador { get; set; }
+        public string ListaPrecioId { get; set; }
+        public string? ListaPrecio { get; set; }
+        public int? PromocionId { get; set; }
         public string? Promocion { get; set; }
-        public double Descuento { get; set; }
+        public double? Descuento { get; set; }
+        public double? PaqueteDescuento { get; set; }
         public double DescuentoPorcentaje { get; set; }
+        public double? PaqueteDescuentoPorcentaje { get; set; }
+        public int? EstudioId { get; set; }
+        public int? PaqueteId { get; set; }
+        public string? Clave { get; set; }
+        public string? Nombre { get; set; }
+        public int? DepartamentoId { get; set; }
+        public int? AreaId { get; set; }
+        public int Dias { get; set; }
+        public int Horas { get; set; }
+        public int? OrdenEstudio { get; set; }
+        public string? Destino { get; set; }
+        public string? DestinoId { get; set; }
+        public int? DestinoTipo { get; set; }
+        public int? MaquilaId { get; set; }
+        public string? Maquila { get; set; }
+        public string? Metodo { get; set; }
+        public string? TipoMuestra { get; set; }
+        public double? Precio { get; set; }
+        public double? PrecioEstudios { get; set; }
+        public bool Activo { get; set; }
+        public bool ShowDetails { get; set; } = false;
+        public double PrecioFinal { get; set; }
+        public DateTime FechaEntrega { get; set; }
+        public List<DtoPromocion> Promociones { get; set; }
+        public List<DtoParametro> Parametros { get; set; }
+        public List<DtoIndicacion> Indicaciones { get; set; }
+        public List<DtoEtiqueta> Etiquetas { get; set; }
+        public List<DtoPaqueteEstudioPrice>? Estudios { get; set; }
     }
 
-    public class DtoEstudioResponsePrice
+
+    public class DtoPaqueteEstudioPrice
     {
         public string? Identificador { get; set; }
         public string ListaPrecioId { get; set; }
@@ -166,7 +229,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
     {
         public int Id { get; set; }
         public string CotizacionId { get; set; }
-        public int EstudioId { get; set; }
+        public int? EstudioId { get; set; }
         public string Clave { get; set; }
         public string Nombre { get; set; }
         //public int PaqueteId { get; set; }
@@ -177,7 +240,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public string Promocion { get; set; }
         public double? Dias { get; set; } = 0;
         public double? Horas { get; set; } = 0;
-        public double Precio { get; set; } = 0;
+        public double? Precio { get; set; } = 0;
         public bool DescuentoManual { get; set; }
         public double? Descuento { get; set; } = 0;
         public double? DescuentoPorcentaje { get; set; } = 0;
@@ -192,7 +255,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
     {
         public int Id { get; set; }
         public string CotizacionId { get; set; }
-        public int EstudioId { get; set; }
+        public int? EstudioId { get; set; }
         public string Clave { get; set; }
         public string Nombre { get; set; }
         //public int PaqueteId { get; set; }
@@ -203,7 +266,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public string Promocion { get; set; }
         public double Dias { get; set; }
         public int Horas { get; set; }
-        public double Precio { get; set; }
+        public double? Precio { get; set; }
         public bool DescuentoManual { get; set; }
         public double Descuento { get; set; }
         public double DescuentoPorcentaje { get; set; }
@@ -227,7 +290,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
     {
         public int Id { get; set; }
         public string CotizacionId { get; set; }
-        public int PaqueteId { get; set; }
+        public int? PaqueteId { get; set; }
         public string Clave { get; set; }
         public string Nombre { get; set; }
         public string ListaPrecioId { get; set; }
@@ -295,6 +358,15 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public double DescuentoPorcentaje { get; set; }
     }
 
+    public class DtoPromocion
+    {
+        public int EstudioId { get; set; }
+        public int PaqueteId { get; set; }
+        public int PromocionId { get; set; }
+        public string? Promocion { get; set; }
+        public double Descuento { get; set; }
+        public double DescuentoPorcentaje { get; set; }
+    }
     public class DtoNewEstudiosByOrden
     {
         public string CotizacionId { get; set; }
