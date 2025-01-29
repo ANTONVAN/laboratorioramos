@@ -10,150 +10,152 @@
 @inject ISnackbar Snackbar
 
 <PageTitle>Consulta de Expedientes</PageTitle>
-@if (dataLoaded)
+@* @if (dataLoaded)
 {
     <Loading></Loading>
 }
 else
 {
-    <MudBreadcrumbs Items="_items" Style="padding: 0px;"></MudBreadcrumbs>
+    
+} *@
+
+<MudBreadcrumbs Items="_items" Style="padding: 0px;"></MudBreadcrumbs>
+<MudGrid>
+    @*  <MudItem xs="12" sm="7" md="12">
+    <MudText Align="Align.Center" Typo="Typo.h4" style="color: #0d37a8;">Consulta de Resultados</MudText>
+    </MudItem>
+    <MudPaper Class="pa-4" Elevation="4" Style="width:100%">
     <MudGrid>
-       @*  <MudItem xs="12" sm="7" md="12">
-            <MudText Align="Align.Center" Typo="Typo.h4" style="color: #0d37a8;">Consulta de Resultados</MudText>
-        </MudItem>
-        <MudPaper Class="pa-4" Elevation="4" Style="width:100%">
-            <MudGrid>
-                <MudItem xs="12" sm="8" md="3">
-                    @{
-                        var nomCompleto = $"{@dtoMedico.Nombre} {@dtoMedico.PrimerApellido} {@dtoMedico.SegundoApellido}";
-                    }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@nomCompleto</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Especialidad: @dtoMedico.Especialidad</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Email: @dtoMedico.Correo</MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    @{
-                        var direcci = $"{@dtoMedico.Calle} Ext: {@dtoMedico.NumeroExterior} Int: {@dtoMedico.NumeroInterior} {@dtoMedico.ColoniaId} {@dtoMedico.CiudadId} {@dtoMedico.EstadoId} {@dtoMedico.CodigoPostal}";
-                    }
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Dirección: @direcci </MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">C.P.: @dtoMedico.CodigoPostal </MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Teléfono: @dtoMedico.Telefono </MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Celular: @dtoMedico.Celular </MudText>
-                </MudItem>
-                <MudItem xs="12" sm="8" md="3">
-                    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Clínicas: @dtoMedico.Clinicas.Count() </MudText>
-                </MudItem>
-                </MudGrid>
-            </MudPaper>
-            <br /> *@
-
-        <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
-            <MudGrid>
-                <MudItem xs="12" sm="12" md="12">
-                    <EditForm Model="@dtoFiltro" OnValidSubmit="BuscaFecha" style="width: 100%;">
-                        
-                        <MudGrid>
-                            <MudItem xs="12" sm="12" md="1">
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="3">
-                                <MudTextField @bind-Value="dtoFiltro.ExpedienteNombre" Disabled="(ValidateData?true:false)" Label="Expediente o Nombre del paciente:" Clearable="true" Class="mt-0" HelperText="Teclee la Clave de Expediente o Nombre del paciente, y pulse Enter." For="@(() => dtoFiltro.ExpedienteNombre)"></MudTextField>
-                                @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="3">
-                                <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
-                                @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                                <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" />
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="3">
-                                <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
-                                <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" />
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="2">
-                                @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
-                                @if (ValidateData)
-                                {
-                                    @* <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Text" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton> *@
-                                    <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto" Style="width:100%;"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
-                                }
-                                else
-                                {
-                                    @* <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton> *@
-                                    <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="ml-auto" Style="width:100%;">Buscar</MudButton>
-                                }
-                            </MudItem>
-                        </MudGrid>
-                    </EditForm>
-                    
-                </MudItem>
-                <MudItem xs="12" sm="12" md="12">
-                    <MudTable Class="mt-4" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
-                        <ToolBarContent>
-                            <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
-                            <MudSpacer />
-                            @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/> *@
-                            @* <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
-                            <MudSpacer />
-                            <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
-                            <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
-                            <MudSpacer />
-                            <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de expediente" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField> *@
-                        </ToolBarContent>
-                        <ColGroup>
-                            <col />
-                            <col />
-                            <col />
-                            <col />
-                        </ColGroup>
-                        <HeaderContent>
-                            <MudTh Style="color:#921313">Expediente</MudTh>
-                            <MudTh Style="color:#921313">Nombre</MudTh>
-                            <MudTh Style="color:#921313">Edad</MudTh>
-                            <MudTh Style="color:#921313">Teléfono</MudTh>
-                            <MudTh Style="color:#921313">Detalles</MudTh>
-                            <MudTh Style="color:#921313">Gráficas</MudTh>
-                        </HeaderContent>
-                        <RowTemplate>
-                            <MudTd DataLabel="Expediente" Style="font-weight:bolder">@context.Expediente</MudTd>
-                            <MudTd DataLabel="Nombre">@context.Nombre</MudTd>
-                            <MudTd DataLabel="Edad">@context.Edad</MudTd>
-                            <MudTd DataLabel="Teléfono">@context.EnvioWhatsapp</MudTd>
-                            <MudTd DataLabel="Detalles">
-                                <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToDetallePaciente(context))"></MudIconButton>
-                            </MudTd>
-                            <MudTd DataLabel="Gráfica">
-                                <MudIconButton Icon="@Icons.Material.Filled.BarChart" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToGraphPaciente(context))"></MudIconButton>
-                            </MudTd>
-                        </RowTemplate>
-                        <NoRecordsContent>
-                            <MudText>Sin Registros para mostrar</MudText>
-                        </NoRecordsContent>
-                        <LoadingContent>
-                            <MudText>Cargando....</MudText>
-                        </LoadingContent>
-                        <PagerContent>
-                            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
-                        </PagerContent>
-                    </MudTable>
-                </MudItem>
-            </MudGrid>
-        </MudPaper>
-
-
-            
-            
+    <MudItem xs="12" sm="8" md="3">
+    @{
+    var nomCompleto = $"{@dtoMedico.Nombre} {@dtoMedico.PrimerApellido} {@dtoMedico.SegundoApellido}";
+    }
+    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@nomCompleto</MudText>
+    </MudItem>
+    <MudItem xs="12" sm="8" md="3">
+    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Especialidad: @dtoMedico.Especialidad</MudText>
+    </MudItem>
+    <MudItem xs="12" sm="8" md="3">
+    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Email: @dtoMedico.Correo</MudText>
+    </MudItem>
+    <MudItem xs="12" sm="8" md="3">
+    @{
+    var direcci = $"{@dtoMedico.Calle} Ext: {@dtoMedico.NumeroExterior} Int: {@dtoMedico.NumeroInterior} {@dtoMedico.ColoniaId} {@dtoMedico.CiudadId} {@dtoMedico.EstadoId} {@dtoMedico.CodigoPostal}";
+    }
+    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Dirección: @direcci </MudText>
+    </MudItem>
+    <MudItem xs="12" sm="8" md="3">
+    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">C.P.: @dtoMedico.CodigoPostal </MudText>
+    </MudItem>
+    <MudItem xs="12" sm="8" md="3">
+    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Teléfono: @dtoMedico.Telefono </MudText>
+    </MudItem>
+    <MudItem xs="12" sm="8" md="3">
+    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Celular: @dtoMedico.Celular </MudText>
+    </MudItem>
+    <MudItem xs="12" sm="8" md="3">
+    <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Clínicas: @dtoMedico.Clinicas.Count() </MudText>
+    </MudItem>
     </MudGrid>
-}
+    </MudPaper>
+    <br /> *@
+
+    <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12">
+                <EditForm Model="@dtoFiltro" OnValidSubmit="BuscaFecha" style="width: 100%;">
+
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="1">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudTextField @bind-Value="dtoFiltro.ExpedienteNombre" Disabled="(ValidateData?true:false)" Label="Expediente o Nombre del paciente:" Clearable="true" Class="mt-0" HelperText="Teclee la Clave de Expediente o Nombre del paciente, y pulse Enter." For="@(() => dtoFiltro.ExpedienteNombre)"></MudTextField>
+                            @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
+                            @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
+                            <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
+                            <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="2">
+                            @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
+                            @if (ValidateData)
+                            {
+                                @* <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Text" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton> *@
+                                <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto" Style="width:100%;"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                            }
+                            else
+                            {
+                                @* <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton> *@
+                                <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="ml-auto" Style="width:100%;">Buscar</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </EditForm>
+
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12">
+                <MudTable Class="mt-4" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
+                        <MudSpacer />
+                        @* <MudDateRangePicker Label="Buscar por rango de fecha" DateFormat="dd/MM/yyyy" TitleDateFormat="dddd, dd. MMMM" @bind-DateRange="_dateRange"/> *@
+                        @* <MudDatePicker Label="Fecha Inicio" @bind-Date="dateInicial" />
+                        <MudSpacer />
+                        <MudDatePicker Label="Fecha Final" @bind-Date="dateFinal" />
+                        <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchString1" Placeholder="Nombre o número de expediente" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Style="width:95%;"></MudTextField> *@
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col />
+                        <col />
+                        <col />
+                        <col />
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh Style="color:#921313">Expediente</MudTh>
+                        <MudTh Style="color:#921313">Nombre</MudTh>
+                        <MudTh Style="color:#921313">Edad</MudTh>
+                        <MudTh Style="color:#921313">Teléfono</MudTh>
+                        <MudTh Style="color:#921313">Detalles</MudTh>
+                        <MudTh Style="color:#921313">Gráficas</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Expediente" Style="font-weight:bolder">@context.Expediente</MudTd>
+                        <MudTd DataLabel="Nombre">@context.Nombre</MudTd>
+                        <MudTd DataLabel="Edad">@context.Edad</MudTd>
+                        <MudTd DataLabel="Teléfono">@context.EnvioWhatsapp</MudTd>
+                        <MudTd DataLabel="Detalles">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToDetallePaciente(context))"></MudIconButton>
+                        </MudTd>
+                        <MudTd DataLabel="Gráfica">
+                            <MudIconButton Icon="@Icons.Material.Filled.BarChart" Size="Size.Small" Color="Color.Info" OnClick="@(() => NavigateToGraphPaciente(context))"></MudIconButton>
+                        </MudTd>
+                    </RowTemplate>
+                    <NoRecordsContent>
+                        <MudText>Sin Registros para mostrar</MudText>
+                    </NoRecordsContent>
+                    <LoadingContent>
+                        <MudText>Cargando....</MudText>
+                    </LoadingContent>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                    </PagerContent>
+                </MudTable>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+
+
+
+</MudGrid>
 <style>
     .mud-input-input-control {
         align-items: normal;
@@ -177,7 +179,7 @@ else
     private List<DtoResponseMedicoPaciente> dtoMedicoPaciente = new();
     private List<DtoResponseMedicoPaciente> dtoMedicoPacienteTmp = new();
 
-    private bool ValidateData = false;
+    private bool ValidateData = true;
 
     private bool dataLoaded = true;
     private string UrlUsuario = "services/records/api/ClinicResults/getList";
@@ -270,7 +272,8 @@ else
                     }
 
 
-                    dataLoaded = false;
+                    //dataLoaded = false;
+                    ValidateData = false;
                 }
                 catch (Exception ex)
                 {
