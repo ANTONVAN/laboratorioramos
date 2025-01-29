@@ -98,40 +98,44 @@ else
                             <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton>
                         </MudItem>
                     </MudGrid> *@
-            <EditForm Model="@dtoFiltro" OnValidSubmit="BuscaFecha" style="width: 100%;">
+                    <EditForm Model="@dtoFiltro" OnValidSubmit="BuscaFecha" style="width: 100%;">
 
-                <MudGrid>
-                    <MudItem xs="12" sm="12" md="1">
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </MudItem>
-                    <MudItem xs="12" sm="12" md="4">
-                        <MudTextField @bind-Value="dtoFiltro.Solicitud" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
-                        @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
-                    </MudItem>
-                    <MudItem xs="12" sm="12" md="3">
-                        <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial"/>
-                    </MudItem>
-                    <MudItem xs="12" sm="12" md="3">
-                            <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy"  @bind-Date="dtoFiltro.DateFinal"/>
-                    </MudItem>
+                        <MudGrid>
+                            <MudItem xs="12" sm="12" md="1">
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="4">
+                                <MudTextField @bind-Value="dtoFiltro.Solicitud" Disabled="(ValidateData?true:false)" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)" ></MudTextField>
+                                @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="3">
+                                <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
+                                <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" />
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="3">
+                                <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
+                                <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" />
+                            </MudItem>
                     
-                    <MudItem xs="12" sm="12" md="1">
-                        @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
-                        @if (ValidateData)
-                        {
-                            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
-                        }
-                        else
-                        {
-                            <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton>
-                        }
-                    </MudItem>
-                </MudGrid>
-            </EditForm>
+                            <MudItem xs="12" sm="12" md="1">
+                                @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
+                                @if (ValidateData)
+                                {
+                                    @* <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton> *@
+                                    <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto" Style="width:100%;"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                                }
+                                else
+                                {
+                                    @* <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton> *@
+                                    <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="ml-auto" Style="width:100%;">Buscar</MudButton>
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </EditForm>
                 </MudItem>
                 <MudItem xs="12" sm="12" md="12">
                     @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
-                    <MudTable Class="mt-4" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;">
+                    <MudTable Class="mt-4" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
                         @* <ToolBarContent>
                             <MudText Typo="Typo.h6" style="color: #0d37a8;">Impresión de Resultados</MudText>
                             @if (ValidateData)
@@ -183,9 +187,9 @@ else
                                 }
                                 if (countStudi > 0)
                                 {
-                                    <MudTd DataLabel=">Número de Órden"><MudLink OnClick="@(() => NavigationResultado(context,null))" Underline="Underline.Always">@context.Solicitud</MudLink></MudTd>
+                                    <MudTd DataLabel="Número de Órden"><MudLink OnClick="@(() => NavigationResultado(context,null))" Underline="Underline.Always">@context.Solicitud</MudLink></MudTd>
                                 }else{
-                                    <MudTd DataLabel=">Número de Órden">@context.Solicitud</MudTd>
+                                    <MudTd DataLabel="Número de Órden">@context.Solicitud</MudTd>
                                 }
                                 <MudTd DataLabel="Fecha de Ingreso">@context.Registro</MudTd>
                                 <MudTd DataLabel="Sucursal">@context.Sucursal</MudTd>
@@ -265,6 +269,9 @@ else
                                 </td>
                             }
                         </ChildRowContent>
+                        <LoadingContent>
+                            <MudText>Cargando....</MudText>
+                        </LoadingContent>
                         <NoRecordsContent>
                             <MudText>Sin Registros para mostrar</MudText>
                         </NoRecordsContent>
@@ -304,6 +311,9 @@ else
             </MudItem>
             <MudItem xs="12" sm="12" md="6">
                 <MudText Typo="Typo.h6">Edad: @SolicitudMedicaPrint.Edad</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12" Class="d-flex d-sm-none d-none d-sm-flex d-md-none">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" aria-label="Buscar" Class="ml-auto" OnClick="@SelAllRog">Seleccionar Todos</MudButton>
             </MudItem>
             <MudItem xs="12" sm="12" md="12">
                 <MudTable MultiSelection="true" @bind-SelectedItems="selectedItems" Items="@SolicitudMedicaPrint.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Elevation="1" Striped="true" HeaderClass="table-head-bordered" Style="width:100%;" Dense="true" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
@@ -560,6 +570,19 @@ else
 
     }
 
+    async Task SelAllRog()
+    {
+        foreach (var item in SolicitudMedicaPrint.Estudios)
+        {
+            // _table.SetSelectedItem(item);
+            _table.SelectedItems.Add(item);
+        }
+        
+
+        StateHasChanged();
+
+    }
+
     #endregion
 
     #region Funsiones TABLA
@@ -767,7 +790,9 @@ else
 
     async Task BuscaFecha()
     {
-        dataLoaded = true;
+        //dataLoaded = true;
+        ValidateData = true;
+        LstExpedientes.Clear();
         DtoRequestMedicoPacientes parametrobusqueda = new();
 
         try
@@ -855,8 +880,6 @@ else
                         {
                             //ValidateData = false;
                         }
-
-
                         break;
                 }
 
@@ -864,7 +887,8 @@ else
 
 
             //_picker.Close();
-            dataLoaded = false;
+            //dataLoaded = false;
+            ValidateData = false;
         }
         catch (Exception ex)
         {
