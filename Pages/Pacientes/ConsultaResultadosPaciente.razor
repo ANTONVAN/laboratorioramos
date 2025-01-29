@@ -105,6 +105,7 @@ else
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             </MudItem>
                             <MudItem xs="12" sm="12" md="4">
+                                @* <MudTextField @bind-Value="dtoFiltro.Solicitud" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
                                 <MudTextField @bind-Value="dtoFiltro.Solicitud" Disabled="(ValidateData?true:false)" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)" ></MudTextField>
                                 @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
                             </MudItem>
@@ -833,9 +834,9 @@ else
                         {
                             MedicoId = new(),
                             CompañiaId = new(),
-                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
+                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
                             TipoFecha = 1,
-                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                         };
                 }
                 else if (PostRequiere == "3")//Compañia

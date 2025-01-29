@@ -315,6 +315,9 @@ else
             <MudItem xs="12" sm="12" md="6">
                 <MudText Typo="Typo.h6">Edad: @SolicitudMedicaPrint.Edad</MudText>
             </MudItem>
+            <MudItem xs="12" sm="12" md="12" Class="d-flex d-sm-none d-none d-sm-flex d-md-none">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" aria-label="Buscar" Class="ml-auto" OnClick="@SelAllRog">Seleccionar Todos</MudButton>
+            </MudItem>
             <MudItem xs="12" sm="12" md="12">
                 <MudTable MultiSelection="true" @bind-SelectedItems="selectedItems" Items="@SolicitudMedicaPrint.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Elevation="1" Striped="true" HeaderClass="table-head-bordered" Style="width:100%;" Dense="true" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
                     <HeaderContent>
@@ -562,6 +565,7 @@ else
         dtoFiltro.DateFinal = newDate;
 
     }
+
 
 
     #endregion
@@ -943,6 +947,19 @@ else
         SolicitudMedicaPrint = new();
     }
 
+
+    async Task SelAllRog()
+    {
+        foreach (var item in SolicitudMedicaPrint.Estudios)
+        {
+            // _table.SetSelectedItem(item);
+            _table.SelectedItems.Add(item);
+        }
+
+
+        StateHasChanged();
+
+    }
     #endregion
     
 
