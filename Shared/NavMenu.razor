@@ -10,7 +10,7 @@
             <MudNavLink Href="ConsultaGraficaPaciente/1/0" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.StackedBarChart">Gráficas</MudNavLink>
             break;
         case 2:
-            <MudNavLink Href="ConsultaExpedientesMedico" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Consulta de Expedientes</MudNavLink>
+            <MudNavLink Href="ConsultaExpedientesMedico/" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Consulta de Expedientes</MudNavLink>
             <MudNavLink Href="ConsultaSolicitudes/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Consulta de Solicitudes</MudNavLink>
             <MudNavLink Href="CreaOrden/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd">Crear Orden</MudNavLink>
             
@@ -42,7 +42,7 @@
         await base.OnInitializedAsync();
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
         var idenUser = authState.User.Claims.ToList();
-        TypeUser = int.Parse(idenUser[1].Value);
+        TypeUser = int.Parse(idenUser[2].Value);
 
     }
 

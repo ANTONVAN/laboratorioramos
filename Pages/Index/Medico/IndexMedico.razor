@@ -1,5 +1,6 @@
 ﻿@layout LabRamosLayout
 @page "/Medico"
+@using LaboratorioRamos.Data.DtoFiltro
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoMedico
 @using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
@@ -56,6 +57,7 @@
     private DtoLoginMedico dtoLoginMedico = new();
     private List<DtoMedico> dtoMedico = new();
     private DtoMedicoPwd dtoMedicoPWD = new();
+    private DtoFiltroNavega filorig = new();
 
     private bool ValidateData = false;
     private string UrlAuth = "services/identity/api/profile/login";
@@ -79,6 +81,7 @@
     async void OnValidSubmit(EditContext context)
     {
         ValidateData = true;
+        filorig.LstFiltro = new();
         dtoLogin = new()
         {
             Usuario = _config.GetSection("UsrLoginGral:User").Value,
@@ -94,7 +97,7 @@
                 {
                     var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
                     Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
-                   
+
                     dtoMedico = await Http.GetFromJsonAsync<List<DtoMedico>>(UrlMedico + "all/" + dtoLoginMedico.Usuario);
                     if (dtoMedico.Count() == 0)
                     {
@@ -121,9 +124,11 @@
                             dtoMedicoPWD.Token = result.Token;
                             dtoMedicoPWD.Sucursal = result.Sucursal;
                             string json = JsonConvert.SerializeObject(dtoMedicoPWD);
+                            string filtro = JsonConvert.SerializeObject(filorig);
                             var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
                             await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
                                 {
+                                    filtros = Cryp.Encripta(filtro),
                                     testsuncretr = Cryp.Encripta(json),
                                     Type = 2,
                                 });

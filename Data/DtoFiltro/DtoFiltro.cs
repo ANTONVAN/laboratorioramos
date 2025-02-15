@@ -14,4 +14,18 @@ namespace LaboratorioRamos.Data.DtoFiltro
         //[Required(ErrorMessage = "Fecha Final es requerida")]
         public DateTime? DateFinal { get; set; } = DateTime.Now;
     }
+
+    public class DtoFiltroLst
+    {
+        public string? OriginPage { get; set; } = "";
+        public string? PageNo { get; set; } = "";
+        public string? ExpedienteNombreSol { get; set; } = "";
+        public DateTime? DateInicial { get; set; } = DateTime.Now;
+        public DateTime? DateFinal { get; set; } = DateTime.Now;
+        public bool ExistReg { get; set; } = false;
+    }
+    public class DtoFiltroNavega
+    {
+        public List<DtoFiltroLst> LstFiltro { get; set; }
+    }
 }

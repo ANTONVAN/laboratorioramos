@@ -9,6 +9,7 @@
 @using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
 @using LaboratorioRamos.Data.DtoImpresionResultados
+@using LaboratorioRamos.Data.DtoStateProvider
 @using LaboratorioRamos.PDF;
 @using Microsoft.AspNetCore.Mvc
 @using Microsoft.AspNetCore.StaticFiles
@@ -140,20 +141,7 @@ else
             </MudItem>
             <MudItem xs="12" sm="12" md="12">
                 @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
-                <MudTable Class="mt-4" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
-                    @*<ToolBarContent>
-                    <MudText Typo="Typo.h6" style="color: #0d37a8;">Impresión de Resultados</MudText>
-                    @if (ValidateData)
-                    {
-                    <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Large" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
-                    }
-                    else
-                    {
-                    <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Large" aria-label="Imprimir Estudios" OnClick="() => ImprimirExp()"></MudIconButton>
-                    }
-
-                    <MudSpacer />
-                    </ToolBarContent>*@
+                <MudTable Class="mt-4" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
                     <ColGroup>
                         <col style="width: 20px;" />
                         <col />
@@ -412,6 +400,7 @@ else
     private IEnumerable<DtoEstudioExpediente> Elements = new List<DtoEstudioExpediente>();
     private bool _selectOnRowClick = true;
     private MudTable<DtoResponseMedicoPacienteStudios> _table;
+    private MudTable<DtoResponseMedicoPaciente> _tableO;
     private PDFGenerator _PdfGenerator = new();
     private bool ValidateData = true;
     private bool ValidateDataMod = false;
@@ -433,6 +422,9 @@ else
     private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true };
 
     private DtoEmpresa dtoEmpresa = new();
+
+    private DtoFiltroNavega filorig = new();
+    private int nopag = 0;
 
     #endregion
 
@@ -466,6 +458,8 @@ else
                 var idenUser = authState.User.Claims.ToList();
                 var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
                 DtoRequestMedicoPacientes parametrobusqueda = new();
+                var filtros = Cryp.Desencripta(idenUser[1].Value.ToString());
+                filorig = JsonConvert.DeserializeObject<DtoFiltroNavega>(filtros);
 
                 if (PostRequiere=="2")
                 {
@@ -478,14 +472,98 @@ else
                     dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
                 }
 
-                parametrobusqueda = new()
+                if (filorig.LstFiltro.Count > 0)
                 {
-                    MedicoId = PostRequiere == "2" ? new(){dtoMedico.IdMedico}:new(),
-                    CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
-                    Buscar = null,
-                    TipoFecha = 1,
-                    Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
-                };
+                    var obFilter = filorig.LstFiltro.FirstOrDefault(op => op.OriginPage.Trim().Equals("ConsultaSolicitudes"));
+                    if (obFilter != null)
+                    {
+                        if (obFilter.ExistReg)
+                        {
+                            if (String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && String.IsNullOrEmpty(obFilter.DateFinal.ToString()) && !String.IsNullOrEmpty(obFilter.ExpedienteNombreSol))
+                            {
+                                parametrobusqueda = new()
+                                    {
+                                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                                        CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                                        Buscar = obFilter.ExpedienteNombreSol.ToString(),
+                                        TipoFecha = 1,
+                                        Fecha = new() { }
+                                    };
+                            }
+                            else if (!String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && !String.IsNullOrEmpty(obFilter.DateFinal.ToString()) && String.IsNullOrEmpty(obFilter.ExpedienteNombreSol))
+                            {
+                                parametrobusqueda = new()
+                                    {
+                                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                                        CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                                        Buscar = null,
+                                        TipoFecha = 1,
+                                        Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") }
+                                    };
+                            }
+                            else if (!String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && !String.IsNullOrEmpty(obFilter.DateFinal.ToString()) && !String.IsNullOrEmpty(obFilter.ExpedienteNombreSol))
+                            {
+                                parametrobusqueda = new()
+                                    {
+                                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                                        CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                                        Buscar = obFilter.ExpedienteNombreSol.ToString(),
+                                        TipoFecha = 1,
+                                        Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") }
+                                    };
+                            }
+                            dtoFiltro.DateFinal = obFilter.DateFinal;
+                            dtoFiltro.DateInicial = obFilter.DateInicial;
+                            dtoFiltro.Solicitud = obFilter.ExpedienteNombreSol;
+                            nopag = int.Parse(obFilter.PageNo);
+                            filorig.LstFiltro.Where(w => w.OriginPage.Equals("ConsultaSolicitudes")).ToList().ForEach(i => i.ExistReg = false);
+                            string json = JsonConvert.SerializeObject(dtoMedico);
+                            string filtro = JsonConvert.SerializeObject(filorig);
+                            var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+                            await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+                                {
+                                    filtros = Cryp.Encripta(filtro),
+                                    testsuncretr = Cryp.Encripta(json),
+                                    Type = 2,
+                                });
+                        }
+                        else
+                        {
+                            parametrobusqueda = new()
+                                {
+                                    MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                                    CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                                    Buscar = null,
+                                    TipoFecha = 1,
+                                    Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
+                                };
+                        }
+                    }
+                    else
+                    {
+                        parametrobusqueda = new()
+                            {
+                                MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                                CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                                Buscar = null,
+                                TipoFecha = 1,
+                                Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
+                            };
+                    }
+                    
+
+                }
+                else
+                {
+                    parametrobusqueda = new()
+                    {
+                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                        CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                        Buscar = null,
+                        TipoFecha = 1,
+                        Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
+                    };
+                }
 
                 string json1 = JsonConvert.SerializeObject(parametrobusqueda);
                 var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
@@ -514,7 +592,7 @@ else
                         {
                             //ValidateData = false;
                         }
-
+                        _tableO.CurrentPage = nopag;
 
                         break;
                     case System.Net.HttpStatusCode.InternalServerError:
@@ -533,7 +611,8 @@ else
 
 
         }
-        StateHasChanged();
+        
+        //StateHasChanged();
 
     }
 
@@ -898,10 +977,45 @@ else
     }
 
 
-    private void NavigationResultado(DtoResponseMedicoPaciente args, DtoResponseMedicoPacienteStudios _estudio)
+    private async void NavigationResultado(DtoResponseMedicoPaciente args, DtoResponseMedicoPacienteStudios _estudio)
     {
-        string json = JsonConvert.SerializeObject(_estudio);
-        string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args.Solicitud}" : $"{args.Solicitud}!{json}");
+
+        var nopag = _tableO.CurrentPage;
+        var obFilters = filorig.LstFiltro.FirstOrDefault(op => op.OriginPage.Trim().Equals("ConsultaSolicitudes"));
+        if (obFilters != null)
+        {
+            obFilters.PageNo = nopag.ToString();
+            obFilters.ExpedienteNombreSol = dtoFiltro.Solicitud;
+            obFilters.DateInicial = dtoFiltro.DateInicial;
+            obFilters.DateFinal = dtoFiltro.DateFinal;
+            obFilters.ExistReg = true;
+        }
+        else
+        {
+            DtoFiltroLst newFilter = new()
+                {
+                    OriginPage = "ConsultaSolicitudes",
+                    PageNo = nopag.ToString(),
+                    ExpedienteNombreSol = dtoFiltro.Solicitud,
+                    DateInicial = dtoFiltro.DateInicial,
+                    DateFinal = dtoFiltro.DateFinal,
+                    ExistReg = true
+                };
+            filorig.LstFiltro.Add(newFilter);
+        }
+
+        string json = JsonConvert.SerializeObject(dtoMedico);
+        string filtro = JsonConvert.SerializeObject(filorig);
+        var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+        await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+            {
+                filtros = Cryp.Encripta(filtro),
+                testsuncretr = Cryp.Encripta(json),
+                Type = 2,
+            });
+
+        string json0 = JsonConvert.SerializeObject(_estudio);
+        string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args.Solicitud}" : $"{args.Solicitud}!{json0}");
         NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(json1)}", true);
     }
     

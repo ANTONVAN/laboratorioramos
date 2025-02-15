@@ -1,6 +1,7 @@
 ﻿@layout LabRamosLayout
 @page "/"
 @using LaboratorioRamos.Data.DtoDetalleExpedienteSolicitud
+@using LaboratorioRamos.Data.DtoFiltro
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
 @using LaboratorioRamos.Data.DtoStateProvider
@@ -60,6 +61,7 @@
     private bool ValidateData = false;
     private string UrlAuth = "services/identity/api/profile/login";
     private string UrlUsuario = "services/records/api/MedicalRecord/now";
+    private DtoFiltroNavega filorig = new();
     #endregion
 
     #region Funcionalidad Página
@@ -79,6 +81,7 @@
     async void OnValidSubmit(EditContext context)
     {
         ValidateData = true;
+        filorig.LstFiltro = new();
         dtoLogin = new()
         {
             Usuario = _config.GetSection("UsrLoginGral:User").Value,
@@ -117,9 +120,11 @@
                                     {
                                         dtoPaciente[0].Token = result.Token;
                                         string json = JsonConvert.SerializeObject(dtoPaciente);
+                                        string filtro = JsonConvert.SerializeObject(filorig);
                                         var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
                                         await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
                                             {
+                                                filtros = Cryp.Encripta(filtro),
                                                 testsuncretr = Cryp.Encripta(json),
                                                 Type = 1
                                             });

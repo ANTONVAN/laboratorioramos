@@ -165,7 +165,7 @@
         public bool Asignado { get; set; }
         public bool OcultarSiNulo { get; set; }
         public bool HasHistory { get; set; }
-        public List<TipoValores> TipoValores { get; set; }
+        public List<TipoValores>? TipoValores { get; set; }
     }
 
     public class Promociones
@@ -208,7 +208,7 @@
         public string TerceraColumna { get; set; }
         public string CuartaColumna { get; set; }
         public string QuintaColumna { get; set; }
-        public DateTime FechaCreo { get; set; }
+        public string FechaCreo { get; set; }
     }
 
     public class TotalGral

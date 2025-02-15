@@ -1,4 +1,5 @@
 ﻿using ApexCharts;
+using LaboratorioRamos.Data.DtoFiltro;
 using LaboratorioRamos.Data.DtoStateProvider;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
@@ -35,6 +36,7 @@ namespace LaboratorioRamos.Helper
                 claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {
                     new Claim("testsuncretr", userSes.testsuncretr.ToString()),
+                    new Claim("testsunfltr", userSes.filtros.ToString()),
                     new Claim("type", userSes.Type.ToString()),
 
                 }, "CustAuth"));
@@ -64,6 +66,7 @@ namespace LaboratorioRamos.Helper
                 claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>
                 {
                     new Claim("testsuncretr", userSession.testsuncretr.ToString()),
+                    new Claim("testsunfltr", userSession.filtros.ToString()),
                     new Claim("type", userSession.Type.ToString()),
                 }));
             }

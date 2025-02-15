@@ -57,7 +57,7 @@
         await base.OnInitializedAsync();
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
         var idenUser = authState.User.Claims.ToList();
-        TypeUser = int.Parse(idenUser[1].Value);
+        TypeUser = int.Parse(idenUser[2].Value);
         var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
         if (TypeUser == 1) //Paciente
         {
