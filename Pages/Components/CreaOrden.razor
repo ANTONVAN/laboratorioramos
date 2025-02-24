@@ -28,13 +28,13 @@ else
 
     <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
     <MudGrid>
-        <MudItem xs="12" sm="12" md="12" >
+        @* <MudItem xs="12" sm="12" md="12" >
             <MudGrid>
                 <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
                     <MudText Typo="Typo.h4" style="color: #0d37a8;">Creación y Consulta de Órdenes Médicas</MudText>
                 </MudItem>
             </MudGrid>
-        </MudItem>
+        </MudItem> *@
 
         @if (!NewCotizacion)
         {
@@ -46,7 +46,7 @@ else
                         </MudItem>
                         <MudItem xs="12" sm="12" md="4">
                             @* <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
-                            <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Disabled="(ValidateData?true:false)" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
+                                <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Disabled="(ValidateData?true:false)" Label="Número de orden:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
                         </MudItem>
                         <MudItem xs="12" sm="12" md="3">
                             @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateInicial" /> *@
@@ -128,7 +128,13 @@ else
         {
             <MudItem xs="12" sm="12" md="12" >
                 <MudGrid>
-                    <MudItem xs="12" sm="12" md="12" Class="d-flex justify-end">
+                    <MudItem xs="12" sm="12" md="3" Class="d-flex justify-center">
+                        <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.ArrowBackIosNew" Color="@Color.Error" Class="add-item-btn">Atrás</MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3" Class="d-flex justify-center">
+                        <MudButton OnClick="@ContnueProcess"  StartIcon="@Icons.Material.Filled.DoubleArrow" Color="@Color.Info" Class="add-item-btn">Continuar</MudButton>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="6" Class="d-flex justify-end">
                         <b><Label>Registro: @DateTime.Now.ToLongDateString().ToUpper()</Label></b>
                     </MudItem>
                 </MudGrid>
@@ -195,12 +201,12 @@ else
                                     }
 
                                 </MudItem>
-                                <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
+                                @* <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
                                     <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" Color="@Color.Error" Class="add-item-btn">Cancelar</MudButton>
                                 </MudItem>
                                 <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
                                     <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Filled.DoubleArrow" Color="@Color.Info" Class="add-item-btn">Continuar</MudButton>
-                                </MudItem>
+                                </MudItem> *@
                             </MudGrid>
                         </EditForm>
                     </MudPaper>
@@ -242,11 +248,11 @@ else
                                     }
 
                                     <MudItem xs="12" sm="12" md="12">
-                                        <MudTextField @bind-Value="dtoGeneralesCotizacion.Observaciones" T="string" Label="Observaciones" Lines="3" />
+                                        <MudTextField @bind-Value="dtoGeneralesCotizacion.Observaciones" T="string" Label="Observaciones (Opcional)" Lines="3" />
                                     </MudItem>
                                     <MudItem xs="12" sm="6" md="6">
                                         @* <MudTextField T="string" Label="Paciente" @bind-Value="dtoGeneralesCotizacion.Paciente" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnKeyUp="ValidaEnterPaciente" OnAdornmentClick="@(() => BuscarPaciente())" /> *@
-                                        <MudTextField T="string" Label="Paciente" @bind-Value="dtoGeneralesCotizacion.Paciente"/>
+                                        <MudTextField T="string" Label="Nombre paciente (opcional)" @bind-Value="dtoGeneralesCotizacion.Paciente"/>
                                     </MudItem>
                                     @if (visibleInfoPaciente)
                                     {
@@ -440,9 +446,9 @@ else
                             </MudStep>
                             <MudStep Title="Recibo" SecondaryText="">
                                 <MudGrid>
-                                    <MudItem xs="12" sm="7" md="12">
+                                    @* <MudItem xs="12" sm="7" md="12">
                                         <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Recibo</MudText><MudSpacer />
-                                    </MudItem>
+                                    </MudItem> *@
                                     <MudItem xs="12" sm="7" md="12" id="iFrameId" Style="height: 35.5rem;">
                                         <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
                                             <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
@@ -463,16 +469,16 @@ else
                         </ActionContent>
                     </MudStepper>
 
-                    <MudForm Spacing="2">
+                        @* <MudForm Spacing="2">
                         <MudGrid>
                             <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
                                 <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" Color="@Color.Error" Class="add-item-btn">Cancelar</MudButton>
                             </MudItem>
-                            @* <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
+                            <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
                                 <MudButton OnClick="@AddItem" StartIcon="@Icons.Material.Filled.Save" Color="@Color.Info" Class="add-item-btn">Crear órden</MudButton>
-                            </MudItem> *@
+                            </MudItem> 
                         </MudGrid>
-                    </MudForm>
+                    </MudForm>*@
                             
                 </MudItem>
             }
