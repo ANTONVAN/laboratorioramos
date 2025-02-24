@@ -82,10 +82,9 @@
     @if (oResulEstudios.Count>0)
     {
         var titleGrafica = $"Gráfica de Resultados ({ValEstudio})";
-        <MudItem xs="12" sm="7" md="12">
+        <MudItem xs="12" sm="12" md="12">
             <ApexChart TItem="DtoEstudioGrafica"
-                       Title="@titleGrafica" Width="800"
-                       Height="400"
+                       Title="@titleGrafica" Width="@("100%")" Height="@("80%")"
                        Options="@options">
 
 
