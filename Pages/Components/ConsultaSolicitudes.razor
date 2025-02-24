@@ -1031,7 +1031,7 @@ else
         string json0 = JsonConvert.SerializeObject(_estudio);
         string jsonSoli = JsonConvert.SerializeObject(args.Solicitud);
         //string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args}" : $"{args}!{_estudio}");
-        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(_estudio == null ? $"{jsonSoli}!{null}!ConsultaSolicitudes" : $"{jsonSoli}!{json0}!ConsultaSolicitudes")}", true);
+        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(_estudio == null ? $"{jsonSoli}!{null}!ConsultaSolicitudes" : $"{jsonSoli}!{json0}!ConsultaSolicitudes")}", false);
     }
     
     #endregion
