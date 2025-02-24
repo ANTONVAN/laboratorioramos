@@ -141,7 +141,7 @@
     private string Sucursal = "";
 
 
-    private ApexChartOptions<DtoEstudioGrafica> options;
+    private ApexChartOptions<DtoEstudioGrafica> options { get; set; } = new ();
 
     DateTime? dateInicial = DateTime.Today;
     DateTime? dateFinal = DateTime.Today;
@@ -196,52 +196,70 @@
                 dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
             }
 
+            options.Responsive = new List<Responsive<DtoEstudioGrafica>> {
+                new Responsive<DtoEstudioGrafica> {
+                    Breakpoint=700, Options = new ApexChartOptions<DtoEstudioGrafica> {
+                        Chart = null,
 
-            options = new ApexChartOptions<DtoEstudioGrafica>
-                {
-                    Chart = new Chart
-                    {
-                        Toolbar = new Toolbar
-                        {
-                            Show = true
-                        },
-                        DropShadow = new DropShadow
-                        {
-                            Enabled = true,
-                            Color = "",
-                            Top = 18,
-                            Left = 7,
-                            Blur = 10,
-                            Opacity = 0.2d
-                        }
-                    },
-                    DataLabels = new ApexCharts.DataLabels
-                    {
-                        OffsetY = -6d
-                    },
-                    Grid = new Grid
-                    {
-                        BorderColor = "#e7e7e7",
-                        Row = new GridRow
-                        {
-                            Colors = new List<string> { "#f3f3f3", "transparent" },
-                            Opacity = 0.5d
-                        }
-                    },
+                        //Title = new Title { Text = "Order Net Value"}
+                    }
 
-                    Colors = new List<string> { "#77B6EA", "#545454" },
-                    Markers = new Markers { Shape = ShapeEnum.Circle, Size = 5, FillOpacity = new Opacity(0.8d) },
-                    Stroke = new Stroke { Curve = Curve.Smooth },
-                    Legend = new Legend
-                    {
-                        Position = LegendPosition.Top,
-                        HorizontalAlign = ApexCharts.Align.Right,
-                        Floating = true,
-                        OffsetX = -5,
-                        OffsetY = -25
-                    },
+                },
+                new Responsive<DtoEstudioGrafica> {
+                    Breakpoint=9001, Options = new ApexChartOptions<DtoEstudioGrafica> {
+                        Chart = null,
 
-                };
+                        //Title = new Title { Text = "Hola"}
+                    }
+
+                }
+            };
+
+            // options = new ApexChartOptions<DtoEstudioGrafica>
+            //     {
+            //         Chart = new Chart
+            //         {
+            //             Toolbar = new Toolbar
+            //             {
+            //                 Show = true
+            //             },
+            //             DropShadow = new DropShadow
+            //             {
+            //                 Enabled = true,
+            //                 Color = "",
+            //                 Top = 18,
+            //                 Left = 7,
+            //                 Blur = 10,
+            //                 Opacity = 0.2d
+            //             }
+            //         },
+            //         DataLabels = new ApexCharts.DataLabels
+            //         {
+            //             OffsetY = -6d
+            //         },
+            //         Grid = new Grid
+            //         {
+            //             BorderColor = "#e7e7e7",
+            //             Row = new GridRow
+            //             {
+            //                 Colors = new List<string> { "#f3f3f3", "transparent" },
+            //                 Opacity = 0.5d
+            //             }
+            //         },
+
+            //         Colors = new List<string> { "#77B6EA", "#545454" },
+            //         Markers = new Markers { Shape = ShapeEnum.Circle, Size = 5, FillOpacity = new Opacity(0.8d) },
+            //         Stroke = new Stroke { Curve = Curve.Smooth },
+            //         Legend = new Legend
+            //         {
+            //             Position = LegendPosition.Top,
+            //             HorizontalAlign = ApexCharts.Align.Right,
+            //             Floating = true,
+            //             OffsetX = -5,
+            //             OffsetY = -25
+            //         },
+
+            //     };
         }
         StateHasChanged();
     }

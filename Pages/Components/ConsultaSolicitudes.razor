@@ -472,25 +472,64 @@ else
                     dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
                 }
 
-                if (filorig.LstFiltro.Count > 0)
+                if (filorig!=null)
                 {
-                    var obFilter = filorig.LstFiltro.FirstOrDefault(op => op.OriginPage.Trim().Equals("ConsultaSolicitudes"));
-                    if (obFilter != null)
+                    if (filorig.LstFiltro.Count > 0)
                     {
-                        if (obFilter.ExistReg)
+                        var obFilter = filorig.LstFiltro.FirstOrDefault(op => op.OriginPage.Trim().Equals("ConsultaSolicitudes"));
+                        if (obFilter != null)
                         {
-                            if (String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && String.IsNullOrEmpty(obFilter.DateFinal.ToString()) && !String.IsNullOrEmpty(obFilter.ExpedienteNombreSol))
+                            if (obFilter.ExistReg)
                             {
-                                parametrobusqueda = new()
+                                if (String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && String.IsNullOrEmpty(obFilter.DateFinal.ToString()) && !String.IsNullOrEmpty(obFilter.ExpedienteNombreSol))
+                                {
+                                    parametrobusqueda = new()
+                                        {
+                                            MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                                            CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                                            Buscar = obFilter.ExpedienteNombreSol.ToString(),
+                                            TipoFecha = 1,
+                                            Fecha = new() { }
+                                        };
+                                }
+                                else if (!String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && !String.IsNullOrEmpty(obFilter.DateFinal.ToString()) && String.IsNullOrEmpty(obFilter.ExpedienteNombreSol))
+                                {
+                                    parametrobusqueda = new()
+                                        {
+                                            MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                                            CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                                            Buscar = null,
+                                            TipoFecha = 1,
+                                            Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") }
+                                        };
+                                }
+                                else if (!String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && !String.IsNullOrEmpty(obFilter.DateFinal.ToString()) && !String.IsNullOrEmpty(obFilter.ExpedienteNombreSol))
+                                {
+                                    parametrobusqueda = new()
+                                        {
+                                            MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                                            CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
+                                            Buscar = obFilter.ExpedienteNombreSol.ToString(),
+                                            TipoFecha = 1,
+                                            Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") }
+                                        };
+                                }
+                                dtoFiltro.DateFinal = obFilter.DateFinal;
+                                dtoFiltro.DateInicial = obFilter.DateInicial;
+                                dtoFiltro.Solicitud = obFilter.ExpedienteNombreSol;
+                                nopag = int.Parse(obFilter.PageNo);
+                                filorig.LstFiltro.Where(w => w.OriginPage.Equals("ConsultaSolicitudes")).ToList().ForEach(i => i.ExistReg = false);
+                                string json = JsonConvert.SerializeObject(dtoMedico);
+                                string filtro = JsonConvert.SerializeObject(filorig);
+                                var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+                                await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
                                     {
-                                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                                        CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
-                                        Buscar = obFilter.ExpedienteNombreSol.ToString(),
-                                        TipoFecha = 1,
-                                        Fecha = new() { }
-                                    };
+                                        filtros = Cryp.Encripta(filtro),
+                                        testsuncretr = Cryp.Encripta(json),
+                                        Type = 2,
+                                    });
                             }
-                            else if (!String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && !String.IsNullOrEmpty(obFilter.DateFinal.ToString()) && String.IsNullOrEmpty(obFilter.ExpedienteNombreSol))
+                            else
                             {
                                 parametrobusqueda = new()
                                     {
@@ -498,34 +537,9 @@ else
                                         CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
                                         Buscar = null,
                                         TipoFecha = 1,
-                                        Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") }
+                                        Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                                     };
                             }
-                            else if (!String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && !String.IsNullOrEmpty(obFilter.DateFinal.ToString()) && !String.IsNullOrEmpty(obFilter.ExpedienteNombreSol))
-                            {
-                                parametrobusqueda = new()
-                                    {
-                                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                                        CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
-                                        Buscar = obFilter.ExpedienteNombreSol.ToString(),
-                                        TipoFecha = 1,
-                                        Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") }
-                                    };
-                            }
-                            dtoFiltro.DateFinal = obFilter.DateFinal;
-                            dtoFiltro.DateInicial = obFilter.DateInicial;
-                            dtoFiltro.Solicitud = obFilter.ExpedienteNombreSol;
-                            nopag = int.Parse(obFilter.PageNo);
-                            filorig.LstFiltro.Where(w => w.OriginPage.Equals("ConsultaSolicitudes")).ToList().ForEach(i => i.ExistReg = false);
-                            string json = JsonConvert.SerializeObject(dtoMedico);
-                            string filtro = JsonConvert.SerializeObject(filorig);
-                            var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
-                            await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
-                                {
-                                    filtros = Cryp.Encripta(filtro),
-                                    testsuncretr = Cryp.Encripta(json),
-                                    Type = 2,
-                                });
                         }
                         else
                         {
@@ -538,6 +552,8 @@ else
                                     Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                                 };
                         }
+
+
                     }
                     else
                     {
@@ -550,8 +566,6 @@ else
                                 Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                             };
                     }
-                    
-
                 }
                 else
                 {

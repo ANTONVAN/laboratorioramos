@@ -496,16 +496,17 @@ else
                 ValidateData = true;
                 dtoMedicoPaciente.Clear();
                 DtoRequestMedicoPacientes parametrobusqueda = new()
+                {
+                    MedicoId = new()
                     {
-                        MedicoId = new()
-                        {
-                            dtoMedico.IdMedico
-                        },
-                        CompañiaId = new(),
-                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre,
-                        TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
-                    };
+                        dtoMedico.IdMedico
+                    },
+                    CompañiaId = new(),
+                    Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre,
+                    TipoFecha = 1,
+                    Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
+                };
+                string json1 = JsonConvert.SerializeObject(parametrobusqueda);
                 var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
 
                 dtoMedicoPacienteTmp = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
