@@ -18,20 +18,37 @@
 
 <PageTitle>Resultados</PageTitle>
 
-@if (dataLoaded)
+@* @if (dataLoaded)
 {
     <Loading></Loading>
 }
 else
 {
-    <MudGrid>
-        @* <MudItem xs="1" sm="1" md="1">
+    
+
+} *@
+
+<MudBreadcrumbs Items="_items" Style="padding-bottom: 24px; padding-top:0px;"></MudBreadcrumbs>
+<MudGrid>
+    @* <MudItem xs="1" sm="1" md="1">
             <MudLink OnClick="NavigationInicio" Underline="Underline.Always"><MudIconButton Icon="@Icons.Material.Filled.ArrowCircleLeft" aria-label="Atras" Color="Color.Dark"></MudIconButton> </MudLink>
         </MudItem> *@
-        <MudItem xs="12" sm="12" md="12">
-            <MudText Align="Align.Center" Typo="Typo.h4" style="color: #0d37a8;">Resultados</MudText>
+    <MudItem xs="12" sm="12" md="12">
+        <MudText Align="Align.Center" Typo="Typo.h4" style="color: #0d37a8;">Resultados</MudText>
+    </MudItem>
+</MudGrid>
+
+@if (dataLoaded)
+{
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="12" Style="text-align:center">
+            <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
         </MudItem>
     </MudGrid>
+    
+}
+else
+{
     <MudPaper Class="pa-4" Elevation="4" Style="width:100%;">
         <MudGrid>
             <MudItem xs="12" sm="12" md="12" Style="padding-top: 12px;">
@@ -50,7 +67,7 @@ else
                         }
                     }
                     &nbsp;<b>@LstExpedientes[0].Nombre</b>
-                    
+
                 </MudText>
             </MudItem>
             <MudItem xs="12" sm="6" md="1" Style="padding-top: 0px;">
@@ -68,7 +85,7 @@ else
                 <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.FolderShared" Color="Color.Primary" />&nbsp;<b>Expediente:</b> &nbsp; @LstExpedientes[0].Expediente</MudText>
             </MudItem>
 
-            
+
             <MudItem xs="12" sm="6" md="3" Style="padding-top: 0px;">
                 <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" />&nbsp;<b>Fecha Nac.:</b> &nbsp; @LstExpedientes[0].FechaNacimiento</MudText>
             </MudItem>
@@ -84,7 +101,7 @@ else
         <MudGrid>
             <MudItem xs="12" sm="12" md="12">
                 <MudExpansionPanels MultiExpansion="true">
-                    @if (dtoResultadosEstudios.Estudios!=null)
+                    @if (dtoResultadosEstudios.Estudios != null)
                     {
                         foreach (var item in dtoResultadosEstudios.Estudios)
                         {
@@ -587,6 +604,10 @@ else
 
 }
 
+
+
+
+
 <style>
 
     .mud-expand-panel .mud-expand-panel-header {
@@ -627,7 +648,7 @@ else
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
     {
         new BreadcrumbItem("Home", href: "#", icon: Icons.Material.Filled.Home),
-        new BreadcrumbItem("Consulta de Resultados", href: null, disabled: true, icon: Icons.Material.Filled.Badge),
+        new BreadcrumbItem("Consulta de Resultados", href: null,  icon: Icons.Material.Filled.Badge),
     };
 
 
@@ -684,13 +705,20 @@ else
 
                 Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
                 var resPacDecripInicial = Cryp.Desencripta(PostSolicitud);
-                var resPacDecrip = resPacDecripInicial.Split("!"); //0=solicitud, 1=Estudio
+                var resPacDecrip = resPacDecripInicial.Split("!"); //0=solicitud, 1=Estudio,2=paginallamado
                 var idenUser = authState.User.Claims.ToList();
+                //var args = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip[0].ToString());
                 if (PostRequiere == "1") //Paciente
                 {
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
                     dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
 
+                    _items = new List<BreadcrumbItem>
+                    {
+                        new BreadcrumbItem("Home", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(resPacDecrip[0])}", icon: Icons.Material.Filled.Home),
+                        new BreadcrumbItem("Consulta de Resultados", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(resPacDecrip[0])}", icon: Icons.Material.Filled.Badge),
+                        new BreadcrumbItem("Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                    };
 
                 }
                 else if (PostRequiere == "2")//Medico
@@ -698,12 +726,25 @@ else
 
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
                     dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
-                    // _items = new List<BreadcrumbItem>
-                    // {
-                    //     new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
-                    //     new BreadcrumbItem("Consulta de Solicitudes", href: "#ConsultaSolicitudesMedico", icon: Icons.Material.Filled.Badge,disabled:false),
-                    //     new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
-                    // };
+                    if (resPacDecrip[2].ToString().Equals("ConsultaResultadosPaciente"))
+                    {
+                        _items = new List<BreadcrumbItem>
+                        {
+                            new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
+                            new BreadcrumbItem("Consulta de Expedientes", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Badge,disabled:false),
+                            new BreadcrumbItem("Consulta de Resultados", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(resPacDecrip[0])}", icon: Icons.Material.Filled.Badge,disabled:false),
+                            new BreadcrumbItem("Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                        };
+                    }else
+                    {
+                        _items = new List<BreadcrumbItem>
+                        {
+                            new BreadcrumbItem("Home", href: $"ConsultaSolicitudes/{PostRequiere}", icon: Icons.Material.Filled.Home),
+                            new BreadcrumbItem("Consulta de Solicitudes", href: $"ConsultaSolicitudes/{PostRequiere}", icon: Icons.Material.Filled.Badge,disabled:false),
+                            new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                        };
+                    }
+                    
                     // var resPacDecrip = Cryp.Desencripta(PostPaciente);
                     // dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
                     // ShowNombre = true;
@@ -726,7 +767,7 @@ else
                     {
                         MedicoId = PostRequiere == "1" ? new() : PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
                         CompañiaId = PostRequiere == "1" ? new() : PostRequiere == "2" ? new():new() { dtoEmpresa.Id },
-                        Buscar = resPacDecrip[0].Replace("\"",""),
+                        Buscar = resPacDecrip[0].Replace("\"", ""),
                         TipoFecha = 1,
                         Fecha = new()
                     };
@@ -757,13 +798,28 @@ else
                             if (resPacDecrip.Count()>1)
                             {
                                 var estuido = resPacDecrip[1].Replace("\\", "");
-                                estuido = estuido[..^1];
-                                dtoResponseMedicoPacienteStudios = JsonConvert.DeserializeObject<DtoResponseMedicoPacienteStudios>(estuido);
-                                var studioselec = dtoResultadosEstudiosGral.Estudios.FirstOrDefault(e => e.Id.Equals(dtoResponseMedicoPacienteStudios.EstudioId));
-                                if (studioselec.EstatusId == 7 || studioselec.EstatusId==6)
+                                if (!String.IsNullOrEmpty(estuido))
                                 {
-                                    dtoResultadosEstudios.Estudios = new() { studioselec };
+                                    estuido = estuido[..^1];
+                                    dtoResponseMedicoPacienteStudios = JsonConvert.DeserializeObject<DtoResponseMedicoPacienteStudios>(estuido);
+                                    var studioselec = dtoResultadosEstudiosGral.Estudios.FirstOrDefault(e => e.Id.Equals(dtoResponseMedicoPacienteStudios.EstudioId));
+                                    if (studioselec.EstatusId == 7 || studioselec.EstatusId == 6)
+                                    {
+                                        dtoResultadosEstudios.Estudios = new() { studioselec };
+                                    }
                                 }
+                                else
+                                {
+                                    dtoResultadosEstudios.Estudios = new();
+                                    foreach (var itemStudiosgr in dtoResultadosEstudiosGral.Estudios)
+                                    {
+                                        if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 6)
+                                        {
+                                            dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
+                                        }
+                                    }
+                                }
+                                
 
                             }
                             else

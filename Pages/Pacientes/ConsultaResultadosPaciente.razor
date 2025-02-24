@@ -28,12 +28,12 @@
 }
 else
 {
-    
 
-   
+
+
 } *@
 
-<MudBreadcrumbs Items="_items" Style="padding: 0px;"></MudBreadcrumbs>
+<MudBreadcrumbs Items="_items" Style="padding-bottom: 24px; padding-top:0px;"></MudBreadcrumbs>
 <MudGrid>
     @if (ShowNombre)
     {
@@ -361,23 +361,23 @@ else
 
 <style>
     .mud-input-input-control {
-        align-items: normal;
+    align-items: normal;
     }
     .mud-toolbar mud-toolbar-gutters mud-table-toolbar{
-        margin-bottom: 20px;
+    margin-bottom: 20px;
     }
 
     .mud-link.mud-link-underline-always {
-        text-decoration: underline;
-        font-family: Arial;
-        font-size: .875rem;
+    text-decoration: underline;
+    font-family: Arial;
+    font-size: .875rem;
     }
 
     .mud-typography {
-        margin: 0;
-        font-family: Arial !important;
-        font-weight: bold !important;
-        font-size: .875rem;
+    margin: 0;
+    font-family: Arial !important;
+    font-weight: bold !important;
+    font-size: .875rem;
     }
 </style>
 
@@ -407,9 +407,9 @@ else
     [RegularExpression("^[0-9]*$", ErrorMessage = "Solo se permiten números")]
     private string searchString1;
     private string searchEstudios = "";
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
+    private List<BreadcrumbItem> _items =new()
     {
-        new BreadcrumbItem("Home", href: "#", icon: Icons.Material.Filled.Home),
+        new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
         new BreadcrumbItem("Consulta de Resultados", href: null, disabled: true, icon: Icons.Material.Filled.Badge),
     };
 
@@ -480,10 +480,10 @@ else
                     var filtros = Cryp.Desencripta(idenUser[1].Value.ToString());
                     filorig = JsonConvert.DeserializeObject<DtoFiltroNavega>(filtros);
                     dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
-                    _items = new List<BreadcrumbItem>
+                    _items =new()
                     {
-                        new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
-                        new BreadcrumbItem("Consulta de Expedientes", href: "#ConsultaExpedientesMedico", icon: Icons.Material.Filled.Badge,disabled:false),
+                        new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico/", icon: Icons.Material.Filled.Home),
+                        new BreadcrumbItem("Consulta de Expedientes", href: "ConsultaExpedientesMedico/", icon: Icons.Material.Filled.Badge,disabled:false),
                         new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                     };
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);
@@ -493,11 +493,11 @@ else
                 }
                 else if (PostRequiere == "3")//Compañia
                 {
-                    _items = new List<BreadcrumbItem>
+                    _items =new()
                     {
                         new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
                         new BreadcrumbItem("Empresa", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
-                        new BreadcrumbItem("Paciente", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                        new BreadcrumbItem("Paciente", href: null, icon: Icons.Material.Filled.VerifiedUser, disabled: true),
                     };
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);
                     dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
@@ -1017,8 +1017,10 @@ else
         });
 
         string json0 = JsonConvert.SerializeObject(_estudio);
-        string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args.Solicitud}" : $"{args.Solicitud}!{json0}");
-        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(json1)}", true);
+        string jsonSoli = JsonConvert.SerializeObject(args.Solicitud);
+        //string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args}" : $"{args}!{_estudio}");
+        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(_estudio == null ? $"{jsonSoli}!{null}!ConsultaResultadosPaciente" : $"{jsonSoli}!{json0}!ConsultaResultadosPaciente")}", true);
+
 
 
     }

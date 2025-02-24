@@ -32,7 +32,7 @@ else
     
 } *@
 
-<MudBreadcrumbs Items="_items" Style="padding: 0px;"></MudBreadcrumbs>
+<MudBreadcrumbs Items="_items" Style="padding-bottom: 24px; padding-top:0px;"></MudBreadcrumbs>
 <MudGrid>
     @* @if (ShowNombre)
     {
@@ -1015,8 +1015,9 @@ else
             });
 
         string json0 = JsonConvert.SerializeObject(_estudio);
-        string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args.Solicitud}" : $"{args.Solicitud}!{json0}");
-        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(json1)}", true);
+        string jsonSoli = JsonConvert.SerializeObject(args.Solicitud);
+        //string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args}" : $"{args}!{_estudio}");
+        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(_estudio == null ? $"{jsonSoli}!{null}!ConsultaSolicitudes" : $"{jsonSoli}!{json0}!ConsultaSolicitudes")}", true);
     }
     
     #endregion
