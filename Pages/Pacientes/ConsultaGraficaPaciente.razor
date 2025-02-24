@@ -199,7 +199,47 @@
             options.Responsive = new List<Responsive<DtoEstudioGrafica>> {
                 new Responsive<DtoEstudioGrafica> {
                     Breakpoint=700, Options = new ApexChartOptions<DtoEstudioGrafica> {
-                        Chart = null,
+                        Chart = new Chart
+                        {
+                            Toolbar = new Toolbar
+                            {
+                                Show = true
+                            },
+                            DropShadow = new DropShadow
+                            {
+                                Enabled = true,
+                                Color = "",
+                                Top = 18,
+                                Left = 7,
+                                Blur = 10,
+                                Opacity = 0.2d
+                            }
+                        },
+                        DataLabels = new ApexCharts.DataLabels
+                        {
+                            OffsetY = -6d
+                        },
+                        Grid = new Grid
+                        {
+                            BorderColor = "#e7e7e7",
+                            Row = new GridRow
+                            {
+                                Colors = new List<string> { "#f3f3f3", "transparent" },
+                                Opacity = 0.5d
+                            }
+                        },
+
+                        Colors = new List<string> { "#77B6EA", "#545454" },
+                        Markers = new Markers { Shape = ShapeEnum.Circle, Size = 5, FillOpacity = new Opacity(0.8d) },
+                        Stroke = new Stroke { Curve = Curve.Smooth },
+                        Legend = new Legend
+                        {
+                            Position = LegendPosition.Top,
+                            HorizontalAlign = ApexCharts.Align.Right,
+                            Floating = true,
+                            OffsetX = -5,
+                            OffsetY = -25
+                        },
 
                         //Title = new Title { Text = "Order Net Value"}
                     }
@@ -207,7 +247,47 @@
                 },
                 new Responsive<DtoEstudioGrafica> {
                     Breakpoint=9001, Options = new ApexChartOptions<DtoEstudioGrafica> {
-                        Chart = null,
+                        Chart = new Chart
+                        {
+                            Toolbar = new Toolbar
+                            {
+                                Show = true
+                            },
+                            DropShadow = new DropShadow
+                            {
+                                Enabled = true,
+                                Color = "",
+                                Top = 18,
+                                Left = 7,
+                                Blur = 10,
+                                Opacity = 0.2d
+                            }
+                        },
+                        DataLabels = new ApexCharts.DataLabels
+                        {
+                            OffsetY = -6d
+                        },
+                        Grid = new Grid
+                        {
+                            BorderColor = "#e7e7e7",
+                            Row = new GridRow
+                            {
+                                Colors = new List<string> { "#f3f3f3", "transparent" },
+                                Opacity = 0.5d
+                            }
+                        },
+
+                        Colors = new List<string> { "#77B6EA", "#545454" },
+                        Markers = new Markers { Shape = ShapeEnum.Circle, Size = 5, FillOpacity = new Opacity(0.8d) },
+                        Stroke = new Stroke { Curve = Curve.Smooth },
+                        Legend = new Legend
+                        {
+                            Position = LegendPosition.Top,
+                            HorizontalAlign = ApexCharts.Align.Right,
+                            Floating = true,
+                            OffsetX = -5,
+                            OffsetY = -25
+                        },
 
                         //Title = new Title { Text = "Hola"}
                     }
