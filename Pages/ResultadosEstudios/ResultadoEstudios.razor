@@ -24,7 +24,7 @@
 }
 else
 {
-    
+
 
 } *@
 
@@ -45,7 +45,7 @@ else
             <MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
         </MudItem>
     </MudGrid>
-    
+
 }
 else
 {
@@ -345,9 +345,17 @@ else
                                                         <MudTable Class="mt-4" Items="@itemParam.TipoValores" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="2" Style="width:100%;">
                                                             <ColGroup>
                                                                 <col />
+                                                                <col />
+                                                                <col />
+                                                                <col />
+                                                                <col />
                                                             </ColGroup>
                                                             <RowTemplate>
-                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.PrimeraColumna &nbsp; @context.SegundaColumna</MudTd>
+                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.PrimeraColumna</MudTd>
+                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.SegundaColumna</MudTd>
+                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.TerceraColumna</MudTd>
+                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.CuartaColumna</MudTd>
+                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.QuintaColumna</MudTd>
                                                             </RowTemplate>
                                                             <NoRecordsContent>
                                                                 <MudText></MudText>
@@ -559,12 +567,24 @@ else
                                                 if (itemParam.TipoValores.Count > 0)
                                                 {
                                                     <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                        <MudTable Class="mt-4" Items="@itemParam.TipoValores" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="2" Style="width:100%;">
-                                                            <ColGroup>
-                                                                <col />
-                                                            </ColGroup>
+                                                        <MudTable Class="mt-4" Items="@itemParam.TipoValores" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="2" Style="width:100%;" CustomHeader="true">
                                                             <RowTemplate>
-                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.PrimeraColumna &nbsp; @context.SegundaColumna</MudTd>
+                                                                @if(context.PrimeraColumna!=null){
+                                                                    <MudTd DataLabel="" Style="font-weight:bolder">@context.PrimeraColumna</MudTd>
+                                                                } 
+                                                                @if(context.SegundaColumna!=null){
+                                                                    <MudTd DataLabel="" Style="font-weight:bolder">@context.SegundaColumna</MudTd>
+                                                                } 
+                                                                @if(context.TerceraColumna!=null){
+                                                                    <MudTd DataLabel="" Style="font-weight:bolder">@context.TerceraColumna</MudTd>
+                                                                }
+                                                                @if(context.CuartaColumna!=null){
+                                                                    <MudTd DataLabel="" Style="font-weight:bolder">@context.CuartaColumna</MudTd>
+                                                                }
+                                                                @if(context.QuintaColumna!=null){
+                                                                    <MudTd DataLabel="" Style="font-weight:bolder">@context.QuintaColumna</MudTd>
+                                                                } 
+                                                                
                                                             </RowTemplate>
                                                             <NoRecordsContent>
                                                                 <MudText></MudText>
