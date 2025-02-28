@@ -128,13 +128,13 @@ else
             {
                 <MudItem xs="12" sm="12" md="12" >
                     <MudGrid>
-                        <MudItem xs="12" sm="12" md="3" Class="d-flex justify-center">
-                            <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.ArrowBackIosNew" Color="@Color.Error" Class="add-item-btn">Atrás</MudButton>
+                        <MudItem xs="12" sm="12" md="9" Class="d-flex justify-center">
+                            <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" Color="@Color.Error" Class="add-item-btn">Salir</MudButton>
                         </MudItem>
-                        <MudItem xs="12" sm="12" md="3" Class="d-flex justify-center">
+                        @* <MudItem xs="12" sm="12" md="3" Class="d-flex justify-center">
                             <MudButton OnClick="@ContnueProcess"  StartIcon="@Icons.Material.Filled.DoubleArrow" Color="@Color.Info" Class="add-item-btn">Continuar</MudButton>
-                        </MudItem>
-                        <MudItem xs="12" sm="12" md="6" Class="d-flex justify-end">
+                        </MudItem> *@
+                        <MudItem xs="12" sm="12" md="3" Class="d-flex justify-end">
                             <b><Label>Registro: @DateTime.Now.ToLongDateString().ToUpper()</Label></b>
                         </MudItem>
                     </MudGrid>
@@ -156,12 +156,6 @@ else
                                         {
                                             SelectedCiudad(dtoGeneralesCotizacion.Ciudad);
                                         }
-                                        @*  <MudSelect T="string" Label="Ciudad *" Clearable="true" ValueChanged="SelectedCiudad">
-                                        @foreach (var ocity in _oSucursalByCity)
-                                        {
-                                            <MudSelectItem Value="@ocity.Ciudad">@ocity.Ciudad</MudSelectItem>
-                                        }
-                                    </MudSelect> *@
                                     </MudItem>
                                     <MudItem xs="12" sm="12" md="12">
                                         @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
@@ -218,7 +212,7 @@ else
                     <MudItem xs="12" sm="12" md="12">
                         <MudText Class="p-2" Style="background-color: #0d37a8;color: white;" Align="Align.Center">Órden No.: <b>@CotizacionDraft.clave &nbsp; &nbsp;&nbsp;&nbsp;</b></MudText>
 
-                        <MudStepper NonLinear ShowResetButton OnPreviewInteraction="OnPreviewInteraction" @bind-ActiveIndex="_index">
+                        <MudStepper NonLinear ShowResetButton OnPreviewInteraction="OnPreviewInteraction" @bind-ActiveIndex="_index" >
                             <ConnectorTemplate Context="step">
                                 <div class="mud-stepper-nav-connector">
                                     @{
@@ -234,6 +228,60 @@ else
 
                         </LabelTemplate> *@
                             <ChildContent>
+                                <MudStep Title="Ciudad" SecondaryText="(Opcional)">
+                                    <MudDivider />
+                                    <MudGrid Class="mt2">
+                                        <MudItem xs="12" sm="6" md="6">
+                                            <MudAutocomplete T="string" @bind-Value="dtoGeneralesCotizacion.Ciudad"
+                                                             SearchFunc="SearchCiudad"
+                                                             Label="Ciudad"
+                                                             Clearable="true" />
+
+                                            @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
+                                            {
+                                                SelectedCiudad(dtoGeneralesCotizacion.Ciudad);
+                                            }
+                                        </MudItem>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
+                                            {
+                                                <MudTable T="DtoSucursal" Items="@_oSucursalForCity" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
+                                                          RowClass="cursor-pointer" RowClassFunc="@SelectedRowSucursal" OnRowClick="RowClickEvent" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
+                                                    @* <ToolBarContent style=" flex-flow: column;padding-top: 20px;"> *@
+                                                    <ToolBarContent>
+                                                        <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Sucursales</MudText> <br />
+                                                        <MudText Typo="Typo.body1" Align="Align.Center" style="color: #0d37a8;">&nbsp;&nbsp;&nbsp;(Opcional)</MudText> <br />
+                                                        @* <MudSpacer /> *@
+                                                    </ToolBarContent>
+                                                    <HeaderContent>
+                                                        @* <MudTh>Código</MudTh> *@
+                                                        <MudTh Style="color:#921313">Clave</MudTh>
+                                                        <MudTh Style="color:#921313">Nombre</MudTh>
+                                                        <MudTh Style="color:#921313">Ubicacion</MudTh>
+                                                        <MudTh Style="color:#921313">Telefono</MudTh>
+                                                        <MudTh Style="color:#921313">Correo</MudTh>
+                                                    </HeaderContent>
+                                                    <RowTemplate>
+                                                        @* <MudTd DataLabel="Codigo">@sucur.Codigo</MudTd> *@
+                                                        <MudTd DataLabel="Clave">@sucur.Clave</MudTd>
+                                                        <MudTd DataLabel="Nombre">@sucur.Nombre</MudTd>
+                                                        <MudTd DataLabel="Ubicacion">@sucur.Ubicacion</MudTd>
+                                                        <MudTd DataLabel="Telefono">@sucur.Telefono</MudTd>
+                                                        <MudTd DataLabel="Correo">@sucur.Correo</MudTd>
+                                                    </RowTemplate>
+                                                    <NoRecordsContent>
+                                                        <MudText>Sin Registros para mostrar</MudText>
+                                                    </NoRecordsContent>
+                                                    <PagerContent>
+                                                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                                                    </PagerContent>
+                                                </MudTable>
+
+                                            }
+
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudStep>
                                 <MudStep Title="Generales Paciente" SecondaryText="(Opcional)">
                                     <MudDivider />
                                     <MudGrid Class="mt-2">
@@ -324,7 +372,7 @@ else
                                                     </PagerContent>
                                                 </MudDataGrid>
 *@
-                                                    <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudios" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Breakpoint="Breakpoint.Sm"
+                                                    <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudiosOriginal" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Breakpoint="Breakpoint.Sm"
                                                     RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele">
                                                         <ColGroup>
                                                             <col style="width:10px;" />
@@ -457,14 +505,22 @@ else
                                     </MudGrid>
                                 </MudStep>
                             </ChildContent>
-                            <ActionContent Context="stepper">                                    
-                                <MudIconButton OnClick="@(() => stepper.PreviousStepAsync())" Icon="@Icons.Material.Filled.ArrowBack" Color="Color.Primary" Disabled="@(_index <= 0)" />
+                            <ActionContent Context="stepper">
+                                @* <MudIconButton OnClick="@(() => stepper.PreviousStepAsync())" Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" Color="Color.Primary" Disabled="@(_index <= 0)" >Anterior</MudIconButton> *@
+                                <MudButton Variant="Variant.Text"
+                                           StartIcon="@Icons.Material.Filled.KeyboardDoubleArrowLeft"
+                                           Color="Color.Primary"
+                                           Style="text-transform:none" OnClick="@(() => stepper.PreviousStepAsync())" Disabled="@(_index <= 0)">
+                                    Anterior
+                                </MudButton>
                                 <MudSpacer />
-                                @* @if (stepper.Steps[_index].Skippable == true)
-                            {
-                                <MudIconButton OnClick="@(() => stepper.SkipCurrentStepAsync())" Icon="@stepper.SkipButtonIcon" Color="Color.Primary" />
-                            } *@
-                                <MudIconButton OnClick="@(() => stepper.NextStepAsync())" Icon="@Icons.Material.Filled.ArrowForward" Color="Color.Primary" />
+                                @* <MudIconButton OnClick="@(() => stepper.NextStepAsync())" Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" Color="Color.Primary">Siguiente</MudIconButton> *@
+                                <MudButton Variant="Variant.Text"
+                                           EndIcon="@Icons.Material.Filled.KeyboardDoubleArrowRight"
+                                           Color="Color.Primary"
+                                           Style="text-transform:none" OnClick="@(() => stepper.NextStepAsync())">
+                                    Siguiente
+                                </MudButton>
 
                             </ActionContent>
                         </MudStepper>
@@ -568,7 +624,7 @@ else
 
             <MudItem xs="12" sm="12" md="12">
                 <MudTable T="DtoEstudioResponsePrice" Items="@_oEstudioResponsePrice" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTableEstudios"
-                RowClass="cursor-pointer" @bind-SelectedItems="selectedEstudios" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Loading="@searchEstudiosTxt">
+                          RowClass="cursor-pointer" @bind-SelectedItems="selectedEstudios" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Loading="@searchEstudiosTxt">
                     <ColGroup>
                         <col />
                         <col style="width:20px;" />
@@ -746,7 +802,7 @@ else
     private bool visibleInfoPaciente= false;
     private bool visibleInfoEstudio= false;
     private bool NewCotizacion = false;
-    private bool ContinuarCotizacion = false;
+    private bool ContinuarCotizacion = true;
     private bool IsEdition = false;
     private bool CreandoPDF = false;
 
@@ -887,26 +943,54 @@ else
         switch (arg.StepIndex)
         {
             case 0:
-                // if (_step1Complete != true)
-                // {
-                //     await DialogService.ShowMessageBox("Error", "You have not flipped the switch in step 1");
-                //     arg.Cancel = true;
-                // }
+                if (String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
+                {
+                    ShowSnack("¡Por favor selecciona una \"CIUDAD\"!", 4);
+                    //ContinuarCotizacion = false;
+                    arg.Cancel = true;
+                }
+                else
+                {
+                    if (String.IsNullOrEmpty(CotizacionDraft.clave))
+                    {
+                        SucursalID = String.IsNullOrEmpty(SucursalID) ? _oSucursalForCity.FirstOrDefault().IdSucursal : SucursalID;
+                        DtoDraftCotizacion drafCotiza = new()
+                            {
+                                SucursalId = SucursalID,
+                                EstatusId = 1
+                            };
+                        string json1 = JsonConvert.SerializeObject(drafCotiza);
+                        var responseDraft = await Http.PostAsJsonAsync<DtoDraftCotizacion>(UrlOrdenesDraft, drafCotiza);
+                        if (responseDraft.IsSuccessStatusCode)
+                        {
+                            IDCotizacionDraft = await responseDraft.Content.ReadAsStringAsync() ?? "";
+                            CotizacionDraft = await Http.GetFromJsonAsync<DtoCotizacion>($"{UrlOrdenesDraftNo}{IDCotizacionDraft}");
+                        }
+                        else
+                        {
+                            ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
+                            //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
+                        }
+                    }
+                }
                 break;
             case 1:
-                if (selectedEstudios.Count==0)
+                
+                break;
+            case 2:
+                if (selectedEstudiosOriginal.Count == 0)
                 {
                     await DialogService.ShowMessageBox("Error", "Por favor seleccione algún estudio para continuar");
                     arg.Cancel = true;
                 }
                 break;
-            case 2:
-
-                break;
             case 3:
+                
+                break;
+            case 4:
                 //CreandoPDF = true;
-                var serv = CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudios, CotizacionDraft);
-                _index = 3;
+                var serv = CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+                _index = 4;
                 await serv;
                 //CreandoPDF = false;
                 break;
@@ -918,23 +1002,51 @@ else
         switch (arg.StepIndex)
         {
             case 1:
-                // if (_step1Complete != true)
-                // {
-                //     await DialogService.ShowMessageBox("Error", "Finish step 1 first");
-                //     arg.Cancel = true;
-                // }
+                if (String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
+                {
+                    ShowSnack("¡Por favor selecciona una \"CIUDAD\"!", 4);
+                    //ContinuarCotizacion = false;
+                    arg.Cancel = true;
+                }
+                else
+                {
+                    if (String.IsNullOrEmpty(CotizacionDraft.clave))
+                    {
+                        SucursalID = String.IsNullOrEmpty(SucursalID) ? _oSucursalForCity.FirstOrDefault().IdSucursal : SucursalID;
+                        DtoDraftCotizacion drafCotiza = new()
+                            {
+                                SucursalId = SucursalID,
+                                EstatusId = 1
+                            };
+                        string json1 = JsonConvert.SerializeObject(drafCotiza);
+                        var responseDraft = await Http.PostAsJsonAsync<DtoDraftCotizacion>(UrlOrdenesDraft, drafCotiza);
+                        if (responseDraft.IsSuccessStatusCode)
+                        {
+                            IDCotizacionDraft = await responseDraft.Content.ReadAsStringAsync() ?? "";
+                            CotizacionDraft = await Http.GetFromJsonAsync<DtoCotizacion>($"{UrlOrdenesDraftNo}{IDCotizacionDraft}");
+                        }
+                        else
+                        {
+                            ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
+                            //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
+                        }
+                    }
+                }
                 break;
             case 2:
-                if (selectedEstudios.Count == 0)
+                
+                break;
+            case 3:
+                if (selectedEstudiosOriginal.Count == 0)
                 {
                     await DialogService.ShowMessageBox("Error", "Por favor seleccione algún estudio para continuar");
                     arg.Cancel = true;
                 }
                 break;
-            case 3:
+            case 4:
                 //CreandoPDF = true;
-                await CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudios, CotizacionDraft);
-                _index = 3;
+                await CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+                _index = 4;
                 //CreandoPDF = false;
                 break;
         }
@@ -1701,13 +1813,13 @@ else
 
 
         dataLoaded = false;
-        _index = 1;
+        _index = 2;
         StateHasChanged();
     }
     void CancelItem()
     {
         NewCotizacion = false;
-        ContinuarCotizacion = false;
+        //ContinuarCotizacion = false;
         dtoGeneralesCotizacion.Ciudad = null;
         dtoGeneralesCotizacion.Paciente = null;
         _oSucursalForCity = new();

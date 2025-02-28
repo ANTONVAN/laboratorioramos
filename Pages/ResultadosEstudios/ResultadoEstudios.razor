@@ -820,7 +820,7 @@ else
                                 var estuido = resPacDecrip[1].Replace("\\", "");
                                 if (!String.IsNullOrEmpty(estuido))
                                 {
-                                    estuido = estuido[..^1];
+                                    //estuido = estuido[..^1];
                                     dtoResponseMedicoPacienteStudios = JsonConvert.DeserializeObject<DtoResponseMedicoPacienteStudios>(estuido);
                                     var studioselec = dtoResultadosEstudiosGral.Estudios.FirstOrDefault(e => e.Id.Equals(dtoResponseMedicoPacienteStudios.EstudioId));
                                     if (studioselec.EstatusId == 7 || studioselec.EstatusId == 6)
