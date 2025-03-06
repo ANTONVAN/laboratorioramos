@@ -17,7 +17,7 @@
 }
 else
 {
-    
+
 } *@
 
 <MudBreadcrumbs Items="_items" Style="padding-bottom: 24px; padding-top:0px;"></MudBreadcrumbs>
@@ -160,11 +160,11 @@ else
 </MudGrid>
 <style>
     .mud-input-input-control {
-        align-items: normal;
+    align-items: normal;
     }
 
     .mud-toolbar mud-toolbar-gutters mud-table-toolbar {
-        margin-bottom: 20px;
+    margin-bottom: 20px;
     }
 </style>
 
@@ -231,16 +231,23 @@ else
                             if (obFilter.ExistReg)
                             {
                                 parametrobusqueda = new()
-                                    {
-                                        MedicoId = new()
                                 {
-                                    dtoMedico.IdMedico
-                                },
-                                        CompañiaId = new(),
-                                        Buscar = obFilter != null ? String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? obFilter.ExpedienteNombreSol : null : null,
-                                        TipoFecha = 1,
-                                        Fecha = obFilter != null ? new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
-                                    };
+                                    MedicoId = new()
+                                    {
+                                        dtoMedico.IdMedico
+                                    },
+                                    CompañiaId = new(),
+                                    Buscar = obFilter != null ? !String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? obFilter.ExpedienteNombreSol : null : null,
+                                    TipoFecha = 1,                                    
+                                };
+                                if (obFilter != null && String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && String.IsNullOrEmpty(obFilter.DateFinal.ToString()))
+                                {
+                                    parametrobusqueda.Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") };
+                                }
+                                else
+                                {
+                                    parametrobusqueda.Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") };
+                                }
                                 dtoFiltro.DateFinal = obFilter.DateFinal;
                                 dtoFiltro.DateInicial = obFilter.DateInicial;
                                 dtoFiltro.ExpedienteNombre = obFilter.ExpedienteNombreSol;
@@ -448,7 +455,7 @@ else
                 };
             filorig.LstFiltro.Add(newFilter);
         }
-        
+
         string json = JsonConvert.SerializeObject(dtoMedico);
         string filtro = JsonConvert.SerializeObject(filorig);
         var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
@@ -474,14 +481,15 @@ else
     {
         try
         {
+            DtoRequestMedicoPacientes parametrobusqueda = new();
             if (dtoFiltro.DateFinal < dtoFiltro.DateInicial)
             {
                 ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!", 4);
             }
-            else if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
-            {
-                ShowSnack("¡Por favor Ingresa Fecha Inicial, Fecha Final y/o Expediente o Nombre del Paciente!",4);
-            }
+            // else if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
+            // {
+            //     ShowSnack("¡Por favor Ingresa Fecha Inicial, Fecha Final y/o Expediente o Nombre del Paciente!",4);
+            // }
             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
             {
                 ShowSnack("¡Por favor Ingresa Fecha Final!", 4);
@@ -492,20 +500,38 @@ else
             }
             else
             {
+                if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
+                {
+                    parametrobusqueda = new()
+                    {
+                        MedicoId = new()
+                        {
+                            dtoMedico.IdMedico
+                        },
+                        CompañiaId = new(),
+                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre,
+                        TipoFecha = 1,
+                        Fecha = new()
+                    };
+                }
+                else
+                {
+                    parametrobusqueda = new()
+                    {
+                        MedicoId = new()
+                        {
+                            dtoMedico.IdMedico
+                        },
+                        CompañiaId = new(),
+                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre,
+                        TipoFecha = 1,
+                        Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
+                    };
+                }
                 //dataLoaded = true;
                 ValidateData = true;
                 dtoMedicoPaciente.Clear();
-                DtoRequestMedicoPacientes parametrobusqueda = new()
-                {
-                    MedicoId = new()
-                    {
-                        dtoMedico.IdMedico
-                    },
-                    CompañiaId = new(),
-                    Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre,
-                    TipoFecha = 1,
-                    Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
-                };
+                
                 string json1 = JsonConvert.SerializeObject(parametrobusqueda);
                 var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
 

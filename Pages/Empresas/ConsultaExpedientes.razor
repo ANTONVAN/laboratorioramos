@@ -15,7 +15,7 @@
 }
 else
 {
-    
+
 } *@
 
 <MudBreadcrumbs Items="_items" Style="padding-bottom: 24px; padding-top:0px;"></MudBreadcrumbs>
@@ -150,11 +150,11 @@ else
 </MudGrid>
 <style>
     .mud-input-input-control {
-        align-items: normal;
+    align-items: normal;
     }
 
     .mud-toolbar mud-toolbar-gutters mud-table-toolbar {
-        margin-bottom: 20px;
+    margin-bottom: 20px;
     }
 </style>
 
@@ -182,8 +182,8 @@ else
     private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
     private MudDateRangePicker _picker;
 
-    DateTime? dateInicial = DateTime.Today;
-    DateTime? dateFinal = DateTime.Today;
+    DateTime? dateInicial;// = new();// DateTime.Today;
+    DateTime? dateFinal;// = new();// DateTime.Today;
     #endregion
 
     #region Funsiones Página
@@ -264,16 +264,35 @@ else
         StateHasChanged();
     }
 
-    void ShowSnack(string message)
+    void ShowSnack(string message, int sev)
     {
-        Snackbar.Add($"Atención: {message}", Severity.Warning);
+        switch (sev)
+        {
+            case 0:
+                Snackbar.Add($"Atención: {message}", Severity.Normal);
+                break;
+            case 1:
+                Snackbar.Add($"Atención: {message}", Severity.Info);
+                break;
+            case 2:
+                Snackbar.Add($"Atención: {message}", Severity.Success);
+                break;
+            case 3:
+                Snackbar.Add($"Atención: {message}", Severity.Warning);
+                break;
+            case 4:
+                Snackbar.Add($"Atención: {message}", Severity.Error);
+                break;
+
+        }
+
     }
 
     void OnDateChange(DateTime? newDate)
     {
         if (newDate < dateInicial)
         {
-            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!");
+            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!",1);
         }
         dateFinal = newDate;
 
@@ -313,18 +332,42 @@ else
         ValidateData = true;
         if (dateFinal < dateInicial)
         {
-            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!");
+            ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!",1);
+        }
+        else if (!String.IsNullOrEmpty(dateInicial.ToString()) && String.IsNullOrEmpty(dateFinal.ToString()) && String.IsNullOrEmpty(searchString1))
+        {
+            ShowSnack("¡Por favor Ingresa Fecha Final!", 4);
+        }
+        else if (String.IsNullOrEmpty(dateInicial.ToString()) && !String.IsNullOrEmpty(dateFinal.ToString()) && String.IsNullOrEmpty(searchString1))
+        {
+            ShowSnack("¡Por favor Ingresa Fecha Inicial", 4);
         }
         else
         {
-            DtoRequestMedicoPacientes parametrobusqueda = new()
-                {
-                    MedicoId = new(),
-                    CompañiaId = new() { dtoEmpresa.Id },
-                    Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? null : searchString1.ToString(),
-                    TipoFecha = 1,
-                    Fecha = String.IsNullOrEmpty(searchString1.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
-                };
+            DtoRequestMedicoPacientes parametrobusqueda = new();
+            if (String.IsNullOrEmpty(dateInicial.ToString()) && String.IsNullOrEmpty(dateFinal.ToString()) && String.IsNullOrEmpty(searchString1))
+            {
+                parametrobusqueda = new()
+                    {
+                        MedicoId = new(),
+                        CompañiaId = new() { dtoEmpresa.Id },
+                        Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? null : searchString1.ToString(),
+                        TipoFecha = 1,
+                        Fecha = new()
+                    };
+            }
+            else
+            {
+                parametrobusqueda = new()
+                    {
+                        MedicoId = new(),
+                        CompañiaId = new() { dtoEmpresa.Id },
+                        Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? null : searchString1.ToString(),
+                        TipoFecha = 1,
+                        Fecha = String.IsNullOrEmpty(searchString1.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
+                    };
+            }
+
             var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
             dtoMedicoPaciente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
             foreach (var item in dtoMedicoPaciente)

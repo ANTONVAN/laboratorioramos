@@ -445,6 +445,8 @@ else
             {
                 var estatusSep = _config.GetSection("IdImpresion").Value.Trim().Split(",");
                 Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
+                dtoFiltro.DateInicial=DateTime.Now;
+                dtoFiltro.DateFinal=DateTime.Now;
                 foreach (var itemST in estatusSep)
                 {
                     LstEstatusPrint.Add(int.Parse(itemST));
@@ -1030,8 +1032,9 @@ else
 
         string json0 = JsonConvert.SerializeObject(_estudio);
         string jsonSoli = JsonConvert.SerializeObject(args.Solicitud);
+        
         //string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args}" : $"{args}!{_estudio}");
-        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(_estudio == null ? $"{jsonSoli}!{null}!ConsultaSolicitudes" : $"{jsonSoli}!{json0}!ConsultaSolicitudes")}", false);
+        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(_estudio == null ? $"{jsonSoli}!{null}!{null}!ConsultaSolicitudes" : $"{jsonSoli}!{json0}!{null}!ConsultaSolicitudes")}", false);
     }
     
     #endregion

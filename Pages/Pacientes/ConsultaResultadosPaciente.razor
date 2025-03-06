@@ -519,8 +519,17 @@ else
                                     CompañiaId = new(),
                                     Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoPaciente[0].NombrePaciente.Trim() : dtoFiltro.Solicitud.ToString() : dtoMedicoPaciente.Nombre.Trim(),
                                     TipoFecha = 1,
-                                    Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? obFilter != null ? new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                                //Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? obFilter != null ? new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                                 };
+
+                            if (obFilter != null && String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && String.IsNullOrEmpty(obFilter.DateFinal.ToString()))
+                            {
+                                parametrobusqueda.Fecha = new();
+                            }
+                            else
+                            {
+                                parametrobusqueda.Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") };
+                            }
                             dtoFiltro.DateFinal = obFilter.DateFinal;
                             dtoFiltro.DateInicial = obFilter.DateInicial;
                             dtoFiltro.Solicitud = obFilter.ExpedienteNombreSol;
@@ -559,7 +568,7 @@ else
                             Fecha = new()
                         };
                     }
-                    
+
 
                 }
                 else
@@ -658,7 +667,7 @@ else
             // _table.SetSelectedItem(item);
             _table.SelectedItems.Add(item);
         }
-        
+
 
         StateHasChanged();
 
@@ -882,10 +891,10 @@ else
             {
                 ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!", 4);
             }
-            else if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
-            {
-                ShowSnack("¡Por favor Ingresa Fecha Inicial, Fecha Final y/o Expediente o Nombre del Paciente!", 4);
-            }
+            // else if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+            // {
+            //     ShowSnack("¡Por favor Ingresa Fecha Inicial, Fecha Final y/o Expediente o Nombre del Paciente!", 4);
+            // }
             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
             {
                 ShowSnack("¡Por favor Ingresa Fecha Final!", 4);
@@ -898,7 +907,20 @@ else
             {
                 if (PostRequiere == "1") //Paciente
                 {
-                    parametrobusqueda = new()
+                    if (String.IsNullOrEmpty(dateInicial.ToString()) && String.IsNullOrEmpty(dateFinal.ToString()) && String.IsNullOrEmpty(searchString1))
+                    {
+                        parametrobusqueda = new()
+                        {
+                            MedicoId = new(),
+                            CompañiaId = new(),
+                            Buscar = dtoPaciente[0].NombrePaciente.Trim(),
+                            TipoFecha = 1,
+                            Fecha = new()
+                        };
+                    }
+                    else
+                    {
+                        parametrobusqueda = new()
                         {
                             MedicoId = new(),
                             CompañiaId = new(),
@@ -906,7 +928,7 @@ else
                             TipoFecha = 1,
                             Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                         };
-
+                    }
                 }
                 else if (PostRequiere == "2")//Medico
                 {
@@ -1019,8 +1041,9 @@ else
 
         string json0 = JsonConvert.SerializeObject(_estudio);
         string jsonSoli = JsonConvert.SerializeObject(args.Solicitud);
+        string jsonPaciente = JsonConvert.SerializeObject(dtoMedicoPaciente);
         //string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args}" : $"{args}!{_estudio}");
-        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(_estudio == null ? $"{jsonSoli}!{null}!ConsultaResultadosPaciente" : $"{jsonSoli}!{json0}!ConsultaResultadosPaciente")}", false);
+        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(_estudio == null ? $"{jsonSoli}!{null}!{(dtoMedicoPaciente.Nombre != null ? jsonPaciente : null)}!ConsultaResultadosPaciente" : $"{jsonSoli}!{json0}!{(dtoMedicoPaciente.Nombre != null ? jsonPaciente : null)}!ConsultaResultadosPaciente")}", false);
 
 
 
