@@ -116,6 +116,9 @@ else
                         <LoadingContent>
                             <MudText>Cargando....</MudText>
                         </LoadingContent>
+                        <NoRecordsContent>
+                            <MudText>Sin Registros para mostrar</MudText>
+                        </NoRecordsContent>
                         <PagerContent>
                             <MudDataGridPager T="DtoCotizacionResponse" />
                         </PagerContent>
@@ -233,9 +236,9 @@ else
                                     <MudGrid Class="mt2">
                                         <MudItem xs="12" sm="6" md="6">
                                             <MudAutocomplete T="string" @bind-Value="dtoGeneralesCotizacion.Ciudad"
-                                                             SearchFunc="SearchCiudad"
-                                                             Label="Ciudad"
-                                                             Clearable="true" />
+                                            SearchFunc="SearchCiudad"
+                                            Label="Ciudad"
+                                            Clearable="true" />
 
                                             @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
                                             {
@@ -246,7 +249,7 @@ else
                                             @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
                                             {
                                                 <MudTable T="DtoSucursal" Items="@_oSucursalForCity" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
-                                                          RowClass="cursor-pointer" RowClassFunc="@SelectedRowSucursal" OnRowClick="RowClickEvent" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
+                                                RowClass="cursor-pointer" RowClassFunc="@SelectedRowSucursal" OnRowClick="RowClickEvent" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
                                                     @* <ToolBarContent style=" flex-flow: column;padding-top: 20px;"> *@
                                                     <ToolBarContent>
                                                         <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Sucursales</MudText> <br />
@@ -482,8 +485,6 @@ else
                                                                 <MudItem xs="12" sm="12" md="12" Class="justify-start">@itemIndipack.Descripcion</MudItem>
                                                             }
                                                         }
-
-
                                                     }
                                                 }
 
@@ -508,17 +509,17 @@ else
                             <ActionContent Context="stepper">
                                 @* <MudIconButton OnClick="@(() => stepper.PreviousStepAsync())" Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" Color="Color.Primary" Disabled="@(_index <= 0)" >Anterior</MudIconButton> *@
                                 <MudButton Variant="Variant.Text"
-                                           StartIcon="@Icons.Material.Filled.KeyboardDoubleArrowLeft"
-                                           Color="Color.Primary"
-                                           Style="text-transform:none" OnClick="@(() => stepper.PreviousStepAsync())" Disabled="@(_index <= 0)">
+                                StartIcon="@Icons.Material.Filled.KeyboardDoubleArrowLeft"
+                                Color="Color.Primary"
+                                Style="text-transform:none" OnClick="@(() => stepper.PreviousStepAsync())" Disabled="@(_index <= 0)">
                                     Anterior
                                 </MudButton>
                                 <MudSpacer />
                                 @* <MudIconButton OnClick="@(() => stepper.NextStepAsync())" Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" Color="Color.Primary">Siguiente</MudIconButton> *@
                                 <MudButton Variant="Variant.Text"
-                                           EndIcon="@Icons.Material.Filled.KeyboardDoubleArrowRight"
-                                           Color="Color.Primary"
-                                           Style="text-transform:none" OnClick="@(() => stepper.NextStepAsync())">
+                                EndIcon="@Icons.Material.Filled.KeyboardDoubleArrowRight"
+                                Color="Color.Primary"
+                                Style="text-transform:none" OnClick="@(() => stepper.NextStepAsync())">
                                     Siguiente
                                 </MudButton>
 
@@ -624,7 +625,7 @@ else
 
             <MudItem xs="12" sm="12" md="12">
                 <MudTable T="DtoEstudioResponsePrice" Items="@_oEstudioResponsePrice" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTableEstudios"
-                          RowClass="cursor-pointer" @bind-SelectedItems="selectedEstudios" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Loading="@searchEstudiosTxt">
+                RowClass="cursor-pointer" @bind-SelectedItems="selectedEstudios" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Loading="@searchEstudiosTxt">
                     <ColGroup>
                         <col />
                         <col style="width:20px;" />
@@ -758,6 +759,7 @@ else
     private readonly DialogOptions diaOptionsEdit = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Medium, FullWidth = false, CloseButton = true };
     private string UrlOrdenes = "services/records/api/Quotation/filter";
     private string UrlOrdenesNew = "services/records/api/Quotation/studies";
+    private string UrlAsignOrdenesNew = "services/records/api/Quotation/general";
     private string UrlOrdenesStudyCancel = "services/records/api/Quotation/studies/cancel";
     private string UrlOrdenesDraft = "services/records/api/Quotation";
     private string UrlOrdenesDraftNo = "services/records/api/Quotation/";
@@ -965,6 +967,20 @@ else
                         {
                             IDCotizacionDraft = await responseDraft.Content.ReadAsStringAsync() ?? "";
                             CotizacionDraft = await Http.GetFromJsonAsync<DtoCotizacion>($"{UrlOrdenesDraftNo}{IDCotizacionDraft}");
+
+                            DtoAsigMedicEmpresa asignMedicEmpresa = new()
+                            {
+                                Activo=true,
+                                CompaiaId = PostRequiere == "2" ? null : dtoEmpresa.Id,
+                                Correo = PostRequiere == "2" ? dtoMedico.Correo : null,
+                                CotizacionId=CotizacionDraft.CotizacionId,
+                                MedicoId=PostRequiere == "2" ? dtoMedico.IdMedico: null,
+                                Observaciones=PostRequiere == "2" ? dtoMedico.Observaciones: null,
+                                Procedencia = PostRequiere == "2" ? 0 : dtoEmpresa.ProcedenciaId,
+                                Whatsapp=PostRequiere == "2" ? dtoMedico.Telefono: null,
+                            };
+                            string jsonAsign = JsonConvert.SerializeObject(asignMedicEmpresa);
+                            var responseasign = await Http.PutAsJsonAsync<DtoAsigMedicEmpresa>(UrlAsignOrdenesNew, asignMedicEmpresa);
                         }
                         else
                         {

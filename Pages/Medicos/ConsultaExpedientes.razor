@@ -511,7 +511,7 @@ else
                         CompañiaId = new(),
                         Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre,
                         TipoFecha = 1,
-                        Fecha = new()
+                            Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                     };
                 }
                 else

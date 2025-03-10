@@ -71,4 +71,16 @@ namespace LaboratorioRamos.Data.DtoCotizacion
         public DateTime? dateInicial { get; set; } = DateTime.Today;
         public DateTime? dateFinal { get; set; } = DateTime.Today;
     }
+
+    public class DtoAsigMedicEmpresa
+    {
+        public string CotizacionId { get; set; }
+        public int Procedencia { get; set; }
+        public string? CompaiaId { get; set; }
+        public string? MedicoId { get; set; }
+        public string? Observaciones { get; set; }
+        public string? Correo { get; set; }
+        public string? Whatsapp { get; set; }
+        public bool Activo { get; set; }
+    }
 }
