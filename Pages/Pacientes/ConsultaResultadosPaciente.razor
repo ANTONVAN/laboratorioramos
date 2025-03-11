@@ -1,5 +1,6 @@
 ﻿@page "/ConsultaResultadosPaciente/{PostRequiere}/{PostPaciente}"
 
+@using LaboratorioRamos.Data.DtoEmpresa
 @using LaboratorioRamos.Data.DtoMedico
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoFiltro
@@ -396,6 +397,7 @@ else
     private DtoFiltro dtoFiltro = new();
     private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
     private DtoMedicoPwd dtoMedico = new();
+    private DtoEmpresa dtoEmpresa = new();
     private DtoFiltroNavega filorig = new();
     private List<DtoResponseMedicoPaciente> LstExpedientes = new();
     private List<int> LstEstatusPrint = new();
@@ -493,9 +495,14 @@ else
                     _items =new()
                     {
                         new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
-                        new BreadcrumbItem("Empresa", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
-                        new BreadcrumbItem("Paciente", href: null, icon: Icons.Material.Filled.VerifiedUser, disabled: true),
+                        new BreadcrumbItem("Paciente", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
+                        new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser, disabled: true),
                     };
+                    var idenUser = authState.User.Claims.ToList();
+                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                    dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
+                    var filtros = Cryp.Desencripta(idenUser[1].Value.ToString());
+                    filorig = JsonConvert.DeserializeObject<DtoFiltroNavega>(filtros);
                     var resPacDecrip = Cryp.Desencripta(PostPaciente);
                     dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
                     ShowNombre = true;
@@ -962,7 +969,7 @@ else
                         {
                             MedicoId = new(),
                             CompañiaId = new(),
-                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString().ToString(),
+                            Buscar = null,
                             TipoFecha = 1,
                             Fecha = new() { }
                         };
@@ -1057,7 +1064,7 @@ else
             filorig.LstFiltro.Add(newFilter);
         }
 
-        string json = JsonConvert.SerializeObject((PostRequiere == "1" ? dtoPaciente : PostRequiere == "2" ? dtoMedico : dtoMedicoPaciente));
+        string json = JsonConvert.SerializeObject((PostRequiere == "1" ? dtoPaciente : PostRequiere == "2" ? dtoMedico : dtoEmpresa));
         string filtro = JsonConvert.SerializeObject(filorig);
         var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
         await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider

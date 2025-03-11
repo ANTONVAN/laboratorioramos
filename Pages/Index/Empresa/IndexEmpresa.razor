@@ -2,6 +2,7 @@
 @page "/Empresa"
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoEmpresa
+@using LaboratorioRamos.Data.DtoFiltro
 @using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
 @using LaboratorioRamos.Data.DtoStateProvider
 @inject HttpClient Http;
@@ -56,6 +57,7 @@
     private DtoLoginEmpresa dtoLoginEmpresa = new();
     private List<DtoEmpresa> LstEmpresa = new();
     private DtoEmpresa ObjEmpresa = new();
+    private DtoFiltroNavega filorig = new();
 
     private bool ValidateData = false;
     private string UrlAuth = "services/identity/api/profile/login";
@@ -79,6 +81,7 @@
     async void OnValidSubmit(EditContext context)
     {
         ValidateData = true;
+        filorig.LstFiltro = new();
         dtoLogin = new()
             {
                 Usuario = _config.GetSection("UsrLoginGral:User").Value.Trim(),
@@ -94,7 +97,7 @@
                 {
                     var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
                     Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
-                    Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
+                    
                     LstEmpresa = await Http.GetFromJsonAsync<List<DtoEmpresa>>(UrlEmpresa + "/" + dtoLoginEmpresa.Usuario.Trim());
                     if (LstEmpresa.Count() == 0)
                     {
@@ -110,12 +113,15 @@
                         {
                             ObjEmpresa.Token = result.Token;
                             string json = JsonConvert.SerializeObject(ObjEmpresa);
+                            string filtro = JsonConvert.SerializeObject(filorig);
                             var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
                             await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
                                 {
+                                    filtros = Cryp.Encripta(filtro),
                                     testsuncretr = Cryp.Encripta(json),
                                     Type = 3,
                                 });
+                            Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
                             NavigationManager.NavigateTo("/Inicio", true);
                             ValidateData = false;
                         }
@@ -125,8 +131,7 @@
                             Http.DefaultRequestHeaders.Remove("branchid");
                             ShowSnack("¡La Contraseña es incorrecta, favor de verificar!");
                             ValidateData = false;
-                        }
-                        
+                        }                        
                     }
                 }
                 catch (Exception ex)

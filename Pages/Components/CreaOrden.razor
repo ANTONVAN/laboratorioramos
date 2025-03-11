@@ -1040,6 +1040,19 @@ else
                         {
                             IDCotizacionDraft = await responseDraft.Content.ReadAsStringAsync() ?? "";
                             CotizacionDraft = await Http.GetFromJsonAsync<DtoCotizacion>($"{UrlOrdenesDraftNo}{IDCotizacionDraft}");
+                            DtoAsigMedicEmpresa asignMedicEmpresa = new()
+                                {
+                                    Activo = true,
+                                    CompaiaId = PostRequiere == "2" ? null : dtoEmpresa.Id,
+                                    Correo = PostRequiere == "2" ? dtoMedico.Correo : null,
+                                    CotizacionId = CotizacionDraft.CotizacionId,
+                                    MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : null,
+                                    Observaciones = PostRequiere == "2" ? dtoMedico.Observaciones : null,
+                                    Procedencia = PostRequiere == "2" ? 0 : dtoEmpresa.ProcedenciaId,
+                                    Whatsapp = PostRequiere == "2" ? dtoMedico.Telefono : null,
+                                };
+                            string jsonAsign = JsonConvert.SerializeObject(asignMedicEmpresa);
+                            var responseasign = await Http.PutAsJsonAsync<DtoAsigMedicEmpresa>(UrlAsignOrdenesNew, asignMedicEmpresa);
                         }
                         else
                         {
