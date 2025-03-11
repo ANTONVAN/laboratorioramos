@@ -991,7 +991,7 @@ else
                 }
                 break;
             case 1:
-                
+
                 break;
             case 2:
                 if (selectedEstudiosOriginal.Count == 0)
@@ -1001,7 +1001,7 @@ else
                 }
                 break;
             case 3:
-                
+
                 break;
             case 4:
                 //CreandoPDF = true;
@@ -1063,7 +1063,7 @@ else
                 }
                 break;
             case 2:
-                
+
                 break;
             case 3:
                 if (selectedEstudiosOriginal.Count == 0)
@@ -1071,12 +1071,20 @@ else
                     await DialogService.ShowMessageBox("Error", "Por favor seleccione algún estudio para continuar");
                     arg.Cancel = true;
                 }
+                else
+                {
+                    await CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+                    _index = 4;
+                }
                 break;
             case 4:
                 //CreandoPDF = true;
-                await CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
-                _index = 4;
+                
                 //CreandoPDF = false;
+
+                //var serv = CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+                //_index = 4;
+                //await serv;
                 break;
         }
     }
