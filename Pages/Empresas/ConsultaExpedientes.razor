@@ -60,10 +60,10 @@ else
         <MudGrid>
             <MudItem xs="12" sm="12" md="12">
                 <MudGrid>
-                    @* <MudItem xs="12" sm="12" md="1">
+                    <MudItem xs="12" sm="12" md="1">
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </MudItem> *@
-                    <MudItem xs="12" sm="12" md="4">
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="3">
                         @* <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
                         <MudTextField @bind-Value="searchString1" Disabled="(ValidateData?true:false)" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
                     </MudItem>

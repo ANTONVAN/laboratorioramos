@@ -44,7 +44,7 @@ else
                             <MudItem xs="12" sm="12" md="1">
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             </MudItem>
-                            <MudItem xs="12" sm="12" md="4">
+                            <MudItem xs="12" sm="12" md="3">
                                 @* <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
                                 <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Disabled="(ValidateData?true:false)" Label="Número de orden:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
                             </MudItem>
@@ -61,7 +61,7 @@ else
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="_busquedaCotizacion.dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
                                 <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
                             </MudItem>
-                            <MudItem xs="12" sm="12" md="1">
+                            <MudItem xs="12" sm="12" md="2">
                                 @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
                                 @if (ValidateData)
                                 {
