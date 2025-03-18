@@ -519,7 +519,7 @@ else
                                 <MudButton Variant="Variant.Text"
                                 EndIcon="@Icons.Material.Filled.KeyboardDoubleArrowRight"
                                 Color="Color.Primary"
-                                Style="text-transform:none" OnClick="@(() => stepper.NextStepAsync())">
+                                Style="text-transform:none" OnClick="@(() => stepper.NextStepAsync())" Disabled="@(_index > 3)">
                                     Siguiente
                                 </MudButton>
 
@@ -1001,13 +1001,15 @@ else
                 }
                 break;
             case 3:
-
+                var serv = CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+                //_index = 4;
+                await serv;
                 break;
             case 4:
                 //CreandoPDF = true;
-                var serv = CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
-                _index = 4;
-                await serv;
+                // var serv = CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+                // _index = 4;
+                // await serv;
                 //CreandoPDF = false;
                 break;
         }
@@ -1071,20 +1073,20 @@ else
                     await DialogService.ShowMessageBox("Error", "Por favor seleccione algún estudio para continuar");
                     arg.Cancel = true;
                 }
-                else
-                {
-                    await CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
-                    _index = 4;
-                }
+                // else
+                // {
+                //     await CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+                //     _index = 4;
+                // }
                 break;
             case 4:
                 //CreandoPDF = true;
                 
                 //CreandoPDF = false;
 
-                //var serv = CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+                var serv = CreatePdfOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
                 //_index = 4;
-                //await serv;
+                await serv;
                 break;
         }
     }
@@ -2484,7 +2486,7 @@ else
     {
 
         MemoryStream archivopdf = await _PdfGenerator.CreatePDFOrder(_dtoGeneralesCotizacion, _dtoPaciente, _dtoEstudioResponsePrices, _cotizacionDraft);
-        _PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", new());
+        //_PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", new());
         try
         {
 
