@@ -2535,85 +2535,93 @@ else
 
     private async Task EditQuotation()
     {
-
-        dtoGeneralesCotizacion = new();
-        selectedEstudios = new();
-
-        CotizacionDraft.clave = _RowEditOrden.Clave;
-        CotizacionDraft.CotizacionId = _RowEditOrden.CotizacionId;
-        // if (_RowEditOrden.Estudios.Count==0)
-        // {
-        //     visibleEditCotizacion = false;
-        //     ShowSnack("¡La ORDEN no tiene estudios, por favor verifique!", 3);
-        // }else{
-
-        // }
-
-        var sucursalResponse = await Http.GetFromJsonAsync<DtoCotizacion>($"{UrlOrdenesDraftNo}{_RowEditOrden.CotizacionId}");
-
-        SucursalID = sucursalResponse.sucursalId;
-        foreach (var itemCit in _oSucursalByCity)
+        try
         {
-            var SucursalActual = itemCit.Sucursales.FirstOrDefault(e => e.IdSucursal.Equals(SucursalID));
-            if (SucursalActual!=null)
+            dtoGeneralesCotizacion = new();
+            selectedEstudios = new();
+
+            CotizacionDraft.clave = _RowEditOrden.Clave;
+            CotizacionDraft.CotizacionId = _RowEditOrden.CotizacionId;
+            // if (_RowEditOrden.Estudios.Count==0)
+            // {
+            //     visibleEditCotizacion = false;
+            //     ShowSnack("¡La ORDEN no tiene estudios, por favor verifique!", 3);
+            // }else{
+
+            // }
+
+            var sucursalResponse = await Http.GetFromJsonAsync<DtoCotizacion>($"{UrlOrdenesDraftNo}{_RowEditOrden.CotizacionId}");
+
+            SucursalID = sucursalResponse.sucursalId;
+            foreach (var itemCit in _oSucursalByCity)
             {
-                SucursalName = $"{SucursalActual.Nombre} - {SucursalActual.Ubicacion}";
-                dtoGeneralesCotizacion.Ciudad = SucursalActual.Ciudad;
+                var SucursalActual = itemCit.Sucursales.FirstOrDefault(e => e.IdSucursal.Equals(SucursalID));
+                if (SucursalActual != null)
+                {
+                    SucursalName = $"{SucursalActual.Nombre} - {SucursalActual.Ubicacion}";
+                    dtoGeneralesCotizacion.Ciudad = SucursalActual.Ciudad;
+                }
             }
-        }
 
-        dtoGeneralesCotizacion.Observaciones = sucursalResponse.observaciones;
-        _index = 2;
-        var studiogral = await Http.GetFromJsonAsync<DtoEstudiosByOrdenActual>($"{UrlOrdenesNew}/{_RowEditOrden.CotizacionId}");
-        foreach (var itemEstudio in studiogral.Estudios)
+            dtoGeneralesCotizacion.Observaciones = sucursalResponse.observaciones;
+            _index = 2;
+            var studiogral = await Http.GetFromJsonAsync<DtoEstudiosByOrdenActual>($"{UrlOrdenesNew}/{_RowEditOrden.CotizacionId}");
+            foreach (var itemEstudio in studiogral.Estudios)
+            {
+                //_oCotizacionEstudios.Add(itemEstudio);
+                var studioActualOrden = studiogral.Estudios.FirstOrDefault(op => op.Id.Equals(itemEstudio.Id));
+
+
+                DtoEstudioRequestPrice oPriceStudio = new()
+                    {
+                        SucursalId = SucursalID,
+                    //CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                        CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                        MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                        EstudioId = itemEstudio.EstudioId
+                    };
+                string json1 = JsonConvert.SerializeObject(oPriceStudio);
+                var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
+                if (responseDraft.IsSuccessStatusCode)
+                {
+                    var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                    selectedEstudios.Add(ostudioResponse);
+                    selectedEstudiosOriginal.Add(ostudioResponse);
+                }
+
+            }
+            foreach (var itemEstudioPack in studiogral.Paquetes)
+            {
+                DtoPaqueteEstudioRequestPrice oPriceStudiopack = new()
+                    {
+                        SucursalId = SucursalID,
+                    //CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                        CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                        MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                        PaqueteId = itemEstudioPack.PaqueteId
+                    };
+                string json1 = JsonConvert.SerializeObject(oPriceStudiopack);
+                var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPriceStudiopack);
+                if (responseDraft.IsSuccessStatusCode)
+                {
+                    var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                    selectedEstudios.Add(ostudioResponse);
+                    selectedEstudiosOriginal.Add(ostudioResponse);
+                }
+
+            }
+            NewCotizacion = true;
+            ContinuarCotizacion = true;
+            visibleInfoEstudio = true;
+            visibleEditCotizacion = false;
+
+        }
+        catch (Exception ex)
         {
-            //_oCotizacionEstudios.Add(itemEstudio);
-            var studioActualOrden = studiogral.Estudios.FirstOrDefault(op => op.Id.Equals(itemEstudio.Id));
             
-
-            DtoEstudioRequestPrice oPriceStudio = new()
-            {
-                SucursalId = SucursalID,
-                //CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
-                EstudioId = itemEstudio.EstudioId
-            };
-            string json1 = JsonConvert.SerializeObject(oPriceStudio);
-            var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
-            if (responseDraft.IsSuccessStatusCode)
-            {
-                var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                selectedEstudios.Add(ostudioResponse);
-                selectedEstudiosOriginal.Add(ostudioResponse);
-            }
-
+            ShowSnack($"{ex.Message}", 4);
         }
-        foreach (var itemEstudioPack in studiogral.Paquetes)
-        {
-            DtoPaqueteEstudioRequestPrice oPriceStudiopack = new()
-            {
-                SucursalId = SucursalID,
-                //CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
-                PaqueteId = itemEstudioPack.PaqueteId
-            };
-            string json1 = JsonConvert.SerializeObject(oPriceStudiopack);
-            var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPriceStudiopack);
-            if (responseDraft.IsSuccessStatusCode)
-            {
-                var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                selectedEstudios.Add(ostudioResponse);
-                selectedEstudiosOriginal.Add(ostudioResponse);
-            }
-
-        }
-        NewCotizacion = true;
-        ContinuarCotizacion = true;
-        visibleInfoEstudio = true;
-        visibleEditCotizacion = false;
-
+        
 
 
 

@@ -1020,7 +1020,7 @@ else
             filorig.LstFiltro.Add(newFilter);
         }
 
-        string json = JsonConvert.SerializeObject(dtoMedico);
+        string json = JsonConvert.SerializeObject(PostRequiere == "2"?dtoMedico: dtoEmpresa);
         string filtro = JsonConvert.SerializeObject(filorig);
         var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
         await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
