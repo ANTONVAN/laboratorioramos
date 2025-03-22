@@ -539,7 +539,7 @@ else
                             dtoFiltro.Solicitud = obFilter.ExpedienteNombreSol;
                             nopag = int.Parse(obFilter.PageNo);
                             filorig.LstFiltro.Where(w => w.OriginPage.Equals("ConsultaResultadosPaciente")).ToList().ForEach(i => i.ExistReg = false);
-                            string json = JsonConvert.SerializeObject(dtoMedico);
+                            string json = JsonConvert.SerializeObject(PostRequiere == "1" ? dtoPaciente: PostRequiere == "2" ? dtoMedico : dtoEmpresa);
                             string filtro = JsonConvert.SerializeObject(filorig);
                             var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
                             await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
