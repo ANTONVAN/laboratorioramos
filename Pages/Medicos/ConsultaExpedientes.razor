@@ -469,10 +469,43 @@ else
         NavigationManager.NavigateTo($"/ConsultaResultadosPaciente/2/{Cryp.Encripta(json1)}");
     }
 
-    private void NavigateToGraphPaciente(DtoResponseMedicoPaciente item)
+    private async void NavigateToGraphPaciente(DtoResponseMedicoPaciente item)
     {
-        string json = JsonConvert.SerializeObject(item);
-        NavigationManager.NavigateTo($"/ConsultaGraficaPaciente/2/{Cryp.Encripta(json)}");
+        var nopag = _table.CurrentPage;
+        var obFilters = filorig.LstFiltro.FirstOrDefault(op => op.OriginPage.Trim().Equals("ConsultaExpedientesMedico"));
+        if (obFilters != null)
+        {
+            obFilters.PageNo = nopag.ToString();
+            obFilters.ExpedienteNombreSol = dtoFiltro.ExpedienteNombre;
+            obFilters.DateInicial = dtoFiltro.DateInicial;
+            obFilters.DateFinal = dtoFiltro.DateFinal;
+            obFilters.ExistReg = true;
+        }
+        else
+        {
+            DtoFiltroLst newFilter = new()
+                {
+                    OriginPage = "ConsultaExpedientesMedico",
+                    PageNo = nopag.ToString(),
+                    ExpedienteNombreSol = dtoFiltro.ExpedienteNombre,
+                    DateInicial = dtoFiltro.DateInicial,
+                    DateFinal = dtoFiltro.DateFinal,
+                    ExistReg = true
+                };
+            filorig.LstFiltro.Add(newFilter);
+        }
+
+        string json = JsonConvert.SerializeObject(dtoMedico);
+        string filtro = JsonConvert.SerializeObject(filorig);
+        var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+        await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+            {
+                filtros = Cryp.Encripta(filtro),
+                testsuncretr = Cryp.Encripta(json),
+                Type = 2,
+            });
+        string json1 = JsonConvert.SerializeObject(item);
+        NavigationManager.NavigateTo($"/ConsultaGraficaPaciente/2/{Cryp.Encripta(json1)}");
     }
 
 
