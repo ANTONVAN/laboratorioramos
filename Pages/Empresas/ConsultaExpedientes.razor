@@ -59,40 +59,42 @@ else
     <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
         <MudGrid>
             <MudItem xs="12" sm="12" md="12">
-                <MudGrid>
-                    <MudItem xs="12" sm="12" md="1">
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    </MudItem>
-                    <MudItem xs="12" sm="12" md="3">
-                        @* <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
-                        <MudTextField @bind-Value="searchString1" Disabled="(ValidateData?true:false)" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
-                    </MudItem>
-                    <MudItem xs="12" sm="12" md="3">
-                        @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" /> *@
-                        @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
+                <EditForm Model="@dtoFiltro" OnValidSubmit="BuscaFecha" style="width: 100%;">
+                    <MudGrid>
+                        <MudItem xs="12" sm="12" md="1">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            @* <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
+                            <MudTextField @bind-Value="dtoFiltro.ExpedienteNombre" Disabled="(ValidateData?true:false)" Label="Expediente o Nombre del paciente:" Clearable="true" Class="mt-0" HelperText="Teclee la Clave de Expediente o Nombre del paciente, y pulse Enter." For="@(() => dtoFiltro.ExpedienteNombre)"></MudTextField>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" /> *@
+                            @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                         <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                        <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
-                    </MudItem>
-                    <MudItem xs="12" sm="12" md="3">
-                        @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" /> *@
-                        @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
+                                <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="3">
+                            @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" /> *@
+                            @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                         <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                        <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
-                    </MudItem>
-                    <MudItem xs="12" sm="12" md="2">
-                        @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton> *@
-                        @if (ValidateData)
-                        {
-                            @* <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Text" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton> *@
-                            <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto" Style="width:100%;"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
-                        }
-                        else
-                        {
-                            @* <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton> *@
-                            <MudButton StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="ml-auto" Style="width:100%;" OnClick="() => BuscaFecha()">Buscar</MudButton>
-                        }
-                    </MudItem>
-                </MudGrid>
+                            <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="2">
+                            @if (ValidateData)
+                            {
+                                @* <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Text" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton> *@
+                                <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto" Style="width:100%;"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                            }
+                            else
+                            {
+                                @* <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton> *@
+                                <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="ml-auto" Style="width:100%;">Buscar</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </EditForm>
+                
             </MudItem>
             <MudItem xs="12" sm="12" md="12">
                 <MudTable Class="mt-4" @ref="_table" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
@@ -192,6 +194,7 @@ else
 
     DateTime? dateInicial;// = new();// DateTime.Today;
     DateTime? dateFinal;// = new();// DateTime.Today;
+    private DtoFiltro dtoFiltro = new();
     #endregion
 
     #region Funsiones Página
@@ -241,9 +244,9 @@ else
                                     parametrobusqueda.Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") };
                                 }
                                 
-                                dateFinal = obFilter.DateFinal;
-                                dateInicial = obFilter.DateInicial;
-                                searchString1 = obFilter.ExpedienteNombreSol;
+                                dtoFiltro.DateFinal= obFilter.DateFinal;
+                                dtoFiltro.DateInicial = obFilter.DateInicial;
+                                dtoFiltro.ExpedienteNombre= obFilter.ExpedienteNombreSol;
                                 nopag = int.Parse(obFilter.PageNo);
                                 filorig.LstFiltro.Where(w => w.OriginPage.Equals("ConsultaExpedientesEmpresa")).ToList().ForEach(i => i.ExistReg = false);
                                 string json = JsonConvert.SerializeObject(dtoEmpresa);
@@ -380,7 +383,7 @@ else
     #endregion
 
     #region Funsiones GRID
-    private bool FilterFuncExpedientes(DtoResponseMedicoPaciente element) => FilterFunc(element, searchString1);
+    private bool FilterFuncExpedientes(DtoResponseMedicoPaciente element) => FilterFunc(element, dtoFiltro.ExpedienteNombre);
     private bool FilterFunc(DtoResponseMedicoPaciente element, string searchString)
     {
         if (string.IsNullOrWhiteSpace(searchString))
@@ -401,9 +404,9 @@ else
         if (obFilters != null)
         {
             obFilters.PageNo = nopag.ToString();
-            obFilters.ExpedienteNombreSol = searchString1.Trim();
-            obFilters.DateInicial = dateInicial;
-            obFilters.DateFinal = dateFinal;
+            obFilters.ExpedienteNombreSol = dtoFiltro.ExpedienteNombre.Trim();
+            obFilters.DateInicial = dtoFiltro.DateInicial;
+            obFilters.DateFinal = dtoFiltro.DateFinal;
             obFilters.ExistReg = true;
         }
         else
@@ -412,9 +415,9 @@ else
             {
                     OriginPage = "ConsultaExpedientesEmpresa",
                 PageNo = nopag.ToString(),
-                ExpedienteNombreSol = searchString1.Trim(),
-                DateInicial = dateInicial,
-                DateFinal = dateFinal,
+                ExpedienteNombreSol = dtoFiltro.ExpedienteNombre.Trim(),
+                    DateInicial = dtoFiltro.DateInicial,
+                DateFinal = dtoFiltro.DateFinal,
                 ExistReg = true
             };
             filorig.LstFiltro.Add(newFilter);
@@ -447,24 +450,24 @@ else
         {
             ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!",1);
         }
-        else if (!String.IsNullOrEmpty(dateInicial.ToString()) && String.IsNullOrEmpty(dateFinal.ToString()) && String.IsNullOrEmpty(searchString1))
+        else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
         {
             ShowSnack("¡Por favor Ingresa Fecha Final!", 4);
         }
-        else if (String.IsNullOrEmpty(dateInicial.ToString()) && !String.IsNullOrEmpty(dateFinal.ToString()) && String.IsNullOrEmpty(searchString1))
+        else if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
         {
             ShowSnack("¡Por favor Ingresa Fecha Inicial", 4);
         }
         else
         {
             DtoRequestMedicoPacientes parametrobusqueda = new();
-            if (String.IsNullOrEmpty(dateInicial.ToString()) && String.IsNullOrEmpty(dateFinal.ToString()) && String.IsNullOrEmpty(searchString1))
+            if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
             {
                 parametrobusqueda = new()
                     {
                         MedicoId = new(),
                         CompañiaId = new() { dtoEmpresa.Id },
-                        Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? null : searchString1.ToString(),
+                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre.ToString()) ? null : dtoFiltro.ExpedienteNombre.ToString(),
                         TipoFecha = 1,
                         Fecha = new()
                     };
@@ -475,9 +478,9 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new() { dtoEmpresa.Id },
-                        Buscar = String.IsNullOrEmpty(searchString1.ToString()) ? null : searchString1.ToString(),
+                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre.ToString(),
                         TipoFecha = 1,
-                        Fecha = String.IsNullOrEmpty(searchString1.ToString()) ? new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
+                        Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
                     };
             }
 
