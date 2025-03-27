@@ -76,7 +76,7 @@ namespace LaboratorioRamos.Data.DtoCotizacion
     {
         public string CotizacionId { get; set; }
         public int Procedencia { get; set; }
-        public string? CompaiaId { get; set; }
+        public string? CompañiaId { get; set; }
         public string? MedicoId { get; set; }
         public string? Observaciones { get; set; }
         public string? Correo { get; set; }
