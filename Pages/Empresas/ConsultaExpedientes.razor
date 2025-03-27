@@ -20,7 +20,7 @@ else
 
 } *@
 
-<MudBreadcrumbs Items="_items" Style="padding-bottom: 24px; padding-top:0px;"></MudBreadcrumbs>
+<MudBreadcrumbs Items="_items" Style="padding-bottom: 4px; padding-top:0px;"></MudBreadcrumbs>
 <MudGrid>
     @* <MudItem xs="12" sm="7" md="12">
     <MudText Align="Align.Center" Typo="Typo.h4" style="color: #0d37a8;">Consulta de Resultados</MudText>
@@ -96,8 +96,8 @@ else
                 </EditForm>
                 
             </MudItem>
-            <MudItem xs="12" sm="12" md="12">
-                <MudTable Class="mt-4" @ref="_table" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
+            <MudItem xs="12" sm="12" md="12" Class="pt-1">
+                <MudTable Class="pt-1" @ref="_table" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
                         <MudSpacer />
@@ -415,7 +415,7 @@ else
             {
                     OriginPage = "ConsultaExpedientesEmpresa",
                 PageNo = nopag.ToString(),
-                ExpedienteNombreSol = dtoFiltro.ExpedienteNombre.Trim(),
+                    ExpedienteNombreSol = dtoFiltro.ExpedienteNombre==null? "":dtoFiltro.ExpedienteNombre.Trim(),
                     DateInicial = dtoFiltro.DateInicial,
                 DateFinal = dtoFiltro.DateFinal,
                 ExistReg = true

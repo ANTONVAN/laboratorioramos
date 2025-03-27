@@ -18,9 +18,26 @@
 
 <MudLayout>
     <MudAppBar Elevation="0">
+        @* <MudGrid>
+            <MudItem xs="6" sm="3" md="3">
+                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12">
+                <MudText Typo="Typo.body1">Encuestas de Satisfacción:</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12">
+                <MudLink Href="https://docs.google.com/forms/d/e/1FAIpQLSdCYId5cr0g85C_f9zDxxErNJwjO4yDGOU6FQ5xE8O6EEUaxg/viewform" Underline="Underline.Always" Typo="Typo.body1" Target="_blank">Monterrey</MudLink>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12">
+                <MudLink Href="https://docs.google.com/forms/d/e/1FAIpQLSeZoFyRuQOhxzcdOjzZnbxhvaV0cJxqKgGVWRmrnbkv911rpg/viewform" Underline="Underline.Always" Typo="Typo.body1" Target="_blank">Sonora</MudLink>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12">
+                <h5>Hola, @NombreUsuario</h5>
+            </MudItem>
+        </MudGrid> *@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
         <MudSpacer />
-        <MudText Typo="Typo.body1">Encuestas de Satisfacción: &nbsp;&nbsp;&nbsp;</MudText>
+        <MudText Class="d-none d-sm-flex d-sm-none d-md-flex" Typo="Typo.body1">Encuestas de Satisfacción: &nbsp;&nbsp;&nbsp;</MudText>
         <MudLink Href="https://docs.google.com/forms/d/e/1FAIpQLSdCYId5cr0g85C_f9zDxxErNJwjO4yDGOU6FQ5xE8O6EEUaxg/viewform" Underline="Underline.Always"  Typo="Typo.body1" Target="_blank">Monterrey</MudLink>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <MudLink Href="https://docs.google.com/forms/d/e/1FAIpQLSeZoFyRuQOhxzcdOjzZnbxhvaV0cJxqKgGVWRmrnbkv911rpg/viewform" Underline="Underline.Always" Typo="Typo.body1" Target="_blank"  >Sonora</MudLink>
@@ -37,7 +54,8 @@
         <NavMenu />
     </MudDrawer>
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-3 pt-1">
+        @* <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-3 pt-1"> *@
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge">
             @Body
         </MudContainer>
     </MudMainContent>

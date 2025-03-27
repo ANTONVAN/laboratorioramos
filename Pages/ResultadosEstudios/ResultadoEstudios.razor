@@ -28,16 +28,13 @@ else
 
 } *@
 
-<MudBreadcrumbs Items="_items" Style="padding-bottom: 24px; padding-top:0px;"></MudBreadcrumbs>
-<MudGrid>
-    @* <MudItem xs="1" sm="1" md="1">
-            <MudLink OnClick="NavigationInicio" Underline="Underline.Always"><MudIconButton Icon="@Icons.Material.Filled.ArrowCircleLeft" aria-label="Atras" Color="Color.Dark"></MudIconButton> </MudLink>
-        </MudItem> *@
+<MudBreadcrumbs Items="_items" Style="padding-bottom: 10px; padding-top:0px;"></MudBreadcrumbs>
+@* <MudGrid>
     <MudItem xs="12" sm="12" md="12">
         <MudText Align="Align.Center" Typo="Typo.h4" style="color: #0d37a8;">Resultados</MudText>
     </MudItem>
 </MudGrid>
-
+ *@
 @if (dataLoaded)
 {
     <MudGrid>
