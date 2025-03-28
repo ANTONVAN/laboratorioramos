@@ -467,7 +467,7 @@ else
                     {
                         MedicoId = new(),
                         CompañiaId = new() { dtoEmpresa.Id },
-                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre.ToString()) ? null : dtoFiltro.ExpedienteNombre.ToString(),
+                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre.ToString(),
                         TipoFecha = 1,
                         Fecha = new()
                     };

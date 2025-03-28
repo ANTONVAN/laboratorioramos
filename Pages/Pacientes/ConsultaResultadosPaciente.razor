@@ -598,6 +598,30 @@ else
                         try
                         {
                             LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                            List<DtoResponseMedicoPaciente> LstExpedientesRemove =new();
+                            foreach (var itemrem in LstExpedientes)
+                            {
+                                if (PostRequiere == "2")
+                                {
+                                    if (true)
+                                    {
+
+                                    }
+                                }
+                                else if (PostRequiere == "3")
+                                {
+                                    if (!dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania))
+                                    {
+                                        LstExpedientesRemove.Add(itemrem);
+
+                                    }
+                                }
+                            }
+
+                            foreach (var itemremD in LstExpedientesRemove)
+                            {
+                                LstExpedientes.Remove(itemremD);
+                            }
                             foreach (var itemExp in LstExpedientes)
                             {
                                 foreach (var itemSol in itemExp.Estudios)
@@ -605,6 +629,8 @@ else
                                     itemSol.SolicitudId = itemExp.SolicitudId;
                                 }
                             }
+                            
+
                         }
                         catch (Exception ex)
                         {
