@@ -996,6 +996,22 @@ else
                             //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
                         }
                     }
+                    else
+                    {
+                        DtoAsigMedicEmpresa asignMedicEmpresa = new()
+                            {
+                                Activo = true,
+                                CompañiaId = PostRequiere == "2" ? "1b84fa7e-9b41-41fa-b8e0-f1d029bb94d4" : dtoEmpresa.Id,
+                                Correo = PostRequiere == "2" ? String.IsNullOrEmpty(dtoMedico.Correo) ? null : dtoMedico.Correo : null,
+                                CotizacionId = CotizacionDraft.CotizacionId,
+                                MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                                Observaciones = PostRequiere == "2" ? String.IsNullOrEmpty(dtoMedico.Observaciones) ? null : dtoMedico.Observaciones : null,
+                                Procedencia = PostRequiere == "2" ? 0 : dtoEmpresa.ProcedenciaId,
+                                Whatsapp = PostRequiere == "2" ? String.IsNullOrEmpty(dtoMedico.Telefono) ? null : dtoMedico.Telefono : null,
+                            };
+                        string jsonAsign = JsonConvert.SerializeObject(asignMedicEmpresa);
+                        var responseasign = await Http.PutAsJsonAsync<DtoAsigMedicEmpresa>(UrlAsignOrdenesNew, asignMedicEmpresa);
+                    }
                 }
                 break;
             case 1:
@@ -1071,6 +1087,22 @@ else
                             ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
                             //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
                         }
+                    }
+                    else
+                    {
+                        DtoAsigMedicEmpresa asignMedicEmpresa = new()
+                            {
+                                Activo = true,
+                                CompañiaId = PostRequiere == "2" ? null : dtoEmpresa.Id,
+                                Correo = PostRequiere == "2" ? dtoMedico.Correo : null,
+                                CotizacionId = CotizacionDraft.CotizacionId,
+                                MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : null,
+                                Observaciones = PostRequiere == "2" ? dtoMedico.Observaciones : null,
+                                Procedencia = PostRequiere == "2" ? 0 : dtoEmpresa.ProcedenciaId,
+                                Whatsapp = PostRequiere == "2" ? dtoMedico.Telefono : null,
+                            };
+                        string jsonAsign = JsonConvert.SerializeObject(asignMedicEmpresa);
+                        var responseasign = await Http.PutAsJsonAsync<DtoAsigMedicEmpresa>(UrlAsignOrdenesNew, asignMedicEmpresa);
                     }
                 }
                 break;
@@ -2207,8 +2239,8 @@ else
                         DtoEstudioRequestPrice oPriceStudio = new()
                             {
                                 SucursalId = SucursalID,
-                                //CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                                CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                                CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                                //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
                                 MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
                                 EstudioId = itemEstudio.Id
                             };
@@ -2243,7 +2275,7 @@ else
                             {
                                 SucursalId = SucursalID,
                                 CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                            //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                                //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
                                 MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
                                 PaqueteId = itemEstudio.Id
                             };
