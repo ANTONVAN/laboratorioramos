@@ -2239,30 +2239,32 @@ else
                 {
                     if (itemEstudio.Activo)
                     {
-                        var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudio.Clave));
-                        if (studioagregado == null)
-                        {
-                            DtoEstudioRequestPrice oPriceStudio = new()
-                                {
-                                    SucursalId = SucursalID,
-                                    CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                                //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                                    MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
-                                    EstudioId = itemEstudio.Id
-                                };
-                            string json1 = JsonConvert.SerializeObject(oPriceStudio);
-                            var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
-                            if (responseDraft.IsSuccessStatusCode)
+                        
+                    }
+
+                    var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudio.Clave));
+                    if (studioagregado == null)
+                    {
+                        DtoEstudioRequestPrice oPriceStudio = new()
                             {
-                                var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                                _oEstudioResponsePrice.Add(ostudioResponse);
-                            }
-                            // else
-                            // {
-                            //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
-                            //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
-                            // }
+                                SucursalId = SucursalID,
+                                CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                            //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                                MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                                EstudioId = itemEstudio.Id
+                            };
+                        string json1 = JsonConvert.SerializeObject(oPriceStudio);
+                        var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
+                        if (responseDraft.IsSuccessStatusCode)
+                        {
+                            var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                            _oEstudioResponsePrice.Add(ostudioResponse);
                         }
+                        // else
+                        // {
+                        //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
+                        //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
+                        // }
                     }
                     
                 }
@@ -2278,30 +2280,32 @@ else
                 {
                     if (itemEstudio.Activo)
                     {
-                        var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudio.Clave));
-                        if (studioagregado == null)
-                        {
-                            DtoPaqueteEstudioRequestPrice oPackPriceStudio = new()
-                                {
-                                    SucursalId = SucursalID,
-                                    CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                                //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                                    MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
-                                    PaqueteId = itemEstudio.Id
-                                };
-                            string json1 = JsonConvert.SerializeObject(oPackPriceStudio);
-                            var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPackPriceStudio);
-                            if (responseDraft.IsSuccessStatusCode)
+                        
+                    }
+
+                    var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudio.Clave));
+                    if (studioagregado == null)
+                    {
+                        DtoPaqueteEstudioRequestPrice oPackPriceStudio = new()
                             {
-                                var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                                _oEstudioResponsePrice.Add(ostudioResponse);
-                            }
-                            // else
-                            // {
-                            //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
-                            //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
-                            // }
+                                SucursalId = SucursalID,
+                                CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                            //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                                MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                                PaqueteId = itemEstudio.Id
+                            };
+                        string json1 = JsonConvert.SerializeObject(oPackPriceStudio);
+                        var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPackPriceStudio);
+                        if (responseDraft.IsSuccessStatusCode)
+                        {
+                            var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                            _oEstudioResponsePrice.Add(ostudioResponse);
                         }
+                        // else
+                        // {
+                        //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
+                        //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
+                        // }
                     }
                     
                 }
@@ -2638,12 +2642,12 @@ else
         try
         {
 
-            await Task.Delay(1500);
+            await Task.Delay(1200);
             _PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", archivopdf);
         }
         catch (Exception ex)
         {
-            await _PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", archivopdf);            
+            _PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", archivopdf);            
         }
 
         StateHasChanged();
