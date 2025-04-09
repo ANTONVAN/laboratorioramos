@@ -41,21 +41,21 @@ else
                 <MudItem xs="12" sm="12" md="12">
                     <EditForm Model="_busquedaCotizacion" OnValidSubmit="@BuscarOrdenes" style="width: 100%;">
                         <MudGrid>
-                            <MudItem xs="12" sm="12" md="1">
+                            @* <MudItem xs="12" sm="12" md="1">
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            </MudItem>
+                            </MudItem> *@
                             <MudItem xs="12" sm="12" md="3">
                                 @* <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
                                 <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Disabled="(ValidateData?true:false)" Label="Número de orden:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
                             </MudItem>
-                            <MudItem xs="12" sm="12" md="3">
+                            <MudItem xs="12" sm="12" md="2">
                                 @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateInicial" /> *@
 
                                 @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="_busquedaCotizacion.dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
                                 <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")"/>
                             </MudItem>
-                            <MudItem xs="12" sm="12" md="3">
+                            <MudItem xs="12" sm="12" md="2">
                                 @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateFinal" /> *@
                                 @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="_busquedaCotizacion.dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
@@ -66,23 +66,26 @@ else
                                 @if (ValidateData)
                                 {
                                     @* <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Text" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton> *@
-                                    <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto" Style="width:100%;"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                                    <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="rounded-0 ml-auto" Style="width:100%;"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
                                 }
                                 else
                                 {
                                     @* <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton> *@
-                                    <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="ml-auto" Style="width:100%;">Buscar</MudButton>
+                                    <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="rounded-0 ml-auto" Style="width:100%;">Buscar</MudButton>
                                 }
+                            </MudItem>
+                            <MudItem xs="12" sm="12" md="2">
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" OnClick="@NewItem" Color="@Color.Info" Class="add-item-btn rounded-0">Crear Nueva Orden</MudButton>
                             </MudItem>
                         </MudGrid>
                     </EditForm>
                 </MudItem>
-                <MudItem xs="12" sm="12" md="12" Class="d-flex justify-start">
+                @* <MudItem xs="12" sm="12" md="12" Class="d-flex justify-start">
                     <MudButton Variant="Variant.Outlined" OnClick="@NewItem" Color="@Color.Info" Class="add-item-btn">Crear Nueva Orden</MudButton>
-                </MudItem>
+                </MudItem> *@
 
                 <MudItem xs="12" sm="12" md="12" Class="pt-1">
-                    <MudDataGrid Class="pt-1" Items="@_oCotizaciones" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" FixedHeader="true" Filterable="false" Loading="@ValidateData">
+                    <MudDataGrid Class="pt-1 rounded-0" Items="@_oCotizaciones" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" FixedHeader="true" Filterable="false" Loading="@ValidateData">
                         <ToolBarContent>
                             <MudSpacer />
                             <MudText Typo="Typo.h6" style="color: #0d37a8;">Historial de Ordenes</MudText>
@@ -131,15 +134,16 @@ else
             {
                 <MudItem xs="12" sm="12" md="12" >
                     <MudGrid>
-                        <MudItem xs="12" sm="12" md="9" Class="d-flex justify-center">
-                            <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" Color="@Color.Error" Class="add-item-btn">Salir</MudButton>
+                        <MudItem xs="12" sm="12" md="10" Class="d-flex justify-end">
+                            <b><Label>Registro: @DateTime.Now.ToLongDateString().ToUpper()</Label></b>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="2" Class="d-flex justify-center">
+                            <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" Color="@Color.Error" Variant="Variant.Filled" Class="add-item-btn rounded-0">Salir</MudButton>
                         </MudItem>
                         @* <MudItem xs="12" sm="12" md="3" Class="d-flex justify-center">
                             <MudButton OnClick="@ContnueProcess"  StartIcon="@Icons.Material.Filled.DoubleArrow" Color="@Color.Info" Class="add-item-btn">Continuar</MudButton>
                         </MudItem> *@
-                        <MudItem xs="12" sm="12" md="3" Class="d-flex justify-end">
-                            <b><Label>Registro: @DateTime.Now.ToLongDateString().ToUpper()</Label></b>
-                        </MudItem>
+                        
                     </MudGrid>
                 </MudItem>
 
@@ -233,7 +237,7 @@ else
 
                             </LabelTemplate> *@
                             <ChildContent>
-                                <MudStep Title="Ciudad" SecondaryText="(Opcional)">
+                                <MudStep Title="Ciudad">
                                     <MudDivider />
                                     <MudGrid Class="mt2">
                                         <MudItem xs="12" sm="6" md="6">
@@ -251,7 +255,7 @@ else
                                             @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
                                             {
                                                 <MudTable T="DtoSucursal" Items="@_oSucursalForCity" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
-                                                RowClass="cursor-pointer" RowClassFunc="@SelectedRowSucursal" OnRowClick="RowClickEvent" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
+                                                          RowClass="cursor-pointer" RowClassFunc="@SelectedRowSucursal" OnRowClick="RowClickEvent" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Class="rounded-0">
                                                     @* <ToolBarContent style=" flex-flow: column;padding-top: 20px;"> *@
                                                     <ToolBarContent>
                                                         <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Sucursales</MudText> <br />
@@ -310,7 +314,7 @@ else
                                         @if (visibleInfoPaciente)
                                         {
                                             <MudItem xs="12" sm="12" md="12">
-                                                <MudTable T="DtoPaciente" Items="@dtoPaciente" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTablePaciente"
+                                                <MudTable T="DtoPaciente" Items="@dtoPaciente" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTablePaciente" Class="rounded-0"
                                                 RowClass="cursor-pointer" RowClassFunc="@SelectedRowPaciente" OnRowClick="RowClickEventPaciente" Context="Pacient" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
                                                     <ToolBarContent>
                                                         <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Pacientes</MudText> <br />
@@ -348,7 +352,7 @@ else
                                     <MudDivider />
                                     <MudGrid Class="mt-2">
                                         <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
-                                            <MudButton Variant="Variant.Outlined" OnClick="@AbrirModalEstudios" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn">Agregar Estudios</MudButton>
+                                            <MudButton Variant="Variant.Outlined" OnClick="@AbrirModalEstudios" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn rounded-0">Agregar Estudios</MudButton>
                                         </MudItem>                                            
                                         @if (visibleInfoEstudio)
                                         {
@@ -378,7 +382,7 @@ else
                                                 </MudDataGrid>
 *@
                                                     <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudiosOriginal" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Breakpoint="Breakpoint.Sm"
-                                                    RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele">
+                                                              RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele" Class="rounded-0">
                                                         <ColGroup>
                                                             <col style="width:10px;" />
                                                             <col style="width:10px;" />
@@ -424,7 +428,7 @@ else
                                                                             </CardHeaderContent>
                                                                         </MudCardHeader>*@
                                                                             <MudCardContent Class="pa-0">
-                                                                                <MudTable Items="@GridEstudioSele.Estudios" Context="StudiContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                                                                <MudTable Items="@GridEstudioSele.Estudios" Context="StudiContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Class="rounded-0">
                                                                                     <HeaderContent>
                                                                                         <MudTh>Clave</MudTh>
                                                                                         <MudTh>Nombre</MudTh>
@@ -568,7 +572,7 @@ else
         <MudGrid>
 
             <MudItem xs="12" sm="12" md="12">
-                <MudDataGrid Items="@_oCotizacionEstudios" Hover="true" Dense="true" Striped="true" Bordered="true">
+                <MudDataGrid Items="@_oCotizacionEstudios" Hover="true" Dense="true" Striped="true" Bordered="true" Class="rounded-0">
                     <Columns>
                         <PropertyColumn Property="x => x.Id" Title="ID" CellClass="justify-center" />
                         @* <PropertyColumn Property="x => x.EstudioId" CellClass="justify-center" /> *@
@@ -632,7 +636,7 @@ else
             </MudItem>
 
             <MudItem xs="12" sm="12" md="12">
-                <MudTable T="DtoEstudioResponsePrice" Items="@_oEstudioResponsePrice" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTableEstudios"
+                <MudTable T="DtoEstudioResponsePrice" Items="@_oEstudioResponsePrice" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTableEstudios" Class="rounded-0"
                 RowClass="cursor-pointer" @bind-SelectedItems="selectedEstudios" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Loading="@searchEstudiosTxt">
                     <ColGroup>
                         <col />
@@ -718,7 +722,7 @@ else
 
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="AgregarEstudio" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn">Aceptar</MudButton>
+        <MudButton OnClick="AgregarEstudio" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn rounded-0">Aceptar</MudButton>
     </DialogActions>
 </MudDialog>
 

@@ -105,12 +105,12 @@ else
                 <EditForm Model="@dtoFiltro" OnValidSubmit="BuscaFecha" style="width: 100%;">
 
                     <MudGrid>
-                        <MudItem xs="12" sm="12" md="1">
+                        @* <MudItem xs="12" sm="12" md="1">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        </MudItem>
-                        <MudItem xs="12" sm="12" md="3">
+                        </MudItem> *@
+                        <MudItem xs="12" sm="12" md="4">
                             @* <MudTextField @bind-Value="dtoFiltro.Solicitud" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
-                            <MudTextField @bind-Value="dtoFiltro.Solicitud" Disabled="(ValidateData?true:false)" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
+                            <MudTextField @bind-Value="dtoFiltro.Solicitud" Disabled="(ValidateData?true:false)" Label="Número de Solicitud o Nombre del Paciente" Clearable="true" Class="mt-0" HelperText="Teclee en Número de Solicitud o Nombre del paciente, y pulse Enter."></MudTextField>
                         </MudItem>
                         <MudItem xs="12" sm="12" md="3">
                             @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
@@ -128,12 +128,12 @@ else
                             @if (ValidateData)
                             {
                                 @* <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Text" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton> *@
-                                <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto" Style="width:100%;"><MudProgressCircular Color="MudBlazor.Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                                <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="rounded-0 ml-auto" Style="width:100%;"><MudProgressCircular Color="MudBlazor.Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
                             }
                             else
                             {
                                 @* <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton> *@
-                                <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="ml-auto" Style="width:100%;">Buscar</MudButton>
+                                <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="rounded-0 ml-auto" Style="width:100%;">Buscar</MudButton>
                             }
                         </MudItem>
                     </MudGrid>
@@ -141,7 +141,7 @@ else
             </MudItem>
             <MudItem xs="12" sm="12" md="12" Class="pt-1">
                 @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
-                <MudTable Class="pt-1" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
+                <MudTable Class="pt-1 rounded-0" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
                     <ColGroup>
                         <col style="width: 20px;" />
                         <col />
@@ -221,7 +221,7 @@ else
                         @if (context.ShowEstudios)
                         {
                             <td colspan="12" style="text-align:-webkit-center;">
-                                <MudTable Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
+                                <MudTable Class="rounded-0" Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
                                     <HeaderContent>
                                         @*  <MudTh style="padding: 0px;">
                                     </MudTh> *@
@@ -295,23 +295,23 @@ else
             <MudItem xs="12" sm="12" md="12">
                 <MudText Typo="Typo.h6" Align="Align.Center">Paciente: <k>@SolicitudMedicaPrint.Nombre</k></MudText>
             </MudItem>
-            <MudItem xs="12" sm="12" md="6">
+            <MudItem xs="12" sm="12" md="3" Class="pt-0">
                 <MudText Typo="Typo.h6">Solicitud: @SolicitudMedicaPrint.Solicitud</MudText>
             </MudItem>
-            <MudItem xs="12" sm="12" md="6">
+            <MudItem xs="12" sm="12" md="3" Class="pt-0">
                 <MudText Typo="Typo.h6">Fecha Ingreso: @SolicitudMedicaPrint.Registro</MudText>
             </MudItem>
-            <MudItem xs="12" sm="12" md="6">
+            <MudItem xs="12" sm="12" md="3" Class="pt-0">
                 <MudText Typo="Typo.h6">Sexo: @SolicitudMedicaPrint.Sexo</MudText>
             </MudItem>
-            <MudItem xs="12" sm="12" md="6">
+            <MudItem xs="12" sm="12" md="3" Class="pt-0">
                 <MudText Typo="Typo.h6">Edad: @SolicitudMedicaPrint.Edad</MudText>
             </MudItem>
-            <MudItem xs="12" sm="12" md="12" Class="d-flex d-sm-none d-none d-sm-flex d-md-none">
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" aria-label="Buscar" Class="ml-auto" OnClick="@SelAllRog">Seleccionar Todos</MudButton>
+            <MudItem xs="12" sm="12" md="12" Class="d-flex d-sm-none d-none d-sm-flex d-md-none pt-0 pb-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" aria-label="Buscar" Class="rounded-0 ml-auto" OnClick="@SelAllRog">Seleccionar Todos</MudButton>
             </MudItem>
             <MudItem xs="12" sm="12" md="12">
-                <MudTable MultiSelection="true" @bind-SelectedItems="selectedItems" Items="@SolicitudMedicaPrint.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Elevation="1" Striped="true" HeaderClass="table-head-bordered" Style="width:100%;" Dense="true" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
+                <MudTable Class="rounded-0" MultiSelection="true" @bind-SelectedItems="selectedItems" Items="@SolicitudMedicaPrint.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Elevation="1" Striped="true" HeaderClass="table-head-bordered" Style="width:100%;" Dense="true" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
                     <HeaderContent>
                         <MudTh>Estudio</MudTh>
                         <MudTh>Fecha de Entrega</MudTh>
@@ -334,7 +334,7 @@ else
     <DialogActions>
         @if (ValidateDataMod)
         {
-            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="rounded-0 ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
         }
         else
         {
@@ -419,7 +419,8 @@ else
 
     private bool visiblePrintResult = false;
 
-    private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true };
+    // private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true };
+    private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true };
 
     private DtoEmpresa dtoEmpresa = new();
 

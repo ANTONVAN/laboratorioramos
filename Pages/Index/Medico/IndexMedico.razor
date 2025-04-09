@@ -16,7 +16,7 @@
 
 
 <MudGrid Justify="Justify.Center">
-    <MudItem xs="12" sm="7" md="12" Class="d-flex justify-center absolute" style="top:15%;">
+    <MudItem xs="12" sm="7" md="12" Class="d-flex absolute justify-center" style="top:15%;">
         <EditForm Model="@dtoLoginMedico" OnValidSubmit="OnValidSubmit" style="width: 500px;">
             <DataAnnotationsValidator />
             <MudGrid>
@@ -32,11 +32,11 @@
                         <MudCardActions>
                             @if (ValidateData)
                             {
-                                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="rounded-0 ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
                             }
                             else
                             {
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Ingresar</MudButton>
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="rounded-0 ml-auto">Ingresar</MudButton>
                             }
 
                         </MudCardActions>

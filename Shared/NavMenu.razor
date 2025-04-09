@@ -10,14 +10,14 @@
             <MudNavLink Href="ConsultaGraficaPaciente/1/0" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.StackedBarChart">Gráficas</MudNavLink>
             break;
         case 2:
-            <MudNavLink Href="ConsultaExpedientesMedico/" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Consulta de Expedientes</MudNavLink>
-            <MudNavLink Href="ConsultaSolicitudes/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Consulta de Solicitudes</MudNavLink>
+            <MudNavLink Href="ConsultaExpedientesMedico/" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Expedientes</MudNavLink>
+            <MudNavLink Href="ConsultaSolicitudes/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Solicitudes</MudNavLink>
             <MudNavLink Href="CreaOrden/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd">Crear Orden</MudNavLink>
             
             break;
         case 3:
             <MudNavLink Href="ConsultaExpedientesEmpresa" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Pacientes</MudNavLink>
-            <MudNavLink Href="ConsultaSolicitudes/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Consulta de Solicitudes</MudNavLink>
+            <MudNavLink Href="ConsultaSolicitudes/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Solicitudes</MudNavLink>
             <MudNavLink Href="CreaOrden/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd">Crear Orden</MudNavLink>
             @* <MudNavLink Href="ConsultaResultadosPacientesEmpresa" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">Consulta de Resultados</MudNavLink> *@
             break;
@@ -27,7 +27,11 @@
     
 </MudNavMenu>
 
-
+<style>
+    .mud-nav-link:not(.mud-nav-link-disabled) .mud-nav-link-icon.mud-nav-link-icon-default {
+        color: var(--mud-palette-success-text);
+    }
+</style>
 @code {
 
     #region Declaración de variables

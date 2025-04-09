@@ -16,15 +16,15 @@
 <MudBreadcrumbs Items="_items" Style="padding-bottom: 2px; padding-top:0px;"></MudBreadcrumbs>
 <MudGrid Style="text-align: -webkit-center;">
     <MudItem xs="12" sm="7" md="12">
-        <MudText Align="MudBlazor.Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Consulta Gráfica del Paciente</MudText>
+        <MudText Align="MudBlazor.Align.Left" Typo="Typo.h5" style="color: #0d37a8;">Consulta Gráfica del Paciente</MudText>
     </MudItem>
-    <MudItem xs="12" sm="7" md="6">
-        <MudText Align="MudBlazor.Align.Center" Typo="Typo.h5" style="color: #0d37a8;">Expediente: @dtoMedicoPaciente.Expediente</MudText>
+    <MudItem xs="12" sm="7" md="6" Class="pt-0">
+        <MudText Align="MudBlazor.Align.Left" Typo="Typo.h5" style="color: #0d37a8;">Expediente: @dtoMedicoPaciente.Expediente</MudText>
     </MudItem>
-    <MudItem xs="12" sm="7" md="6">
-        <MudText Align="MudBlazor.Align.Center" Typo="Typo.h5" style="color: #0d37a8;">Paciente: @dtoMedicoPaciente.Nombre</MudText>
+    <MudItem xs="12" sm="7" md="6" Class="pt-0">
+        <MudText Align="MudBlazor.Align.Left" Typo="Typo.h5" style="color: #0d37a8;">Paciente: @dtoMedicoPaciente.Nombre</MudText>
     </MudItem>
-    <MudItem xs="12" sm="7" md="3">
+    <MudItem xs="12" sm="7" md="3" Class="pt-0">
         <MudAutocomplete T="string" @bind-Value="ValEstudio"
                          SearchFunc="SearchEstudio"
                          Label="Estudio"
@@ -53,28 +53,28 @@
             <MudSelectItem Value="@("DIFENILHIDANTOINA (EPAMIN)")" />
         </MudSelect> *@
     </MudItem>
-    <MudItem xs="12" sm="5" md="3">
+    <MudItem xs="12" sm="5" md="3" Class="pt-0">
         @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" /> *@
         @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="MudBlazor.Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
         <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="MudBlazor.Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
         <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="MudBlazor.Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
     </MudItem>
-    <MudItem xs="12" sm="5" md="3">        
+    <MudItem xs="12" sm="5" md="3" Class="pt-0">
         @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal"/> *@
         @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="MudBlazor.Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
         <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="MudBlazor.Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
         <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="MudBlazor.Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
     </MudItem>
-    <MudItem xs="12" sm="7" md="2">
+    <MudItem xs="12" sm="7" md="2" Class="pt-0">
         @if (ValidateData)
         {
             @* <MudIconButton Color="MudBlazor.Color.Default" Size="MudBlazor.Size.Large" aria-label="Buscando"><MudProgressCircular Color="MudBlazor.Color.Default" Size="MudBlazor.Size.Small" Indeterminate="true" /></MudIconButton> *@
-            <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="MudBlazor.Color.Default" Class="ml-auto" Style="width:100%;"><MudProgressCircular Color="MudBlazor.Color.Default" Size="MudBlazor.Size.Small" Indeterminate="true" /></MudButton>
+            <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="MudBlazor.Color.Default" Class="rounded-0 ml-auto" Style="width:100%;"><MudProgressCircular Color="MudBlazor.Color.Default" Size="MudBlazor.Size.Small" Indeterminate="true" /></MudButton>
         }
         else
         {
             @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="MudBlazor.Color.Primary" Size="MudBlazor.Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()"></MudIconButton> *@
-            <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="MudBlazor.Color.Default" aria-label="Buscar" Class="ml-auto" Style="width:100%;" OnClick="() => BuscaFecha()">Buscar</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="MudBlazor.Color.Default" aria-label="Buscar" Class="rounded-0 ml-auto" Style="width:100%;" OnClick="() => BuscaFecha()">Buscar</MudButton>
         }
         
     </MudItem>

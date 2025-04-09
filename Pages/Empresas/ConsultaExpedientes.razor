@@ -61,10 +61,10 @@ else
             <MudItem xs="12" sm="12" md="12">
                 <EditForm Model="@dtoFiltro" OnValidSubmit="BuscaFecha" style="width: 100%;">
                     <MudGrid>
-                        <MudItem xs="12" sm="12" md="1">
+                        @* <MudItem xs="12" sm="12" md="1">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        </MudItem>
-                        <MudItem xs="12" sm="12" md="3">
+                        </MudItem> *@
+                        <MudItem xs="12" sm="12" md="4">
                             @* <MudTextField @bind-Value="searchString1" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
                             <MudTextField @bind-Value="dtoFiltro.ExpedienteNombre" Disabled="(ValidateData?true:false)" Label="Expediente o Nombre del paciente:" Clearable="true" Class="mt-0" HelperText="Teclee la Clave de Expediente o Nombre del paciente, y pulse Enter." For="@(() => dtoFiltro.ExpedienteNombre)"></MudTextField>
                         </MudItem>
@@ -84,12 +84,12 @@ else
                             @if (ValidateData)
                             {
                                 @* <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Text" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton> *@
-                                <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto" Style="width:100%;"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                                <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="rounded-0 ml-auto" Style="width:100%;"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
                             }
                             else
                             {
                                 @* <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton> *@
-                                <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="ml-auto" Style="width:100%;">Buscar</MudButton>
+                                <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Default" aria-label="Buscar" Class="rounded-0 ml-auto" Style="width:100%;">Buscar</MudButton>
                             }
                         </MudItem>
                     </MudGrid>
@@ -97,7 +97,7 @@ else
 
             </MudItem>
             <MudItem xs="12" sm="12" md="12" Class="pt-1">
-                <MudTable Class="pt-1" @ref="_table" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
+                <MudTable Class="pt-1 rounded-0" @ref="_table" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
                         <MudSpacer />
@@ -213,6 +213,8 @@ else
             {
                 try
                 {
+                    // dtoFiltro.DateInicial=DateTime.Now;
+                    // dtoFiltro.DateFinal=DateTime.Now;
                     var idenUser = authState.User.Claims.ToList();
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
                     var filtros = Cryp.Desencripta(idenUser[1].Value.ToString());
