@@ -29,7 +29,7 @@
 }
 else
 {
-    
+
 } *@
 
 <MudBreadcrumbs Items="_items" Style="padding-bottom: 4px; padding-top:0px;"></MudBreadcrumbs>
@@ -141,7 +141,8 @@ else
             </MudItem>
             <MudItem xs="12" sm="12" md="12" Class="pt-1">
                 @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
-                <MudTable Class="pt-1 rounded-0" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData">
+                <MudTable Class="pt-1 rounded-0" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
+                          FixedHeader="true" FixedFooter="false" Bordered="true" HeaderClass="table-head-bordered">
                     <ColGroup>
                         <col style="width: 20px;" />
                         <col />
@@ -346,23 +347,23 @@ else
 
 <style>
     .mud-input-input-control {
-        align-items: normal;
+    align-items: normal;
     }
     .mud-toolbar mud-toolbar-gutters mud-table-toolbar{
-        margin-bottom: 20px;
+    margin-bottom: 20px;
     }
 
     .mud-link.mud-link-underline-always {
-        text-decoration: underline;
-        font-family: Arial;
-        font-size: .875rem;
+    text-decoration: underline;
+    font-family: Arial;
+    font-size: .875rem;
     }
 
     .mud-typography {
-        margin: 0;
-        font-family: Arial !important;
-        font-weight: bold !important;
-        font-size: .875rem;
+    margin: 0;
+    font-family: Arial !important;
+    font-weight: bold !important;
+    font-size: .875rem;
     }
 </style>
 
@@ -452,9 +453,11 @@ else
                 {
                     LstEstatusPrint.Add(int.Parse(itemST));
                 }
+
+                var linkho = PostRequiere == "2" ? "ConsultaSolicitudes/2" : "ConsultaSolicitudes/3";
                 _items = new List<BreadcrumbItem>
                 {
-                    new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
+                    new BreadcrumbItem("Home", href: linkho, icon: Icons.Material.Filled.Home),
                     new BreadcrumbItem("Consulta de Solicitudes", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                 };
 

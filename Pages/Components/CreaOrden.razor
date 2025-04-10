@@ -44,7 +44,7 @@ else
                             @* <MudItem xs="12" sm="12" md="1">
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             </MudItem> *@
-                            <MudItem xs="12" sm="12" md="3">
+                            <MudItem xs="12" sm="12" md="4">
                                 @* <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
                                 <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Disabled="(ValidateData?true:false)" Label="Número de orden:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
                             </MudItem>
@@ -75,7 +75,7 @@ else
                                 }
                             </MudItem>
                             <MudItem xs="12" sm="12" md="2">
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" OnClick="@NewItem" Color="@Color.Info" Class="add-item-btn rounded-0">Crear Nueva Orden</MudButton>
+                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" OnClick="@NewItem" Color="@Color.Info" Class="add-item-btn rounded-0">Crear Orden</MudButton>
                             </MudItem>
                         </MudGrid>
                     </EditForm>
@@ -85,7 +85,7 @@ else
                 </MudItem> *@
 
                 <MudItem xs="12" sm="12" md="12" Class="pt-1">
-                    <MudDataGrid Class="pt-1 rounded-0" Items="@_oCotizaciones" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" FixedHeader="true" Filterable="false" Loading="@ValidateData">
+                    <MudDataGrid Class="pt-1 rounded-0" Items="@_oCotizaciones" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData" FixedHeader="true" FixedFooter="false">
                         <ToolBarContent>
                             <MudSpacer />
                             <MudText Typo="Typo.h6" style="color: #0d37a8;">Historial de Ordenes</MudText>
@@ -134,7 +134,10 @@ else
             {
                 <MudItem xs="12" sm="12" md="12" >
                     <MudGrid>
-                        <MudItem xs="12" sm="12" md="10" Class="d-flex justify-end">
+                        <MudItem xs="12" sm="12" md="3" >
+                            <MudText Align="Align.Left">Órden No.: <b>@CotizacionDraft.clave</b></MudText>
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="7" Class="d-flex justify-end">
                             <b><Label>Registro: @DateTime.Now.ToLongDateString().ToUpper()</Label></b>
                         </MudItem>
                         <MudItem xs="12" sm="12" md="2" Class="d-flex justify-center">
@@ -143,7 +146,7 @@ else
                         @* <MudItem xs="12" sm="12" md="3" Class="d-flex justify-center">
                             <MudButton OnClick="@ContnueProcess"  StartIcon="@Icons.Material.Filled.DoubleArrow" Color="@Color.Info" Class="add-item-btn">Continuar</MudButton>
                         </MudItem> *@
-                        
+
                     </MudGrid>
                 </MudItem>
 
@@ -167,16 +170,13 @@ else
                                     <MudItem xs="12" sm="12" md="12">
                                         @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
                                         {
-                                            <MudTable T="DtoSucursal" Items="@_oSucursalForCity" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
-                                            RowClass="cursor-pointer" RowClassFunc="@SelectedRowSucursal" OnRowClick="RowClickEvent" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
-                                                @* <ToolBarContent style=" flex-flow: column;padding-top: 20px;"> *@
+                                            @* <MudTable T="DtoSucursal" Items="@_oSucursalForCity" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
+                                                      RowClass="cursor-pointer" OnRowClick="OnRowClick" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
                                                 <ToolBarContent>
                                                     <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Sucursales</MudText> <br />
                                                     <MudText Typo="Typo.body1" Align="Align.Center" style="color: #0d37a8;">&nbsp;&nbsp;&nbsp;(Opcional)</MudText> <br />
-                                                    @* <MudSpacer /> *@
                                                 </ToolBarContent>
                                                 <HeaderContent>
-                                                    @* <MudTh>Código</MudTh> *@
                                                     <MudTh Style="color:#921313">Clave</MudTh>
                                                     <MudTh Style="color:#921313">Nombre</MudTh>
                                                     <MudTh Style="color:#921313">Ubicacion</MudTh>
@@ -184,7 +184,6 @@ else
                                                     <MudTh Style="color:#921313">Correo</MudTh>
                                                 </HeaderContent>
                                                 <RowTemplate>
-                                                    @* <MudTd DataLabel="Codigo">@sucur.Codigo</MudTd> *@
                                                     <MudTd DataLabel="Clave">@sucur.Clave</MudTd>
                                                     <MudTd DataLabel="Nombre">@sucur.Nombre</MudTd>
                                                     <MudTd DataLabel="Ubicacion">@sucur.Ubicacion</MudTd>
@@ -197,7 +196,7 @@ else
                                                 <PagerContent>
                                                     <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
                                                 </PagerContent>
-                                            </MudTable>
+                                            </MudTable> *@
 
                                         }
 
@@ -216,9 +215,8 @@ else
                 }
                 else
                 {
-                    <MudItem xs="12" sm="12" md="12">
-                        <MudText Class="p-2" Style="background-color: #0d37a8;color: white;" Align="Align.Center">Órden No.: <b>@CotizacionDraft.clave &nbsp; &nbsp;&nbsp;&nbsp;</b></MudText>
-
+                    <MudItem xs="12" sm="12" md="12" Class="pt-0">
+                        @* <MudText Class="p-2" Style="background-color: #0d37a8;color: white;" Align="Align.Center">Órden No.: <b>@CotizacionDraft.clave &nbsp; &nbsp;&nbsp;&nbsp;</b></MudText> *@
                         <MudStepper NonLinear ShowResetButton OnPreviewInteraction="OnPreviewInteraction" @bind-ActiveIndex="_index" >
                             <ConnectorTemplate Context="step">
                                 <div class="mud-stepper-nav-connector">
@@ -228,19 +226,36 @@ else
                                     }
                                 </div>
                             </ConnectorTemplate>
-                            @*<LabelTemplate>
-                                 @{
+                            <LabelTemplate>
+                                @{
                                     if (context.IsActive && _index==4 && CreandoPDF ==true) {
                                         <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
                                     }
+                                    @if (context.IsActive)
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.ArrowRight" Color="Color.Primary" Size="Size.Large"></MudIcon>
+                                    }
+                                    else if (context.Completed)
+                                    {
+                                        <div style="height: 10px; width:10px; background-color: var(--mud-palette-success); border-radius: 50%;"></div>
+                                    }
+                                    else
+                                    {
+                                        // <div style="height: 10px; width:10px; background-color: #d4ddeb; border-radius: 50%;"></div>
+                                        <MudIcon Icon="@Icons.Material.Filled.Adjust" Color="Color.Default" Size="Size.Medium"></MudIcon>
+                                    }
                                 } 
 
-                            </LabelTemplate> *@
+                            </LabelTemplate>
                             <ChildContent>
-                                <MudStep Title="Ciudad">
+                                @* <MudStep Title="Ciudad"> *@
+                                <MudStep>
                                     <MudDivider />
-                                    <MudGrid Class="mt2">
-                                        <MudItem xs="12" sm="6" md="6">
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            <MudText Align="Align.Left">Paso 1: <b>Ciudad</b></MudText>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="6" md="6" Class="pt-0">
                                             <MudAutocomplete T="string" @bind-Value="dtoGeneralesCotizacion.Ciudad"
                                             SearchFunc="SearchCiudad"
                                             Label="Ciudad"
@@ -254,16 +269,16 @@ else
                                         <MudItem xs="12" sm="12" md="12">
                                             @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
                                             {
-                                                <MudTable T="DtoSucursal" Items="@_oSucursalForCity" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
-                                                          RowClass="cursor-pointer" RowClassFunc="@SelectedRowSucursal" OnRowClick="RowClickEvent" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Class="rounded-0">
-                                                    @* <ToolBarContent style=" flex-flow: column;padding-top: 20px;"> *@
+                                                @* <MudTable @ref="mudTable" T="DtoSucursal" Items="@_oSucursalForCity" MultiSelection="true" Hover="true" SelectOnRowClick="false"
+          @bind-SelectedItems="selectedItems" OnRowClick="@RowClickEvent" Breakpoint="Breakpoint.Sm" RowClass="cursor-pointer" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Class="rounded-0"> *@
+                                                @* <MudTable @ref="mudTable" T="DtoSucursal" Items="@_oSucursalForCity" MultiSelection="true" SelectionChangeable="true" Hover="true"
+                                                OnRowClick="@OnRowClick" SelectOnRowClick="false" SelectedItemsChanged="@SelectedItemsChanged" Context="sucur" Dense="true" Striped="true" Bordered="true" Class="rounded-0">
                                                     <ToolBarContent>
                                                         <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Sucursales</MudText> <br />
                                                         <MudText Typo="Typo.body1" Align="Align.Center" style="color: #0d37a8;">&nbsp;&nbsp;&nbsp;(Opcional)</MudText> <br />
-                                                        @* <MudSpacer /> *@
                                                     </ToolBarContent>
                                                     <HeaderContent>
-                                                        @* <MudTh>Código</MudTh> *@
+                                                        <MudTh></MudTh>
                                                         <MudTh Style="color:#921313">Clave</MudTh>
                                                         <MudTh Style="color:#921313">Nombre</MudTh>
                                                         <MudTh Style="color:#921313">Ubicacion</MudTh>
@@ -271,7 +286,6 @@ else
                                                         <MudTh Style="color:#921313">Correo</MudTh>
                                                     </HeaderContent>
                                                     <RowTemplate>
-                                                        @* <MudTd DataLabel="Codigo">@sucur.Codigo</MudTd> *@
                                                         <MudTd DataLabel="Clave">@sucur.Clave</MudTd>
                                                         <MudTd DataLabel="Nombre">@sucur.Nombre</MudTd>
                                                         <MudTd DataLabel="Ubicacion">@sucur.Ubicacion</MudTd>
@@ -284,17 +298,43 @@ else
                                                     <PagerContent>
                                                         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
                                                     </PagerContent>
-                                                </MudTable>
+                                                </MudTable> *@
+
+                                                <MudDataGrid @ref="mudTable" T="DtoSucursal" MultiSelection="true" Items="@_oSucursalForCity" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged" FixedHeader="true" FixedFooter="false">
+                                                    <ToolBarContent>
+                                                        <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Sucursales</MudText> <br />
+                                                        <MudText Typo="Typo.body1" Align="Align.Center" style="color: #0d37a8;">&nbsp;&nbsp;&nbsp;(Opcional)</MudText> <br />
+                                                        @* <MudSpacer /> *@
+                                                    </ToolBarContent>
+                                                    <Columns>
+                                                        <SelectColumn T="DtoSucursal" />
+                                                        <PropertyColumn Property="x => x.Clave" HeaderStyle="color:#921313" />
+                                                        <PropertyColumn Property="x => x.Nombre" HeaderStyle="color:#921313"/>
+                                                        <PropertyColumn Property="x => x.Ubicacion" HeaderStyle="color:#921313"/>
+                                                        <PropertyColumn Property="x => x.Telefono" HeaderStyle="color:#921313"/>
+                                                        <PropertyColumn Property="x => x.Correo" HeaderStyle="color:#921313" />
+                                                    </Columns>
+                                                    <NoRecordsContent>
+                                                        <MudText>Sin Registros para mostrar</MudText>
+                                                    </NoRecordsContent>
+                                                    <PagerContent>
+                                                        <MudDataGridPager T="DtoSucursal" />
+                                                    </PagerContent>
+                                                </MudDataGrid>
 
                                             }
 
                                         </MudItem>
                                     </MudGrid>
                                 </MudStep>
-                                <MudStep Title="Generales Paciente" SecondaryText="(Opcional)">
+                                @* <MudStep Title="Generales Paciente" SecondaryText="(Opcional)"> *@
+                                <MudStep>
                                     <MudDivider />
-                                    <MudGrid Class="mt-2">
+                                    <MudGrid>
                                         <MudItem xs="12" sm="12" md="12">
+                                            <MudText Align="Align.Left">Paso 2: <b>Datos Generales</b></MudText>
+                                        </MudItem>
+                                        @* <MudItem xs="12" sm="12" md="12">
                                             <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Ciudad: <b>@dtoGeneralesCotizacion.Ciudad</b></MudText>
                                         </MudItem>
                                         @if (!String.IsNullOrEmpty(SucursalName))
@@ -303,9 +343,9 @@ else
                                                 <MudText Typo="Typo.h6" Align="Align.Start" style="color: #0d37a8;">Sucursal: <b>@SucursalName</b></MudText>
                                             </MudItem>
                                         }
-
-                                        <MudItem xs="12" sm="12" md="12">
-                                            <MudTextField @bind-Value="dtoGeneralesCotizacion.Observaciones" T="string" Label="Observaciones (Opcional)" Lines="3" />
+ *@
+                                        <MudItem xs="12" sm="12" md="12" Class="pt-0">
+                                            <MudTextField @bind-Value="dtoGeneralesCotizacion.Observaciones" T="string" Label="Observaciones (Opcional)" Lines="1" />
                                         </MudItem>
                                         <MudItem xs="12" sm="6" md="6">
                                             @* <MudTextField T="string" Label="Paciente" @bind-Value="dtoGeneralesCotizacion.Paciente" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnKeyUp="ValidaEnterPaciente" OnAdornmentClick="@(() => BuscarPaciente())" /> *@
@@ -348,10 +388,14 @@ else
 
                                     </MudGrid>
                                 </MudStep>
-                                <MudStep Title="Estudios" SecondaryText="Agregar Estudios" HasError="@(selectedEstudios.Count()==0)">
+                                @* <MudStep Title="Estudios" SecondaryText="Agregar Estudios" HasError="@(selectedEstudios.Count()==0)"> *@
+                                <MudStep HasError="@(selectedEstudios.Count()==0)">
                                     <MudDivider />
-                                    <MudGrid Class="mt-2">
-                                        <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            <MudText Align="Align.Left">Paso 3: <b>Estudios</b></MudText>
+                                        </MudItem>
+                                        <MudItem xs="12" sm="12" md="12" Class="d-flex pt-0 justify-center">
                                             <MudButton Variant="Variant.Outlined" OnClick="@AbrirModalEstudios" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn rounded-0">Agregar Estudios</MudButton>
                                         </MudItem>                                            
                                         @if (visibleInfoEstudio)
@@ -381,8 +425,8 @@ else
                                                     </PagerContent>
                                                 </MudDataGrid>
 *@
-                                                    <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudiosOriginal" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Breakpoint="Breakpoint.Sm"
-                                                              RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele" Class="rounded-0">
+                                                    <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudiosOriginal" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" Breakpoint="Breakpoint.Sm"
+                                                              RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele" Class="rounded-0" FixedHeader="true" FixedFooter="false">
                                                         <ColGroup>
                                                             <col style="width:10px;" />
                                                             <col style="width:10px;" />
@@ -459,9 +503,13 @@ else
                                         }
                                     </MudGrid>
                                 </MudStep>
-                                <MudStep Title="Indicaciones" SecondaryText="Atención" >
+                                @* <MudStep Title="Indicaciones" SecondaryText="Atención" > *@
+                                <MudStep>
                                     <MudDivider />
-                                    <MudGrid Class="mt-2">
+                                    <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            <MudText Align="Align.Left">Paso 4: <b>Indicaciones</b></MudText>
+                                        </MudItem>
                                         @{
                                             List<string> listindicaciones = new();
                                             foreach (var item in selectedEstudios)
@@ -474,7 +522,7 @@ else
                                                         if (indiexiste == null)
                                                         {
                                                             listindicaciones.Add(itemIndi.Descripcion);
-                                                            <MudItem xs="12" sm="12" md="12" Class="justify-start">@itemIndi.Descripcion</MudItem>
+                                                            <MudItem xs="12" sm="12" md="12" Class="pt-0 justify-start">@itemIndi.Descripcion</MudItem>
                                                         }
 
                                                     }
@@ -499,8 +547,12 @@ else
                                         <MudItem xs="12" sm="12" md="12" Class="justify-start"></MudItem>
                                     </MudGrid>
                                 </MudStep>
-                                <MudStep Title="Recibo" SecondaryText="">
+                                @* <MudStep Title="Recibo" SecondaryText=""> *@
+                                <MudStep>
                                     <MudGrid>
+                                        <MudItem xs="12" sm="12" md="12">
+                                            <MudText Align="Align.Left">Paso 5: <b>Recibo</b></MudText>
+                                        </MudItem>
                                         @* <MudItem xs="12" sm="7" md="12">
                                         <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Recibo</MudText><MudSpacer />
                                     </MudItem> *@
@@ -533,8 +585,6 @@ else
                                         Siguiente
                                     </MudButton>
                                 }
-
-
                             </ActionContent>
                         </MudStepper>
 
@@ -750,6 +800,17 @@ else
     padding-bottom: 50px;
     text-align: right;
     }
+
+    .mud-stepper .mud-stepper-nav .mud-step {
+    padding: 0px !important;
+    position: relative;
+    cursor: default;
+    }
+
+    .mud-stepper.mud-stepper__horizontal .mud-stepper-nav-connector {
+    align-self: center;
+    margin: -3px -3px -2px -9px;
+    }
 </style>
 
 @code {
@@ -822,7 +883,7 @@ else
 
     private int selectedRowNumber = -1;
     private int selectedRowNumberPaciente = -1;
-    private MudTable<DtoSucursal> mudTable;
+    private MudDataGrid<DtoSucursal> mudTable;
     private MudTable<DtoPaciente> mudTablePaciente;
     private MudTable<DtoEstudioResponsePrice> mudTableEstudios;
     private DtoPaciente dtoPacienteSelected;
@@ -835,10 +896,13 @@ else
     private string _step2TextInput;
     private int _index;
     private int llamado =0;
+    private int priAct =0;
     PDFGenerator _PdfGenerator = new();
     DtoCotizacionRequest parametrobusqueda = new();
 
     private DtoEmpresa dtoEmpresa = new();
+
+    private HashSet<DtoSucursal> selectedItems = new HashSet<DtoSucursal>();
 
 
     #endregion
@@ -2075,26 +2139,20 @@ else
         return _oSucursalByCity.Select(x=>x.Ciudad).Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
     }
 
-    private string SelectedRowSucursal(DtoSucursal element, int rowNumber)
+    private void SelectedRowSucursal(DtoSucursal element)
     {
-        if (selectedRowNumber == rowNumber)
+        var t = "";
+    }
+
+    void SelectedItemsChanged(HashSet<DtoSucursal> items)
+    {
+        var rowActual = priAct == 0 ? items.ToList().Last():items.ToList().First();
+        foreach (var item in items)
         {
-            selectedRowNumber = -1;
-            SucursalID = "";
-            SucursalName = "";
-            return string.Empty;
+            mudTable.SelectedItems.Remove(item);
         }
-        else if (mudTable.SelectedItem != null && mudTable.SelectedItem.Equals(element))
-        {
-            selectedRowNumber = rowNumber;
-            SucursalID = element.IdSucursal;
-            SucursalName = $"{element.Nombre} - {element.Ubicacion}";
-            return "selected";
-        }
-        else
-        {
-            return string.Empty;
-        }
+        mudTable.SelectedItems.Add(rowActual);
+        priAct=1;
     }
 
     private string SelectedRowPaciente(DtoPaciente element, int rowNumber)
@@ -2118,9 +2176,14 @@ else
     }
 
 
-    private void RowClickEvent(TableRowClickEventArgs<DtoSucursal> tableRowClickEventArgs)
+    void OnRowClick(TableRowClickEventArgs<DtoSucursal> args)
     {
         var t = "";
+    }
+
+    void RowClicked(DataGridRowClickEventArgs<DtoSucursal> args)
+    {
+        var te = "";
     }
     private void RowClickEventPaciente(TableRowClickEventArgs<DtoPaciente> tableRowClickEventArgs)
     {
