@@ -48,11 +48,11 @@ else
 {
     <MudPaper Class="pa-4" Elevation="4" Style="width:100%;">
         <MudGrid>
-            <MudItem xs="12" sm="12" md="12" Style="padding-top: 12px;">
-                <MudText Align="Align.Left" Typo="Typo.h6" style="color: #66686c;"><b style="color: #0d37a8;">Solicitud: @LstExpedientes[0].Solicitud</b>&nbsp;&nbsp;<b style="font-size:small;">Registro: @LstExpedientes[0].Registro</b></MudText>
+            <MudItem xs="12" sm="12" md="4" Style="padding-top: 12px;">
+                <MudText Align="Align.Left" Typo="Typo.body1" style="color: #66686c;"><b style="color: #0d37a8;">Solicitud: @LstExpedientes[0].Solicitud</b>&nbsp;&nbsp;<b style="font-size:small;">Registro: @LstExpedientes[0].Registro</b></MudText>
             </MudItem>
-            <MudItem xs="12" sm="6" md="4" Style="padding-top: 0px;">
-                <MudText Align="Align.Left" Typo="Typo.subtitle1">
+            <MudItem xs="12" sm="6" md="6" Style="padding-top: 12px;">
+                <MudText Align="Align.Left" Typo="Typo.body1">
                     @{
                         if (LstExpedientes[0].Sexo == "Masculino")
                         {
@@ -67,34 +67,34 @@ else
 
                 </MudText>
             </MudItem>
-            <MudItem xs="12" sm="6" md="1" Style="padding-top: 0px;">
-                <MudText Align="Align.Center" Typo="Typo.subtitle2">
-                    <b>@LstExpedientes[0].Edad&nbsp;años</b>
+            <MudItem xs="12" sm="6" md="2" Style="padding-top: 12px;">
+                <MudText Align="Align.Center" Typo="Typo.body1">
+                    Edad: <b>@LstExpedientes[0].Edad&nbsp;años</b>
                 </MudText>
             </MudItem>
             <MudItem xs="12" sm="6" md="4" Style="padding-top: 0px;">
-                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.MedicalServices" Color="Color.Primary" />&nbsp;<b>Médico:</b>&nbsp; @dtoMedicoSolicitud.Nombre&nbsp;@dtoMedicoSolicitud.PrimerApellido&nbsp;@dtoMedicoSolicitud.SegundoApellido </MudText>
+                <MudText Align="Align.Justify" Typo="Typo.body1"><MudIcon Icon="@Icons.Material.Filled.MedicalServices" Color="Color.Primary" />&nbsp;<b>Médico:</b>&nbsp; @dtoMedicoSolicitud.Nombre&nbsp;@dtoMedicoSolicitud.PrimerApellido&nbsp;@dtoMedicoSolicitud.SegundoApellido </MudText>
             </MudItem>
             <MudItem xs="12" sm="6" md="3" Style="padding-top: 0px;">
-                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.Business" Color="Color.Primary" />&nbsp;<b>Compañia:</b> &nbsp; @LstExpedientes[0].Compania</MudText>
+                <MudText Align="Align.Justify" Typo="Typo.body1"><MudIcon Icon="@Icons.Material.Filled.Business" Color="Color.Primary" />&nbsp;<b>Compañia:</b> &nbsp; @LstExpedientes[0].Compania</MudText>
             </MudItem>
             <MudItem xs="12" sm="6" md="3" Style="padding-top: 0px;">
-                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.FolderShared" Color="Color.Primary" />&nbsp;<b>Expediente:</b> &nbsp; @LstExpedientes[0].Expediente</MudText>
+                <MudText Align="Align.Justify" Typo="Typo.body1"><MudIcon Icon="@Icons.Material.Filled.FolderShared" Color="Color.Primary" />&nbsp;<b>Expediente:</b> &nbsp; @LstExpedientes[0].Expediente</MudText>
             </MudItem>
 
 
-            <MudItem xs="12" sm="6" md="3" Style="padding-top: 0px;">
-                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" />&nbsp;<b>Fecha Nac.:</b> &nbsp; @LstExpedientes[0].FechaNacimiento</MudText>
+            <MudItem xs="12" sm="6" md="4" Style="padding-top: 0px;">
+                <MudText Align="Align.Justify" Typo="Typo.body1"><MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Color="Color.Primary" />&nbsp;<b>Fecha Nac.:</b> &nbsp; @LstExpedientes[0].FechaNacimiento</MudText>
             </MudItem>
             <MudItem xs="12" sm="6" md="3" Style="padding-top: 0px;">
-                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.Phone" Color="Color.Primary" />&nbsp;<b>Teléfono:</b> &nbsp; @LstExpedientes[0].Telefono</MudText>
+                <MudText Align="Align.Justify" Typo="Typo.body1"><MudIcon Icon="@Icons.Material.Filled.Phone" Color="Color.Primary" />&nbsp;<b>Teléfono:</b> &nbsp; @LstExpedientes[0].Telefono</MudText>
             </MudItem>
             <MudItem xs="12" sm="6" md="3" Style="padding-top: 0px;">
-                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.PhoneAndroid" Color="Color.Primary" />&nbsp;<b>Celular:</b> &nbsp; @LstExpedientes[0].EnvioWhatsapp</MudText>
+                <MudText Align="Align.Justify" Typo="Typo.body1"><MudIcon Icon="@Icons.Material.Filled.PhoneAndroid" Color="Color.Primary" />&nbsp;<b>Celular:</b> &nbsp; @LstExpedientes[0].EnvioWhatsapp</MudText>
             </MudItem>
         </MudGrid>
     </MudPaper>
-    <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%;">
+    <MudPaper Class="pa-1 mt-1" Elevation="4" Style="width:100%;">
         <MudGrid>
             <MudItem xs="12" sm="12" md="12">
                 <MudExpansionPanels MultiExpansion="true">
