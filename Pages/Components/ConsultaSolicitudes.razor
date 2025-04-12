@@ -142,7 +142,7 @@ else
             <MudItem xs="12" sm="12" md="12" Class="pt-1">
                 @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
                 <MudTable Class="pt-1 rounded-0" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
-                          FixedHeader="true" FixedFooter="false" Bordered="true" HeaderClass="table-head-bordered">
+                          FixedHeader="true" FixedFooter="false" Bordered="false" >
                     <ColGroup>
                         <col style="width: 20px;" />
                         <col />
@@ -221,8 +221,8 @@ else
                     <ChildRowContent>
                         @if (context.ShowEstudios)
                         {
-                            <td colspan="12" style="text-align:-webkit-center;">
-                                <MudTable Class="rounded-0" Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
+                            <td colspan="12" style="text-align:-webkit-center;padding-bottom:15px;">
+                                <MudTable Class="rounded-0" Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Height="Auto" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
                                     <HeaderContent>
                                         @*  <MudTh style="padding: 0px;">
                                     </MudTh> *@
@@ -364,6 +364,10 @@ else
     font-family: Arial !important;
     font-weight: bold !important;
     font-size: .875rem;
+    }
+
+    .mud-table-cell {
+        padding: 0px 0px 0px 0px !important;
     }
 </style>
 

@@ -6,6 +6,7 @@
 @using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoEmpresa
+@using LaboratorioRamos.Data.DtoEstudiosGral
 @using LaboratorioRamos.PDF;
 
 
@@ -75,7 +76,15 @@ else
                                 }
                             </MudItem>
                             <MudItem xs="12" sm="12" md="2">
-                                <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" OnClick="@NewItem" Color="@Color.Info" Class="add-item-btn rounded-0">Crear Orden</MudButton>
+                                @if (ValidateData)
+                                {
+                                    <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="rounded-0 ml-auto" Style="width:100%;"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                                }
+                                else
+                                {
+                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" OnClick="@NewItem" Color="@Color.Info" Class="add-item-btn rounded-0">Crear Orden</MudButton>
+                                }
+                                
                             </MudItem>
                         </MudGrid>
                     </EditForm>
@@ -215,7 +224,7 @@ else
                 }
                 else
                 {
-                    <MudItem xs="12" sm="12" md="12" Class="pt-0">
+                    <MudItem xs="12" sm="12" md="12" Class="pt-0" Style="height:66vh;">
                         @* <MudText Class="p-2" Style="background-color: #0d37a8;color: white;" Align="Align.Center">Órden No.: <b>@CotizacionDraft.clave &nbsp; &nbsp;&nbsp;&nbsp;</b></MudText> *@
                         <MudStepper NonLinear ShowResetButton OnPreviewInteraction="OnPreviewInteraction" @bind-ActiveIndex="_index" >
                             <ConnectorTemplate Context="step">
@@ -345,7 +354,7 @@ else
                                         }
  *@
                                         <MudItem xs="12" sm="12" md="12" Class="pt-0">
-                                            <MudTextField @bind-Value="dtoGeneralesCotizacion.Observaciones" T="string" Label="Observaciones (Opcional)" Lines="1" />
+                                            <MudTextField @bind-Value="dtoGeneralesCotizacion.Observaciones" T="string" Label="Observaciones (Opcional)" Lines="10" />
                                         </MudItem>
                                         <MudItem xs="12" sm="6" md="6">
                                             @* <MudTextField T="string" Label="Paciente" @bind-Value="dtoGeneralesCotizacion.Paciente" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnKeyUp="ValidaEnterPaciente" OnAdornmentClick="@(() => BuscarPaciente())" /> *@
@@ -426,7 +435,7 @@ else
                                                 </MudDataGrid>
 *@
                                                     <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudiosOriginal" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" Breakpoint="Breakpoint.Sm"
-                                                              RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele" Class="rounded-0" FixedHeader="true" FixedFooter="false">
+                                                    RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele" Class="rounded-0" FixedHeader="true" FixedFooter="false" Height="Auto">
                                                         <ColGroup>
                                                             <col style="width:10px;" />
                                                             <col style="width:10px;" />
@@ -556,7 +565,7 @@ else
                                         @* <MudItem xs="12" sm="7" md="12">
                                         <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Recibo</MudText><MudSpacer />
                                     </MudItem> *@
-                                        <MudItem xs="12" sm="7" md="12" id="iFrameId" Style="height: 35.5rem;">
+                                        <MudItem xs="12" sm="7" md="12" id="iFrameId" Style="height: 55vh;">
                                             <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
                                                 <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
                                             </MudItem>
@@ -622,7 +631,7 @@ else
         <MudGrid>
 
             <MudItem xs="12" sm="12" md="12">
-                <MudDataGrid Items="@_oCotizacionEstudios" Hover="true" Dense="true" Striped="true" Bordered="true" Class="rounded-0">
+                <MudDataGrid Items="@_oCotizacionEstudios" Hover="true" Dense="true" Striped="true" Bordered="true" Class="rounded-0" Height="Auto">
                     <Columns>
                         <PropertyColumn Property="x => x.Id" Title="ID" CellClass="justify-center" />
                         @* <PropertyColumn Property="x => x.EstudioId" CellClass="justify-center" /> *@
@@ -687,7 +696,7 @@ else
 
             <MudItem xs="12" sm="12" md="12">
                 <MudTable T="DtoEstudioResponsePrice" Items="@_oEstudioResponsePrice" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTableEstudios" Class="rounded-0"
-                RowClass="cursor-pointer" @bind-SelectedItems="selectedEstudios" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Loading="@searchEstudiosTxt">
+                RowClass="cursor-pointer" @bind-SelectedItems="selectedEstudios" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Loading="@searchEstudiosTxt" Height="Auto">
                     <ColGroup>
                         <col />
                         <col style="width:20px;" />
@@ -813,18 +822,23 @@ else
     }
 
     .mud-table-pagination-toolbar {
-        border-top: 1px solid var(--mud-palette-table-lines);
-        height: 25px;
-        padding-right: 2px;
-        padding-inline-end: 2px;
-        padding-inline-start: unset;
-        flex-wrap: nowrap;
+    border-top: 1px solid var(--mud-palette-table-lines);
+    height: 25px;
+    padding-right: 2px;
+    padding-inline-end: 2px;
+    padding-inline-start: unset;
+    flex-wrap: nowrap;
     }
 
     .mud-card-actions {
-        display: flex;
-        padding: 0px;
-        align-items: center;
+    display: flex;
+    padding: 0px;
+    align-items: center;
+    }
+
+    .mud-stepper .mud-stepper-content {
+        padding: 0 24px;
+        height: 60vh;
     }
 
 </style>
@@ -858,6 +872,8 @@ else
     private string UrlEstudiosPrecio = "services/catalogo/api/Price/info/study";
     private string UrlPaquete = "services/catalogo/api/Pack/packList/";
     private string UrlPaquetesPrecio = "services/catalogo/api/Price/info/pack";
+    private string UrlAllStudy = "services/gateway/api/study/active";
+    private string UrlVisStudy = "services/catalogo/api/Study/";
 
     private string IDCotizacionDraft = "";
 
@@ -877,6 +893,8 @@ else
     private List<DtoPaciente> dtoPacienteTemp = new();
     private List<DtoPaciente> dtoPaciente = new();
     private DtoRequestPaciente dtoRequestPaciente = new();
+    private List<DtoEstudiosGral> dtoEstudiosGralTmp= new();
+    private List<DtoEstudiosGral> dtoEstudiosGral= new();
 
     private DtoGeneralesCotizacion dtoGeneralesCotizacion = new();
     private string SucursalID = "";
@@ -952,6 +970,9 @@ else
                         dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
                     }
 
+
+                    dtoEstudiosGralTmp = await Http.GetFromJsonAsync<List<DtoEstudiosGral>>(UrlAllStudy);
+
                     parametrobusqueda = new()
                     {
                         SucursalId = new(),
@@ -960,6 +981,20 @@ else
                         CompañiaId = PostRequiere == "2" ? new(): new(){dtoEmpresa.Id},
                         Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
                     };
+                    // var counter = 0;
+                    // foreach (var item in dtoEstudiosGralTmp)
+                    // {
+                    //     var sesEstudio = await Http.GetFromJsonAsync<DtoEstudiosById>($"{UrlVisStudy}{item.Id}");
+                    //     if (sesEstudio!=null)
+                    //     {
+                    //         if (sesEstudio.Visible)
+                    //         {
+                    //             dtoEstudiosGral.Add(item);
+                    //         }
+                    //     }
+                    //     counter++;
+                    // }
+
 
 
 
@@ -2304,7 +2339,14 @@ else
         else
         {
             _oEstudioResponsePrice = new();
-            var sesEstudio = await Http.GetFromJsonAsync<List<DtoEstudiosOrden>>($"{UrlEstudios}{EstudioSearch}");
+            //este es el primer Search queda inhabilitado
+            //var sesEstudio = await Http.GetFromJsonAsync<List<DtoEstudiosOrden>>($"{UrlEstudios}{EstudioSearch}");
+            dtoEstudiosGralTmp.Where(e=>e.ClavesExternas==null).ToList().ForEach(e=>e.ClavesExternas="");
+            var sesEstudio = dtoEstudiosGralTmp.Where(e => e.Nombre.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) || e.ClavesExternas.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper())).ToList();
+
+
+
+
             var sesPackEstudio = await Http.GetFromJsonAsync<List<DtoPackEstudioOrden>>($"{UrlPaquete}{EstudioSearch}");
             if (sesEstudio.Count == 0)
             {
@@ -2316,34 +2358,45 @@ else
             {
                 foreach (var itemEstudio in sesEstudio)
                 {
-                    if (itemEstudio.Activo)
-                    {
-                        
-                    }
-
                     var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudio.Clave));
                     if (studioagregado == null)
                     {
-                        DtoEstudioRequestPrice oPriceStudio = new()
-                            {
-                                SucursalId = SucursalID,
-                                CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                            //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                                MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
-                                EstudioId = itemEstudio.Id
-                            };
-                        string json1 = JsonConvert.SerializeObject(oPriceStudio);
-                        var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
-                        if (responseDraft.IsSuccessStatusCode)
+
+                        var sesEstudioVis = await Http.GetFromJsonAsync<DtoEstudiosById>($"{UrlVisStudy}{itemEstudio.Id}");
+                        if (sesEstudioVis!=null)
                         {
-                            var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                            _oEstudioResponsePrice.Add(ostudioResponse);
+                            if (sesEstudioVis.Visible)
+                            {
+                                DtoEstudioRequestPrice oPriceStudio = new()
+                                {
+                                    SucursalId = SucursalID,
+                                    CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                                    //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                                    MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                                    EstudioId = itemEstudio.Id
+                                };
+                                string json1 = JsonConvert.SerializeObject(oPriceStudio);
+                                var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
+                                if (responseDraft.IsSuccessStatusCode)
+                                {
+                                    var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                                    _oEstudioResponsePrice.Add(ostudioResponse);
+                                }
+                                // foreach (var itemRet in _oEstudioResponsePrice)
+                                // {
+                                //     if (!itemRet)
+                                //     {
+                                        
+                                //     }
+                                // }
+                                _oEstudioResponsePrice.Where(op => !op.Nombre.Trim().ToUpper().Contains(sesEstudio[0].ClavesExternas)).ToList().ForEach(op => op.Nombre = $"{op.Nombre} ({sesEstudio[0].ClavesExternas})");
+                                // else
+                                // {
+                                //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
+                                //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
+                                // }
+                            }
                         }
-                        // else
-                        // {
-                        //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
-                        //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
-                        // }
                     }
                     
                 }
