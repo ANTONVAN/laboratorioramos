@@ -224,7 +224,7 @@ else
                 }
                 else
                 {
-                    <MudItem xs="12" sm="12" md="12" Class="pt-0" Style="height:66vh;">
+                    <MudItem xs="12" sm="12" md="12" Class="pt-0" Style="height:75vh;">
                         @* <MudText Class="p-2" Style="background-color: #0d37a8;color: white;" Align="Align.Center">Órden No.: <b>@CotizacionDraft.clave &nbsp; &nbsp;&nbsp;&nbsp;</b></MudText> *@
                         <MudStepper NonLinear ShowResetButton OnPreviewInteraction="OnPreviewInteraction" @bind-ActiveIndex="_index" >
                             <ConnectorTemplate Context="step">
@@ -309,7 +309,7 @@ else
                                                     </PagerContent>
                                                 </MudTable> *@
 
-                                                <MudDataGrid @ref="mudTable" T="DtoSucursal" MultiSelection="true" Items="@_oSucursalForCity" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged" FixedHeader="true" FixedFooter="false" Height="45vh">
+                                                <MudDataGrid @ref="mudTable" T="DtoSucursal" MultiSelection="true" Items="@_oSucursalForCity" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged" FixedHeader="true" FixedFooter="false" Height="52vh">
                                                     <ToolBarContent>
                                                         <MudText Typo="Typo.h6" Align="Align.Left" style="color: #0d37a8;">Sucursales</MudText>&nbsp; &nbsp;&nbsp;&nbsp;<br />
                                                         <MudText Typo="Typo.body1" Align="Align.Left" style="color: #0d37a8;">(Opcional)</MudText>
@@ -409,7 +409,7 @@ else
                                         </MudItem>                                            
                                         @if (visibleInfoEstudio)
                                         {
-                                            <MudItem xs="12" sm="12" md="12">
+                                            <MudItem xs="12" sm="12" md="12" Class="pt-1">
                                                 <MudForm Spacing="2">
                                                     @* <MudDataGrid T="DtoEstudioResponsePrice" Items="@selectedEstudios" Filterable="false" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true" StartedEditingItem="@DeleteOrderItem">
                                                     <ToolBarContent>
@@ -435,7 +435,7 @@ else
                                                 </MudDataGrid>
 *@
                                                     <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudiosOriginal" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" Breakpoint="Breakpoint.Sm"
-                                                    RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele" Class="rounded-0" FixedHeader="true" FixedFooter="false" Height="Auto">
+                                                    RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele" Class="rounded-0" FixedHeader="true" FixedFooter="false" Height="53vh">
                                                         <ColGroup>
                                                             <col style="width:10px;" />
                                                             <col style="width:10px;" />
@@ -838,7 +838,11 @@ else
 
     .mud-stepper .mud-stepper-content {
         padding: 0 24px;
-        height: 60vh;
+        height: 66vh;
+    }
+
+    .mud-toolbar {
+        --mud-internal-toolbar-height: 25px !important;
     }
 
 </style>
