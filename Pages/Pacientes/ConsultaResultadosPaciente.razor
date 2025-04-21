@@ -143,7 +143,7 @@ else
             <MudItem xs="12" sm="12" md="12" Class="pt-1">
                 @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
                 <MudTable Class="pt-1 rounded-0" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
-                          FixedHeader="true" FixedFooter="false">
+                FixedHeader="true" FixedFooter="false">
                     @* <ToolBarContent>
                     <MudText Typo="Typo.h6" style="color: #0d37a8;">Impresión de Resultados</MudText>
                     @if (ValidateData)
@@ -209,12 +209,12 @@ else
                                     {
                                         if (ValidateData)
                                         {
-                                            <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Medium" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Small" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
                                         }
                                         else
                                         {
                                             // <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => ImprimirExp()"></MudIconButton>
-                                            <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => OpenDialog(context)"></MudIconButton>
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Small" aria-label="Imprimir Estudios" OnClick="() => OpenDialog(context)"></MudIconButton>
                                         }
                                     }
                                 }
@@ -378,6 +378,10 @@ else
     font-weight: bold !important;
     font-size: .875rem;
     }
+
+    .mud-table-cell {
+    padding: 0px 0px 0px 0px !important;
+    }
 </style>
 
 
@@ -520,8 +524,8 @@ else
                         {
                             parametrobusqueda = new()
                                 {
-                                    MedicoId = new(),
-                                    CompañiaId = new(),
+                                    MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                                    CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id} : new(),
                                     Buscar = PostRequiere == "1" ? (String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? dtoPaciente[0].NombrePaciente.Trim() : obFilter.ExpedienteNombreSol.ToString()) :
                                             PostRequiere == "2" ? String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? dtoMedicoPaciente.Nombre.Trim() : obFilter.ExpedienteNombreSol : 
                                                 PostRequiere == "3" ? String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? dtoMedicoPaciente.Nombre.Trim() : obFilter.ExpedienteNombreSol : dtoMedicoPaciente.Nombre.Trim(),
@@ -557,7 +561,7 @@ else
                             parametrobusqueda = new()
                                 {
                                     MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                                    CompañiaId = new(),
+                                    CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
                                     Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
                                     TipoFecha = 1,
                                     Fecha = new()
@@ -569,7 +573,7 @@ else
                         parametrobusqueda = new()
                         {
                             MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                            CompañiaId = new(),
+                                CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
                             Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
                             TipoFecha = 1,
                             Fecha = new()
@@ -583,7 +587,7 @@ else
                     parametrobusqueda = new()
                     {
                         MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                        CompañiaId = new(),
+                            CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
                         Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
                         TipoFecha = 1,
                         Fecha = new()
@@ -630,7 +634,7 @@ else
                                     itemSol.SolicitudId = itemExp.SolicitudId;
                                 }
                             }
-                            
+
 
                         }
                         catch (Exception ex)
@@ -969,7 +973,7 @@ else
                     {
                         parametrobusqueda = new()
                         {
-                            MedicoId = new(),
+                            MedicoId = new() { dtoMedico.IdMedico },
                             CompañiaId = new(),
                             Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
                             TipoFecha = 1,
@@ -980,7 +984,7 @@ else
                     {
                         parametrobusqueda = new()
                         {
-                            MedicoId = new(),
+                            MedicoId = new() { dtoMedico.IdMedico },
                             CompañiaId = new(),
                             Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
                             TipoFecha = 1,
@@ -997,7 +1001,7 @@ else
                         parametrobusqueda = new()
                         {
                             MedicoId = new(),
-                            CompañiaId = new(),
+                            CompañiaId = new() { dtoEmpresa.Id },
                             Buscar = null,
                             TipoFecha = 1,
                             Fecha = new() { }
@@ -1008,7 +1012,7 @@ else
                         parametrobusqueda = new()
                         {
                             MedicoId = new(),
-                            CompañiaId = new(),
+                                CompañiaId = new() { dtoEmpresa.Id },
                             Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString().ToString(),
                             TipoFecha = 1,
                             Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
