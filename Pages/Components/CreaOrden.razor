@@ -878,9 +878,12 @@ else
     private string UrlUsuario = "services/records/api/MedicalRecord/now";
     private string UrlEstudios = "services/catalogo/api/Study/studyList/";
     private string UrlEstudiosPrecio = "services/catalogo/api/Price/info/study";
+    private string UrlEstudiosPrecioall = "services/catalogo/api/Price/info/studies";
     private string UrlPaquete = "services/catalogo/api/Pack/packList/";
     private string UrlPaquetesPrecio = "services/catalogo/api/Price/info/pack";
+    private string UrlPaquetesPrecioAll = "services/catalogo/api/Price/info/packages";
     private string UrlAllStudy = "services/gateway/api/study/active";
+    private string UrlAllPack = "services/gateway/api/pack/active";
     private string UrlVisStudy = "services/catalogo/api/Study/";
 
     private string IDCotizacionDraft = "";
@@ -897,11 +900,15 @@ else
     private List<DtoSucursalByCity> _oSucursalByCity = new();
     private List<DtoSucursal> _oSucursalForCity = new();
     private List<DtoEstudioResponsePrice> _oEstudioResponsePrice = new();
+    private List<DtoEstudioResponsePrice> _oEstudioResponsePriceTMp = new();
 
     private List<DtoPaciente> dtoPacienteTemp = new();
     private List<DtoPaciente> dtoPaciente = new();
     private DtoRequestPaciente dtoRequestPaciente = new();
     private List<DtoEstudiosGral> dtoEstudiosGralTmp= new();
+    private List<DtoPackEstudioOrden> dtoPacksGralTmp = new();
+    private Task<List<DtoEstudiosGral>> ListEstudio;
+    private Task<List<DtoPackEstudioOrden>> ListPacks;
     private List<DtoEstudiosGral> dtoEstudiosGral= new();
 
     private DtoGeneralesCotizacion dtoGeneralesCotizacion = new();
@@ -979,7 +986,9 @@ else
                     }
 
 
-                    dtoEstudiosGralTmp = await Http.GetFromJsonAsync<List<DtoEstudiosGral>>(UrlAllStudy);
+                    //dtoEstudiosGralTmp = Http.GetFromJsonAsync<List<DtoEstudiosGral>>(UrlAllStudy);
+                    ListEstudio = Http.GetFromJsonAsync<List<DtoEstudiosGral>>(UrlAllStudy);
+                    ListPacks = Http.GetFromJsonAsync<List<DtoPackEstudioOrden>>(UrlAllPack);
 
                     parametrobusqueda = new()
                     {
@@ -1102,7 +1111,7 @@ else
                 }
                 break;
             case 3:
-            if (selectedEstudiosOriginal.Count == 0)
+                if (selectedEstudiosOriginal.Count == 0)
                 {
                     await DialogService.ShowMessageBox("Error", "Por favor seleccione algún estudio para continuar");
                     arg.Cancel = true;
@@ -1168,7 +1177,7 @@ else
                     await serv;
                     CreandoPDF = false;
                 }
-                
+
                 break;
         }
     }
@@ -2313,6 +2322,15 @@ else
         //dataLoaded = true;
         searchEstudiosTxt = true;
         visibleInfoEstudio = false;
+        if (dtoEstudiosGralTmp.Count==0)
+        {
+            dtoEstudiosGralTmp = await ListEstudio;
+        }
+        if (dtoPacksGralTmp.Count == 0)
+        {
+            dtoPacksGralTmp = await ListPacks;
+        }
+
         if (String.IsNullOrEmpty(EstudioSearch))
         {
             ShowSnack("¡Por favor Ingresa un \"NOMBRE DE ESTUDIO\"!", 4);
@@ -2325,11 +2343,46 @@ else
             //var sesEstudio = await Http.GetFromJsonAsync<List<DtoEstudiosOrden>>($"{UrlEstudios}{EstudioSearch}");
             dtoEstudiosGralTmp.Where(e=>e.ClavesExternas==null).ToList().ForEach(e=>e.ClavesExternas="");
             var sesEstudio = dtoEstudiosGralTmp.Where(e => e.Nombre.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) || e.ClavesExternas.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) || e.Clave.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper())).ToList();
+            var sesPackEstudio = dtoPacksGralTmp.Where(e => e.Nombre.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) || e.Clave.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper())).ToList();
+
+
+            DtoEstudioRequestPriceAll oPriceStudioAll = new()
+                {
+                    SucursalId = SucursalID,
+                    CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                    MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                    EstudioId = 0,
+                    EstudiosIds= new()
+                };
+
+            foreach (var itemst in sesEstudio)
+            {
+                oPriceStudioAll.EstudiosIds.Add(itemst.Id);
+            }
+            string jsonall = JsonConvert.SerializeObject(oPriceStudioAll);
+            var responseDraftall = await Http.PostAsJsonAsync<DtoEstudioRequestPriceAll>(UrlEstudiosPrecioall, oPriceStudioAll);
+            _oEstudioResponsePriceTMp = await responseDraftall.Content.ReadFromJsonAsync<List<DtoEstudioResponsePrice>>();
 
 
 
+            //var sesPackEstudio = await Http.GetFromJsonAsync<List<DtoPackEstudioOrden>>($"{UrlPaquete}{EstudioSearch}");
+            DtoPaqueteEstudioRequestPriceAll oPackPriceStudioAll = new()
+                {
+                    SucursalId = SucursalID,
+                    CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                    MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                    PaqueteId = 0,
+                    PaquetesIds=new()
+                };
 
-            var sesPackEstudio = await Http.GetFromJsonAsync<List<DtoPackEstudioOrden>>($"{UrlPaquete}{EstudioSearch}");
+            foreach (var itemstpk in sesPackEstudio)
+            {
+                oPackPriceStudioAll.PaquetesIds.Add(itemstpk.Id);
+            }
+            string jsonPack = JsonConvert.SerializeObject(oPackPriceStudioAll);
+            var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPriceAll>(UrlPaquetesPrecioAll, oPackPriceStudioAll);
+            var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<List<DtoEstudioResponsePrice>>();
+
             if (sesEstudio.Count == 0)
             {
                 ShowSnack("¡El ESTUDIO no existe, favor de verificar!", 3);
@@ -2349,40 +2402,33 @@ else
                         {
                             if (sesEstudioVis.Visible)
                             {
-                                DtoEstudioRequestPrice oPriceStudio = new()
+                                // DtoEstudioRequestPrice oPriceStudio = new()
+                                // {
+                                //     SucursalId = SucursalID,
+                                //     CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                                //     //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                                //     MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                                //     EstudioId = itemEstudio.Id
+                                // };
+                                // string json1 = JsonConvert.SerializeObject(oPriceStudio);
+                                // var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
+                                // if (responseDraft.IsSuccessStatusCode)
+                                // {
+                                //     var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                                //     _oEstudioResponsePrice.Add(ostudioResponse);
+                                // }
+
+                                var stud = _oEstudioResponsePriceTMp.FirstOrDefault(e => e.EstudioId.Equals(itemEstudio.Id));
+                                if (stud!=null)
                                 {
-                                    SucursalId = SucursalID,
-                                    CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                                    //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                                    MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
-                                    EstudioId = itemEstudio.Id
-                                };
-                                string json1 = JsonConvert.SerializeObject(oPriceStudio);
-                                var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
-                                if (responseDraft.IsSuccessStatusCode)
-                                {
-                                    var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                                    _oEstudioResponsePrice.Add(ostudioResponse);
+                                    _oEstudioResponsePrice.Add(stud);
                                 }
-                                // foreach (var itemRet in _oEstudioResponsePrice)
-                                // {
-                                //     if (!itemRet)
-                                //     {
-                                        
-                                //     }
-                                // }
-                                _oEstudioResponsePrice.Where(op => !op.Nombre.Trim().ToUpper().Contains(sesEstudio[0].ClavesExternas)).ToList().ForEach(op => op.Nombre = $"{op.Nombre} ({sesEstudio[0].ClavesExternas})");
-                                // else
-                                // {
-                                //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
-                                //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
-                                // }
                             }
                         }
                     }
                     
                 }
-
+                _oEstudioResponsePrice.Where(op => !op.Nombre.Trim().ToUpper().Contains(sesEstudio[0].ClavesExternas)).ToList().ForEach(op => op.Nombre = $"{op.Nombre} ({sesEstudio[0].ClavesExternas})");
                 searchEstudiosTxt=false;
                 //visibleInfoEstudio = true;
                 //StateHasChanged();
@@ -2390,36 +2436,27 @@ else
 
             if (sesPackEstudio.Count> 0)
             {
-                foreach (var itemEstudio in sesPackEstudio)
+                foreach (var itemEstudioPack in sesPackEstudio)
                 {
-                    if (itemEstudio.Activo)
-                    {
-                        
-                    }
-
-                    var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudio.Clave));
+                    var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudioPack.Clave));
                     if (studioagregado == null)
                     {
-                        DtoPaqueteEstudioRequestPrice oPackPriceStudio = new()
-                            {
-                                SucursalId = SucursalID,
-                                CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                            //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                                MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
-                                PaqueteId = itemEstudio.Id
-                            };
-                        string json1 = JsonConvert.SerializeObject(oPackPriceStudio);
-                        var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPackPriceStudio);
-                        if (responseDraft.IsSuccessStatusCode)
-                        {
-                            var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                            _oEstudioResponsePrice.Add(ostudioResponse);
-                        }
-                        // else
+                        // DtoPaqueteEstudioRequestPrice oPackPriceStudio = new()
+                        //     {
+                        //         SucursalId = SucursalID,
+                        //         CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                        //     //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                        //         MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                        //         PaqueteId = itemEstudio.Id
+                        //     };
+                        // string json1 = JsonConvert.SerializeObject(oPackPriceStudio);
+                        // var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPackPriceStudio);
+                        // if (responseDraft.IsSuccessStatusCode)
                         // {
-                        //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
-                        //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
+                        //     var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                        //     _oEstudioResponsePrice.Add(ostudioResponse);
                         // }
+                        _oEstudioResponsePrice.Add(ostudioResponse.FirstOrDefault(e => e.PaqueteId.Equals(itemEstudioPack.Id)));
                     }
                     
                 }

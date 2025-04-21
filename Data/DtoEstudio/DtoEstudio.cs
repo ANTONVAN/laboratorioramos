@@ -89,7 +89,15 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public string SucursalId { get; set; }
         public string MedicoId { get; set; }
         public string CompañiaId { get; set; }
-        public int? EstudioId { get; set; }
+        public int? EstudioId { get; set; } 
+    }
+    public class DtoEstudioRequestPriceAll
+    {
+        public string SucursalId { get; set; }
+        public string MedicoId { get; set; }
+        public string CompañiaId { get; set; }
+        public int? EstudioId { get; set; } = 0;
+        public List<int>? EstudiosIds { get; set; }
 
     }
     public class DtoPaqueteEstudioRequestPrice
@@ -98,6 +106,15 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public string MedicoId { get; set; }
         public string CompañiaId { get; set; }
         public int? PaqueteId { get; set; }
+
+    }
+    public class DtoPaqueteEstudioRequestPriceAll
+    {
+        public string SucursalId { get; set; }
+        public string MedicoId { get; set; }
+        public string CompañiaId { get; set; }
+        public int? PaqueteId { get; set; } = 0;
+        public List<int>? PaquetesIds { get; set; }
 
     }
 
