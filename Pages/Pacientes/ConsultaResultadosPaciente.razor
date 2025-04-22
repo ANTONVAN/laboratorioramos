@@ -226,8 +226,8 @@ else
                     <ChildRowContent>
                         @if (context.ShowEstudios)
                         {
-                            <td colspan="12" style="text-align:-webkit-center;">
-                                <MudTable Class="rounded-0" Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
+                            <td colspan="12" style="text-align:-webkit-center;padding-bottom:15px;">
+                                <MudTable Class="rounded-0" Items="@context.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="false" Striped="true" Style="width:92%;" Height="Auto" Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
                                     @* <ToolBarContent>
                                 <MudText Typo="Typo.subtitle2">Estudios</MudText>
                                 <MudSpacer />
