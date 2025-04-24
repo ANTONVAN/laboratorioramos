@@ -2430,8 +2430,6 @@ else
                 }
                 _oEstudioResponsePrice.Where(op => !op.Nombre.Trim().ToUpper().Contains(sesEstudio[0].ClavesExternas)).ToList().ForEach(op => op.Nombre = $"{op.Nombre} ({sesEstudio[0].ClavesExternas})");
                 searchEstudiosTxt=false;
-                //visibleInfoEstudio = true;
-                //StateHasChanged();
             }
 
             if (sesPackEstudio.Count> 0)
@@ -2456,7 +2454,11 @@ else
                         //     var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
                         //     _oEstudioResponsePrice.Add(ostudioResponse);
                         // }
-                        _oEstudioResponsePrice.Add(ostudioResponse.FirstOrDefault(e => e.PaqueteId.Equals(itemEstudioPack.Id)));
+                        var studpack = ostudioResponse.FirstOrDefault(e => e.PaqueteId.Equals(itemEstudioPack.Id));
+                        if (studpack != null)
+                        {
+                            _oEstudioResponsePrice.Add(studpack);
+                        }
                     }
                     
                 }

@@ -606,11 +606,18 @@ else
                             List<DtoResponseMedicoPaciente> LstExpedientesRemove =new();
                             foreach (var itemrem in LstExpedientes)
                             {
-                                if (PostRequiere == "2")
+                                if (PostRequiere == "1")
                                 {
-                                    if (true)
+                                    if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoPaciente[0].NombrePaciente.Trim().ToUpper()))
                                     {
-
+                                        LstExpedientesRemove.Add(itemrem);
+                                    }
+                                }
+                                else if(PostRequiere == "2")
+                                {
+                                    if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                                    {
+                                        LstExpedientesRemove.Add(itemrem);
                                     }
                                 }
                                 else if (PostRequiere == "3")
@@ -1032,20 +1039,59 @@ else
                         try
                         {
                             LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                            if (LstExpedientes[0].Nombre.Trim().ToUpper().Equals(PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim().ToUpper() : dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+
+                            List<DtoResponseMedicoPaciente> LstExpedientesRemove = new();
+                            foreach (var itemrem in LstExpedientes)
                             {
-                                foreach (var itemExp in LstExpedientes)
+                                if (PostRequiere == "1")
                                 {
-                                    foreach (var itemSol in itemExp.Estudios)
+                                    if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoPaciente[0].NombrePaciente.Trim().ToUpper()))
                                     {
-                                        itemSol.SolicitudId = itemExp.SolicitudId;
+                                        LstExpedientesRemove.Add(itemrem);
+                                    }
+                                }
+                                else if (PostRequiere == "2")
+                                {
+                                    if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                                    {
+                                        LstExpedientesRemove.Add(itemrem);
+                                    }
+                                }
+                                else if (PostRequiere == "3")
+                                {
+                                    if (!dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania))
+                                    {
+                                        LstExpedientesRemove.Add(itemrem);
+
                                     }
                                 }
                             }
-                            else
+
+                            foreach (var itemremD in LstExpedientesRemove)
                             {
-                                LstExpedientes = new();
+                                LstExpedientes.Remove(itemremD);
                             }
+                            foreach (var itemExp in LstExpedientes)
+                            {
+                                foreach (var itemSol in itemExp.Estudios)
+                                {
+                                    itemSol.SolicitudId = itemExp.SolicitudId;
+                                }
+                            }
+                            // if (LstExpedientes[0].Nombre.Trim().ToUpper().Equals(PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim().ToUpper() : dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                            // {
+                            //     foreach (var itemExp in LstExpedientes)
+                            //     {
+                            //         foreach (var itemSol in itemExp.Estudios)
+                            //         {
+                            //             itemSol.SolicitudId = itemExp.SolicitudId;
+                            //         }
+                            //     }
+                            // }
+                            // else
+                            // {
+                            //     LstExpedientes = new();
+                            // }
 
                         }
                         catch (Exception ex)
