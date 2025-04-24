@@ -1064,6 +1064,10 @@ else
                                         LstExpedientesRemove.Add(itemrem);
 
                                     }
+                                    else if (dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania) && !itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                                    {
+                                        LstExpedientesRemove.Add(itemrem);
+                                    }
                                 }
                             }
 

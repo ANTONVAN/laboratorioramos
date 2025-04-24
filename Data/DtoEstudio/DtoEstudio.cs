@@ -178,6 +178,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public double? PaqueteDescuentoPorcentaje { get; set; }
         public int? EstudioId { get; set; }
         public int? PaqueteId { get; set; }
+        public int? PackTempId { get; set; }
         public string? Clave { get; set; }
         public string? Nombre { get; set; }
         public int? DepartamentoId { get; set; }
@@ -305,7 +306,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
 
     public class Paquetes
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string CotizacionId { get; set; }
         public int? PaqueteId { get; set; }
         public string Clave { get; set; }
@@ -314,6 +315,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public string ListaPrecio { get; set; }
         public int? PromocionId { get; set; } = 0;
         public string Promocion { get; set; }
+        public string Type { get; set; } = "pack";
         public double? Dias { get; set; } = 0;
         public double? Horas { get; set; } = 0;
         public double? PrecioEstudios { get; set; } = 0;

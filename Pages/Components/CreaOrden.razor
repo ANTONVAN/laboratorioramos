@@ -1923,7 +1923,7 @@ else
                                     }
                                     Paquetes _paquetes = new()
                                         {
-                                            Id = 0,
+                                            Id = item.PackTempId,
                                             Clave = item.Clave,
                                             CotizacionId = CotizacionDraft.CotizacionId,
                                             Descuento = 0,
@@ -2365,7 +2365,7 @@ else
 
 
 
-            //var sesPackEstudio = await Http.GetFromJsonAsync<List<DtoPackEstudioOrden>>($"{UrlPaquete}{EstudioSearch}");
+            //var sesPackEstudio1 = await Http.GetFromJsonAsync<List<DtoPackEstudioOrden>>($"{UrlPaquete}{EstudioSearch}");
             DtoPaqueteEstudioRequestPriceAll oPackPriceStudioAll = new()
                 {
                     SucursalId = SucursalID,
@@ -2426,7 +2426,7 @@ else
                             }
                         }
                     }
-                    
+
                 }
                 _oEstudioResponsePrice.Where(op => !op.Nombre.Trim().ToUpper().Contains(sesEstudio[0].ClavesExternas)).ToList().ForEach(op => op.Nombre = $"{op.Nombre} ({sesEstudio[0].ClavesExternas})");
                 searchEstudiosTxt=false;
@@ -2457,10 +2457,11 @@ else
                         var studpack = ostudioResponse.FirstOrDefault(e => e.PaqueteId.Equals(itemEstudioPack.Id));
                         if (studpack != null)
                         {
+                            studpack.PackTempId = itemEstudioPack.Id;
                             _oEstudioResponsePrice.Add(studpack);
                         }
                     }
-                    
+
                 }
 
                 searchEstudiosTxt = false;
@@ -2691,7 +2692,7 @@ else
                     }
                     Estudios _Estudio = new()
                     {
-                        Id = 0,
+                        Id = itemEstudios.EstudioId,
                         Clave = itemEstudios.Clave,
                         CotizacionId = CotizacionDraft.CotizacionId,
                         Descuento = 0,
@@ -2720,7 +2721,7 @@ else
                 }
                 Paquetes _paquetes = new()
                 {
-                    Id = 0,
+                    Id = item.PackTempId,
                     Clave = item.Clave,
                     CotizacionId = CotizacionDraft.CotizacionId,
                     Descuento = 0,
@@ -2867,7 +2868,7 @@ else
                 }
 
                 dtoGeneralesCotizacion.Observaciones = sucursalResponse.observaciones;
-                _index = 3;
+                _index = 2;
                 //var studiogral = await Http.GetFromJsonAsync<DtoEstudiosByOrdenActual>($"{UrlOrdenesNew}/{_RowEditOrden.CotizacionId}");
                 foreach (var itemEstudio in studiogral.Estudios)
                 {
@@ -2879,7 +2880,7 @@ else
                         {
                             SucursalId = SucursalID,
                             CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                            //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                        //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
                             MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
                             EstudioId = itemEstudio.EstudioId
                         };
@@ -2900,7 +2901,7 @@ else
                         {
                             SucursalId = SucursalID,
                             CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                            //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                        //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
                             MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
                             PaqueteId = itemEstudioPack.PaqueteId
                         };
@@ -2909,6 +2910,7 @@ else
                     if (responseDraft.IsSuccessStatusCode)
                     {
                         var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                        ostudioResponse.PackTempId = itemEstudioPack.Id;
                         selectedEstudios.Add(ostudioResponse);
                         selectedEstudiosOriginal.Add(ostudioResponse);
                     }
