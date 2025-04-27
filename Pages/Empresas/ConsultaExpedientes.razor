@@ -165,6 +165,10 @@ else
     .mud-table-cell {
         padding: 0px 0px 0px 10px !important;
     }
+
+    .mud-toolbar {
+        --mud-internal-toolbar-height: 34px;
+    }
 </style>
 
 @code {
@@ -311,6 +315,7 @@ else
                         case System.Net.HttpStatusCode.OK:
                             try
                             {
+                                dtoMedicoPaciente.Clear();
                                 dtoMedicoPacienteDump = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
                                 foreach (var item in dtoMedicoPacienteDump)
                                 {
@@ -321,9 +326,10 @@ else
                                     var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
                                     item.Expediente = sesExpediente[0].Expediente;
                                 }
+
                                 foreach (var itemExp in dtoMedicoPacienteDump)
                                 {
-                                    var rowexiste = dtoMedicoPaciente.FirstOrDefault(op => op.Equals(itemExp));
+                                    var rowexiste = dtoMedicoPaciente.FirstOrDefault(op => op.Expediente.Equals(itemExp.Expediente));
                                     if (rowexiste == null)
                                     {
                                         dtoMedicoPaciente.Add(itemExp);

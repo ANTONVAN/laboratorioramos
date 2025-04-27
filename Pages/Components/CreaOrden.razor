@@ -654,7 +654,7 @@ else
 
 <MudDialog @bind-Visible="visibleEditCotizacion" Options="diaOptionsEdit">
     <TitleContent>
-        <MudText Typo="Typo.h4" Color="Color.Warning" Align="Align.Center">
+        <MudText Typo="Typo.h6" Color="Color.Warning" Align="Align.Justify">
             <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Color="Color.Warning" Class="mr-3" Size="Size.Large" />Atención Usuario
         </MudText>
     </TitleContent>
@@ -1923,7 +1923,7 @@ else
                                     }
                                     Paquetes _paquetes = new()
                                         {
-                                            Id = item.PackTempId,
+                                            Id = 0,
                                             Clave = item.Clave,
                                             CotizacionId = CotizacionDraft.CotizacionId,
                                             Descuento = 0,
@@ -2622,6 +2622,7 @@ else
                 EstudiosOrden _Estudio = new()
                 {
                     Id = _oCotizacionesDelete[0].Estudios.FirstOrDefault(e => e.Clave.Equals(item1.Clave)).Id,
+                    //Id = item1.EstudioId,
                     Clave = item1.Clave,
                     CotizacionId = CotizacionDraft.CotizacionId,
                     Descuento = 0,
