@@ -2342,8 +2342,8 @@ else
             //este es el primer Search queda inhabilitado
             //var sesEstudio = await Http.GetFromJsonAsync<List<DtoEstudiosOrden>>($"{UrlEstudios}{EstudioSearch}");
             dtoEstudiosGralTmp.Where(e=>e.ClavesExternas==null).ToList().ForEach(e=>e.ClavesExternas="");
-            var sesEstudio = dtoEstudiosGralTmp.Where(e => e.Nombre.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) || e.ClavesExternas.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) || e.Clave.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper())).ToList();
-            var sesPackEstudio = dtoPacksGralTmp.Where(e => e.Nombre.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) || e.Clave.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper())).ToList();
+            var sesEstudio = dtoEstudiosGralTmp.Where(e => e.Nombre.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) || e.ClavesExternas.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) || e.Clave.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) && e.Activo==true).ToList();
+            var sesPackEstudio = dtoPacksGralTmp.Where(e => e.Nombre.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) || e.Clave.Trim().ToUpper().Contains(EstudioSearch.Trim().ToUpper()) && e.Activo==true).ToList();
 
 
             DtoEstudioRequestPriceAll oPriceStudioAll = new()
@@ -2361,7 +2361,8 @@ else
             }
             string jsonall = JsonConvert.SerializeObject(oPriceStudioAll);
             var responseDraftall = await Http.PostAsJsonAsync<DtoEstudioRequestPriceAll>(UrlEstudiosPrecioall, oPriceStudioAll);
-            _oEstudioResponsePriceTMp = await responseDraftall.Content.ReadFromJsonAsync<List<DtoEstudioResponsePrice>>();
+            var studioTemp = await responseDraftall.Content.ReadFromJsonAsync<List<DtoEstudioResponsePrice>>();
+            _oEstudioResponsePriceTMp = studioTemp.Where(e => e.Activo == true).ToList();
 
 
 
@@ -2381,7 +2382,10 @@ else
             }
             string jsonPack = JsonConvert.SerializeObject(oPackPriceStudioAll);
             var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPriceAll>(UrlPaquetesPrecioAll, oPackPriceStudioAll);
+            // var ostudioResponseTmp = await responseDraft.Content.ReadFromJsonAsync<List<DtoEstudioResponsePrice>>();
+            // var ostudioResponse = ostudioResponseTmp.Where(e => e.Activo == true).ToList();
             var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<List<DtoEstudioResponsePrice>>();
+            
 
             if (sesEstudio.Count == 0)
             {
