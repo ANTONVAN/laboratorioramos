@@ -616,7 +616,10 @@ else
                             {
                                 LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
                             }
-
+                            else
+                            {
+                                LstExpedientes = LstExpedientestmp;
+                            }
                             //LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
                             List<DtoResponseMedicoPaciente> LstExpedientesRemove =new();
                             foreach (var itemrem in LstExpedientes)
@@ -1069,6 +1072,10 @@ else
                             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                             {
                                 LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                            }
+                            else
+                            {
+                                LstExpedientes = LstExpedientestmp;
                             }
 
                             List<DtoResponseMedicoPaciente> LstExpedientesRemove = new();
