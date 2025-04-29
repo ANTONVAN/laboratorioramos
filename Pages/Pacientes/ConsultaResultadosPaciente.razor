@@ -1022,10 +1022,10 @@ else
                         parametrobusqueda = new()
                         {
                             MedicoId = new(),
-                                CompañiaId = new() { dtoEmpresa.Id },
-                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString().ToString(),
+                            CompañiaId = new() { dtoEmpresa.Id },
+                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString().ToString(),
                             TipoFecha = 1,
-                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud.ToString()) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                         };
                     }
                     
