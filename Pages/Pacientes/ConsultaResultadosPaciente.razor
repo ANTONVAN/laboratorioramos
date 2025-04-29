@@ -1002,7 +1002,7 @@ else
                         };
                     }
 
-                    
+
                 }
                 else if (PostRequiere == "3")//Compañia
                 {
@@ -1028,7 +1028,7 @@ else
                             Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
                         };
                     }
-                    
+
                 }
 
                 Http.DefaultRequestHeaders.Remove("branchid");
@@ -1041,7 +1041,20 @@ else
                     case System.Net.HttpStatusCode.OK:
                         try
                         {
-                            LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                            var LstExpedientestmp = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+
+                            if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                            {
+                                LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                            }
+                            else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                            {
+                                LstExpedientes = LstExpedientestmp.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
+                            }
+                            else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                            {
+                                LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                            }
 
                             List<DtoResponseMedicoPaciente> LstExpedientesRemove = new();
                             foreach (var itemrem in LstExpedientes)
