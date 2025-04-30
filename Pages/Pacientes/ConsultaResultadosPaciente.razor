@@ -141,7 +141,7 @@ else
                 </EditForm>
             </MudItem>
             <MudItem xs="12" sm="12" md="12" Class="pt-1">
-                <MudText Align="Align.Center" Typo="Typo.caption" Style="color: #0d37a8;">@tmprow</MudText> 
+                @* <MudText Align="Align.Center" Typo="Typo.caption" Style="color: #0d37a8;">@tmprow</MudText>  *@
                 @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
                 <MudTable Class="pt-1 rounded-0" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
                 FixedHeader="true" FixedFooter="false">
