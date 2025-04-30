@@ -1054,6 +1054,8 @@ else
                 string json1 = JsonConvert.SerializeObject(parametrobusqueda);
                 var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
 
+
+
                 switch (sesExpediente.StatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:
