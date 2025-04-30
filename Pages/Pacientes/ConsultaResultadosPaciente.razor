@@ -1072,7 +1072,7 @@ else
                             }
                             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
                             {
-                                tmprow=$"condicion2{LstExpedientestmp[0].Registro}";
+                                tmprow=$"condicion2{LstExpedientestmp[0].Registro}-{dtoFiltro.DateInicial}";
                                 LstExpedientes = LstExpedientestmp.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
                             }
                             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
