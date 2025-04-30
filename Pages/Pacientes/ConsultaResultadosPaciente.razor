@@ -30,7 +30,7 @@
 else
 {
 
- 
+
 
 } *@
 
@@ -141,6 +141,7 @@ else
                 </EditForm>
             </MudItem>
             <MudItem xs="12" sm="12" md="12" Class="pt-1">
+                <MudText Align="Align.Center" Typo="Typo.caption" Style="color: #0d37a8;">@tmprow</MudText> 
                 @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
                 <MudTable Class="pt-1 rounded-0" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
                 FixedHeader="true" FixedFooter="false">
@@ -166,7 +167,7 @@ else
                     </ColGroup>
                     <HeaderContent>
                         <MudTh></MudTh>
-                        <MudTh Style="color:#921313">Número de Solicitud</MudTh>
+                        <MudTh Style="color:#921313">Número de Solicitud-</MudTh>
                         <MudTh Style="color:#921313">Fecha de Ingreso</MudTh>
                         <MudTh Style="color:#921313">Sucursal</MudTh>
                         <MudTh Style="color:#921313">Imprimir Estudios</MudTh>
@@ -435,6 +436,7 @@ else
     private string UrlUsuario = "services/records/api/ClinicResults/getList";
     private string UrlPaciente = "services/records/api/MassSearch/GetAllCaptureResults";
     private string UrlImprimeResultados = "services/records/api/ClinicResults/printResultFile";
+    private string tmprow = "0";
 
     DateTime? dateInicial = DateTime.Today;
     DateTime? dateFinal = DateTime.Today;
@@ -1065,18 +1067,22 @@ else
 
                             if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                             {
+                                tmprow = "condicion1";
                                 LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
                             }
                             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
                             {
+                                tmprow="condicion2";
                                 LstExpedientes = LstExpedientestmp.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
                             }
                             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                             {
+                                tmprow = "condicion11";
                                 LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
                             }
                             else
                             {
+                                tmprow="gral";
                                 LstExpedientes = LstExpedientestmp;
                             }
 
