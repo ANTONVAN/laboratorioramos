@@ -2321,7 +2321,7 @@ else
     {
         //dataLoaded = true;
         searchEstudiosTxt = true;
-        visibleInfoEstudio = false;
+        //visibleInfoEstudio = false;
         if (dtoEstudiosGralTmp.Count==0)
         {
             dtoEstudiosGralTmp = await ListEstudio;
@@ -2390,7 +2390,7 @@ else
             if (sesEstudio.Count == 0)
             {
                 ShowSnack("¡El ESTUDIO no existe, favor de verificar!", 3);
-                visibleInfoEstudio = false;
+                //visibleInfoEstudio = false;
                 searchEstudiosTxt = false;
             }
             else
