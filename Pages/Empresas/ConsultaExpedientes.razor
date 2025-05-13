@@ -97,7 +97,7 @@ else
 
             </MudItem>
             <MudItem xs="12" sm="12" md="12" Class="pt-1">
-                <MudTable Class="pt-1 rounded-0" @ref="_table" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
+                <MudTable Class="rounded-0 pt-1" @ref="_table" Items="@dtoMedicoPaciente" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
                           FixedHeader="true" FixedFooter="false">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
@@ -317,15 +317,20 @@ else
                             {
                                 dtoMedicoPaciente.Clear();
                                 dtoMedicoPacienteDump = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                                List<string> refExpe = new();
                                 foreach (var item in dtoMedicoPacienteDump)
                                 {
-                                    List<string> refExpe = new();
                                     refExpe.Add(item.ExpedienteId.ToString());
-                                    string json = JsonConvert.SerializeObject(refExpe);
-                                    var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
-                                    var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
-                                    item.Expediente = sesExpediente[0].Expediente;
                                 }
+
+                                string json = JsonConvert.SerializeObject(refExpe);
+                                var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                                var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                                foreach (var item2 in dtoMedicoPacienteDump)
+                                {
+                                    item2.Expediente = sesExpediente.FirstOrDefault(e=>e.Id.Equals(item2.ExpedienteId)).Expediente;
+                                }
+                                
 
                                 foreach (var itemExp in dtoMedicoPacienteDump)
                                 {
@@ -508,14 +513,18 @@ else
             dtoMedicoPaciente.Clear();
             var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
             dtoMedicoPacienteDump = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+            List<string> refExpe = new();
             foreach (var item in dtoMedicoPacienteDump)
             {
-                List<string> refExpe = new();
                 refExpe.Add(item.ExpedienteId.ToString());
-                string json = JsonConvert.SerializeObject(refExpe);
-                var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
-                var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
-                item.Expediente = sesExpediente[0].Expediente;
+            }
+
+            string json = JsonConvert.SerializeObject(refExpe);
+            var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+            var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+            foreach (var item2 in dtoMedicoPacienteDump)
+            {
+                item2.Expediente = sesExpediente.FirstOrDefault(e => e.Id.Equals(item2.ExpedienteId)).Expediente;
             }
 
             foreach (var itemExp in dtoMedicoPacienteDump)
