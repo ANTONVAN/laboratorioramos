@@ -94,7 +94,7 @@ else
                 </MudItem> *@
 
                 <MudItem xs="12" sm="12" md="12" Class="pt-1">
-                    <MudDataGrid Class="pt-1 rounded-0" Items="@_oCotizaciones" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData" FixedHeader="true" FixedFooter="false">
+                    <MudDataGrid Class="rounded-0 pt-1" Items="@_oCotizaciones" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData" FixedHeader="true" FixedFooter="false">
                         <ToolBarContent>
                             <MudSpacer />
                             <MudText Typo="Typo.h6" style="color: #0d37a8;">Historial de Ordenes</MudText>
@@ -132,7 +132,7 @@ else
                             <MudText>Sin Registros para mostrar</MudText>
                         </NoRecordsContent>
                         <PagerContent>
-                            <MudDataGridPager T="DtoCotizacionResponse" />
+                            <MudDataGridPager T="DtoCotizacionResponse" PageSizeOptions="new int[] { 25, 50, 100 }" />
                         </PagerContent>
                     </MudDataGrid>
 
@@ -404,7 +404,7 @@ else
                                         <MudItem xs="12" sm="12" md="12">
                                             <MudText Align="Align.Left">Paso 3: <b>Estudios</b></MudText>
                                         </MudItem>
-                                        <MudItem xs="12" sm="12" md="12" Class="d-flex pt-0 justify-center">
+                                        <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center pt-0">
                                             <MudButton Variant="Variant.Outlined" OnClick="@AbrirModalEstudios" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn rounded-0">Agregar Estudios</MudButton>
                                         </MudItem>                                            
                                         @if (visibleInfoEstudio)
@@ -503,7 +503,7 @@ else
                                                             <MudText>Sin Registros para mostrar</MudText>
                                                         </NoRecordsContent>
                                                         <PagerContent>
-                                                            <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                                                            <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
                                                         </PagerContent>
                                                     </MudTable>
 
@@ -531,7 +531,7 @@ else
                                                         if (indiexiste == null)
                                                         {
                                                             listindicaciones.Add(itemIndi.Descripcion);
-                                                            <MudItem xs="12" sm="12" md="12" Class="pt-0 justify-start">@itemIndi.Descripcion</MudItem>
+                                                            <MudItem xs="12" sm="12" md="12" Class="justify-start pt-0">@itemIndi.Descripcion</MudItem>
                                                         }
 
                                                     }
@@ -772,7 +772,7 @@ else
                         <MudText>Sin Registros para mostrar</MudText>
                     </NoRecordsContent>
                     <PagerContent>
-                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                        <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
                     </PagerContent>
                 </MudTable>
             </MudItem>

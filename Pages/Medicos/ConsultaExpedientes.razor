@@ -102,7 +102,7 @@ else
 
             </MudItem>
             <MudItem xs="12" sm="12" md="12" Class="pt-1">
-                <MudTable @ref="_table" Items="@dtoMedicoPaciente" Class="pt-1 rounded-0" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
+                <MudTable @ref="_table" Items="@dtoMedicoPaciente" Class="rounded-0 pt-1" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
                           FixedHeader="true" FixedFooter="false">
                     @* <ToolBarContent>
                         <MudText Typo="Typo.h6" style="color: #0d37a8;">Consulta de Expedientes</MudText>
@@ -141,7 +141,7 @@ else
                         <MudText>Cargando....</MudText>
                     </LoadingContent>
                     <PagerContent>
-                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                        <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
                     </PagerContent>
                 </MudTable>
             </MudItem>

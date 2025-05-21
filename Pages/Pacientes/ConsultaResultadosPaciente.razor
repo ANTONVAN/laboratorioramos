@@ -143,7 +143,7 @@ else
             <MudItem xs="12" sm="12" md="12" Class="pt-1">
                 @* <MudText Align="Align.Center" Typo="Typo.caption" Style="color: #0d37a8;">@tmprow</MudText>  *@
                 @* <MudTable Class="mt-4" Items="@LstExpedientes" Breakpoint="Breakpoint.Sm" Filter="new Func<DtoResponseMedicoPaciente,bool>(FilterFuncExpedientes)" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;"> *@
-                <MudTable Class="pt-1 rounded-0" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
+                <MudTable Class="rounded-0 pt-1" @ref="_tableO" Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@ValidateData"
                 FixedHeader="true" FixedFooter="false">
                     @* <ToolBarContent>
                     <MudText Typo="Typo.h6" style="color: #0d37a8;">Impresión de Resultados</MudText>
@@ -253,14 +253,15 @@ else
 
 
                                         @{
-                                            if (EstContext.EstatusId == 7 || EstContext.EstatusId == 6)
-                                            {
-                                                <MudTd DataLabel="Nombre"><MudLink OnClick="@(() => NavigationResultado(context,EstContext))" Underline="Underline.Always">@EstContext.Estudio</MudLink></MudTd>
-                                            }
-                                            else
-                                            {
-                                                <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
-                                            }
+                                            // if (EstContext.EstatusId == 7 || EstContext.EstatusId == 6)
+                                            // {
+                                            //     <MudTd DataLabel="Nombre"><MudLink OnClick="@(() => NavigationResultado(context,EstContext))" Underline="Underline.Always">@EstContext.Estudio</MudLink></MudTd>
+                                            // }
+                                            // else
+                                            // {
+                                            //     <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
+                                            // }
+                                            <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
                                             <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
                                             <MudTd DataLabel="Estatus">
                                                 @if (EstContext.EstatusId == 7 || EstContext.EstatusId == 6)
@@ -289,7 +290,7 @@ else
                         <MudText>Sin Registros para mostrar</MudText>
                     </NoRecordsContent>
                     <PagerContent>
-                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                        <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
                     </PagerContent>
                 </MudTable>
             </MudItem>
@@ -322,7 +323,7 @@ else
             <MudItem xs="12" sm="12" md="3" Class="pt-0">
                 <MudText Typo="Typo.h6">Edad: @SolicitudMedicaPrint.Edad</MudText>
             </MudItem>
-            <MudItem xs="12" sm="12" md="12" Class="d-flex d-sm-none d-none d-sm-flex d-md-none pt-0 pb-2">
+            <MudItem xs="12" sm="12" md="12" Class="d-flex d-sm-none d-none d-sm-flex d-md-none pb-2 pt-0">
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" aria-label="Buscar" Class="ml-auto" OnClick="@SelAllRog">Seleccionar Todos</MudButton>
             </MudItem>
             <MudItem xs="12" sm="12" md="12" Class="pt-0">
@@ -338,7 +339,7 @@ else
                         <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
                     </RowTemplate>
                     <PagerContent>
-                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+                        <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
                     </PagerContent>
                 </MudTable>
             </MudItem>
