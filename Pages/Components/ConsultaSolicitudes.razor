@@ -115,12 +115,12 @@ else
                         <MudItem xs="12" sm="12" md="3">
                             @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                            <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
+                            <MudDatePicker Clearable="true" Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
                         </MudItem>
                         <MudItem xs="12" sm="12" md="3">
                             @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                            <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")"/>
+                            <MudDatePicker Clearable="true" Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")"/>
                         </MudItem>
 
                         <MudItem xs="12" sm="12" md="2">
@@ -386,7 +386,7 @@ else
     private DtoMedicoPwd dtoMedico = new();
     private List<DtoPaciente> dtoPaciente = new();
     private DtoFiltro dtoFiltro = new();
-    private List<DtoResponseMedicoPaciente> dtoMedicoPaciente = new();
+    private DtoInfoExpediente dtoMedicoPaciente = new();
     private List<DtoResponseMedicoPaciente> LstExpedientes = new();
     private DtoResponseMedicoPaciente SolicitudMedicaPrint=new();
     private List<int> LstEstatusPrint = new();
@@ -414,9 +414,11 @@ else
 
     private bool dataLoaded = true;
 
-    private string UrlUsuario = "services/records/api/ClinicResults/getList";
-    private string UrlPaciente = "services/records/api/MassSearch/GetAllCaptureResults";
-    private string UrlImprimeResultados = "services/records/api/ClinicResults/printResultFile";
+    private string UrlUsuario = "services/gateway/api/ClinicResults/getList";
+    private string UrlPaciente = "services/gateway/api/MassSearch/GetAllCaptureResults";
+    private string UrlImprimeResultados = "services/gateway/api/ClinicResults/printResultFile";
+    private string UrlMedicoPacienteExpediente = "services/gateway/api/MedicalRecord/report/expedientes";
+    private string UrlInfoExpediente = "services/gateway/api/MedicalRecord/";
 
 
     DateTime? dateInicial = DateTime.Today;
@@ -600,7 +602,15 @@ else
                         {
 
                             LstExpedientes = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-
+                            var idexp = LstExpedientes.Where(e => e.ExpedienteId != null).Select(e => e.ExpedienteId).ToList();
+                            List<string> refExpe = new(idexp);
+                            string json = JsonConvert.SerializeObject(refExpe);
+                            var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                            var sesExpediente2 = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                            foreach (var item2 in LstExpedientes)
+                            {
+                                item2.Expediente = sesExpediente2.FirstOrDefault(e => e.Id.Equals(item2.ExpedienteId)).Expediente;
+                            }
 
                             foreach (var itemExp in LstExpedientes)
                             {
@@ -967,6 +977,15 @@ else
                         try
                         {
                             LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                            var idexp = LstExpedientes.Where(e => e.ExpedienteId != null).Select(e => e.ExpedienteId).ToList();
+                            List<string> refExpe = new(idexp);
+                            string json = JsonConvert.SerializeObject(refExpe);
+                            var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                            var sesExpediente2 = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                            foreach (var item2 in LstExpedientes)
+                            {
+                                item2.Expediente = sesExpediente2.FirstOrDefault(e => e.Id.Equals(item2.ExpedienteId)).Expediente;
+                            }
                             foreach (var itemExp in LstExpedientes)
                             {
                                 foreach (var itemSol in itemExp.Estudios)
@@ -1041,9 +1060,12 @@ else
 
         string json0 = JsonConvert.SerializeObject(_estudio);
         string jsonSoli = JsonConvert.SerializeObject(args.Solicitud);
+        dtoMedicoPaciente = await Http.GetFromJsonAsync<DtoInfoExpediente>($"{UrlInfoExpediente}{args.ExpedienteId}");
+        string jsonPaciente = JsonConvert.SerializeObject(dtoMedicoPaciente);
+        
         
         //string json1 = JsonConvert.SerializeObject(_estudio == null ? $"{args}" : $"{args}!{_estudio}");
-        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(_estudio == null ? $"{jsonSoli}!{null}!{null}!ConsultaSolicitudes" : $"{jsonSoli}!{json0}!{null}!ConsultaSolicitudes")}", false);
+        NavigationManager.NavigateTo($"ResultadoEstudios/{PostRequiere}/{Cryp.Encripta(_estudio == null ? $"{jsonSoli}!{null}!{(args.Nombre != null ? jsonPaciente : null)}!ConsultaSolicitudes" : $"{jsonSoli}!{json0}!{null}!ConsultaSolicitudes")}", false);
     }
     
     #endregion

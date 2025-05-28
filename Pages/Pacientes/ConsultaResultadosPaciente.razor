@@ -46,19 +46,19 @@ else
             <MudGrid>
                 <MudItem xs="12" sm="8" md="3">
                     @{
-                        var nompac = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente : dtoMedicoPaciente.Nombre;
+                        var nompac = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente : $"{dtoMedicoPaciente.Nombre} {dtoMedicoPaciente.Apellido}";
                     }
                     <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@nompac</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
                     @{
-                        var gener = PostRequiere == "1" ? (dtoPaciente[0].Genero == "M" ? "MASCULINO" : "FEMENINO") : @dtoMedicoPaciente.Sexo.ToUpper();
+                        var gener = PostRequiere == "1" ? (dtoPaciente[0].Genero == "M" ? "MASCULINO" : "FEMENINO") : (dtoMedicoPaciente.Sexo == "M" ? "MASCULINO" : "FEMENINO");
                     }
                     <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">@gener</MudText>
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
                     @{
-                        var FecNac = PostRequiere == "1" ? dtoPaciente[0].FechaNacimiento : dtoMedicoPaciente.FechaNacimiento;
+                        var FecNac = PostRequiere == "1" ? dtoPaciente[0].FechaNacimiento : dtoMedicoPaciente.FechaNacimientoFormat;
                     }
                     <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Fecha de Nacimiento: @FecNac</MudText>
                 </MudItem>
@@ -70,7 +70,7 @@ else
                 </MudItem>
                 <MudItem xs="12" sm="8" md="3">
                     @{
-                        var PacCorreo = PostRequiere == "1" ? "--" : dtoMedicoPaciente.EnvioCorreo;
+                        var PacCorreo = PostRequiere == "1" ? "--" : dtoMedicoPaciente.Correo;
                     }
                     <MudText Align="Align.Center" Typo="Typo.subtitle1" Style="color: #0d37a8;">Email: @PacCorreo</MudText>
                 </MudItem>
@@ -116,12 +116,12 @@ else
                         <MudItem xs="12" sm="12" md="3" xl="3">
                             @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                            <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
+                            <MudDatePicker Clearable="true" Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
                         </MudItem>
                         <MudItem xs="12" sm="12" md="3" xl="3">
                             @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                            <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
+                            <MudDatePicker Clearable="true" Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
                         </MudItem>
 
                         <MudItem xs="12" sm="12" md="2" xl="2">
@@ -402,11 +402,14 @@ else
 
     private List<DtoPaciente> dtoPaciente = new();
     private DtoFiltro dtoFiltro = new();
-    private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
+    private DtoInfoExpediente dtoMedicoPaciente = new();
+    private DtoInfoExpediente dtoInfoExpedientePaciente = new();
+    private List<DtoSolicitudesForExpediente> dtoSolicitudesForExpediente = new();
     private DtoMedicoPwd dtoMedico = new();
     private DtoEmpresa dtoEmpresa = new();
     private DtoFiltroNavega filorig = new();
     private List<DtoResponseMedicoPaciente> LstExpedientes = new();
+    private List<DtoResponseMedicoPaciente> LstExpedientesActuales = new();
     private List<int> LstEstatusPrint = new();
     private DtoResponseMedicoPaciente SolicitudMedicaPrint = new();
 
@@ -430,12 +433,16 @@ else
     private bool ValidateData = true;
     private bool ValidateDataMod = false;
     private bool ShowNombre = false;
+    private string ExpedienteMostrar = "";
 
     private bool dataLoaded = true;
     private int nopag = 0;
 
     private string UrlUsuario = "services/records/api/ClinicResults/getList";
-    private string UrlPaciente = "services/records/api/MassSearch/GetAllCaptureResults";
+    // private string UrlPaciente = "services/records/api/MassSearch/GetAllCaptureResults";
+    private string UrlPaciente = "services/gateway/api/deliveryResults/GetAllCaptureResults";
+    private string UrlInfoExpediente = "services/gateway/api/MedicalRecord/";
+    private string UrlSolicitudesByExpediente = "services/gateway/api/MedicalRecord/requests/";
     private string UrlImprimeResultados = "services/records/api/ClinicResults/printResultFile";
     private string tmprow = "0";
 
@@ -472,130 +479,74 @@ else
                 {
                     LstEstatusPrint.Add(int.Parse(itemST));
                 }
+                var idenUser = authState.User.Claims.ToList();
+                var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                var filtros = Cryp.Desencripta(idenUser[1].Value.ToString());
+                var resPacDecrip = PostPaciente == "0" ? null:Cryp.Desencripta(PostPaciente);
+
+
+
                 if (PostRequiere == "1") //Paciente
                 {
-                    var idenUser = authState.User.Claims.ToList();
-                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
-                    var filtros = Cryp.Desencripta(idenUser[1].Value.ToString());
+
                     filorig = JsonConvert.DeserializeObject<DtoFiltroNavega>(filtros);
                     dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
                 }
                 else if (PostRequiere == "2")//Medico
                 {
-                    var idenUser = authState.User.Claims.ToList();
-                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
-                    var filtros = Cryp.Desencripta(idenUser[1].Value.ToString());
+                    // var idenUser = authState.User.Claims.ToList();
+                    // var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                    // var filtros = Cryp.Desencripta(idenUser[1].Value.ToString());
                     filorig = JsonConvert.DeserializeObject<DtoFiltroNavega>(filtros);
                     dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
-                    _items =new()
+
+
+                    dtoMedicoPaciente = await Http.GetFromJsonAsync<DtoInfoExpediente>($"{UrlInfoExpediente}{resPacDecrip}");
+                    dtoSolicitudesForExpediente = await Http.GetFromJsonAsync<List<DtoSolicitudesForExpediente>>($"{UrlSolicitudesByExpediente}{resPacDecrip}");
+                    //dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoExpedienteResponse>(resPacDecrip);
+                    ExpedienteMostrar = dtoMedicoPaciente.Expediente;
+                    _items = new()
                     {
                         new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico/", icon: Icons.Material.Filled.Home),
                         new BreadcrumbItem("Consulta de Expedientes", href: "ConsultaExpedientesMedico/", icon: Icons.Material.Filled.Badge,disabled:false),
-                        new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                        new BreadcrumbItem($"Consulta de Resultados (Exp: {ExpedienteMostrar})", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                     };
-                    var resPacDecrip = Cryp.Desencripta(PostPaciente);
-                    dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
                     ShowNombre = true;
 
                 }
                 else if (PostRequiere == "3")//Compañia
                 {
+                    dtoMedicoPaciente = await Http.GetFromJsonAsync<DtoInfoExpediente>($"{UrlInfoExpediente}{resPacDecrip}");
+                    ExpedienteMostrar = dtoMedicoPaciente.Expediente;
                     _items =new()
                     {
                         new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
                         new BreadcrumbItem("Paciente", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
-                        new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser, disabled: true),
+                        new BreadcrumbItem($"Consulta de Resultados (Exp: {ExpedienteMostrar})", href: null, icon: Icons.Material.Filled.VerifiedUser, disabled: true),
                     };
-                    var idenUser = authState.User.Claims.ToList();
-                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
-                    dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
-                    var filtros = Cryp.Desencripta(idenUser[1].Value.ToString());
+                    // var idenUser = authState.User.Claims.ToList();
+                    // var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                    // var filtros = Cryp.Desencripta(idenUser[1].Value.ToString());
                     filorig = JsonConvert.DeserializeObject<DtoFiltroNavega>(filtros);
-                    var resPacDecrip = Cryp.Desencripta(PostPaciente);
-                    dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+                    dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
+                    //dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoExpedienteResponse>(resPacDecrip);
+                    
                     ShowNombre = true;
                 }
 
                 DtoRequestMedicoPacientes parametrobusqueda = new();
 
-                if (filorig.LstFiltro.Count > 0)
+
+
+                parametrobusqueda = new()
                 {
-                    var obFilter = filorig.LstFiltro.FirstOrDefault(op => op.OriginPage.Trim().Equals("ConsultaResultadosPaciente"));
-                    if (obFilter != null)
-                    {
-                        if (obFilter.ExistReg)
-                        {
-                            parametrobusqueda = new()
-                                {
-                                    MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                                    CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id} : new(),
-                                    Buscar = PostRequiere == "1" ? (String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? dtoPaciente[0].NombrePaciente.Trim() : obFilter.ExpedienteNombreSol.ToString()) :
-                                            PostRequiere == "2" ? String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? dtoMedicoPaciente.Nombre.Trim() : obFilter.ExpedienteNombreSol : 
-                                                PostRequiere == "3" ? String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? dtoMedicoPaciente.Nombre.Trim() : obFilter.ExpedienteNombreSol : dtoMedicoPaciente.Nombre.Trim(),
-                                    TipoFecha = 1,
-                                //Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? obFilter != null ? new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
-                                };
-
-                            if (obFilter != null && String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && String.IsNullOrEmpty(obFilter.DateFinal.ToString()))
-                            {
-                                parametrobusqueda.Fecha = new();
-                            }
-                            else
-                            {
-                                parametrobusqueda.Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") };
-                            }
-                            dtoFiltro.DateFinal = obFilter.DateFinal;
-                            dtoFiltro.DateInicial = obFilter.DateInicial;
-                            dtoFiltro.Solicitud = obFilter.ExpedienteNombreSol;
-                            nopag = int.Parse(obFilter.PageNo);
-                            filorig.LstFiltro.Where(w => w.OriginPage.Equals("ConsultaResultadosPaciente")).ToList().ForEach(i => i.ExistReg = false);
-                            string json = JsonConvert.SerializeObject(PostRequiere == "1" ? dtoPaciente: PostRequiere == "2" ? dtoMedico : dtoEmpresa);
-                            string filtro = JsonConvert.SerializeObject(filorig);
-                            var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
-                            await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
-                                {
-                                    filtros = Cryp.Encripta(filtro),
-                                    testsuncretr = Cryp.Encripta(json),
-                                    Type = 2,
-                                });
-                        }
-                        else
-                        {
-                            parametrobusqueda = new()
-                                {
-                                    MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                                    CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
-                                    Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
-                                    TipoFecha = 1,
-                                    Fecha = new()
-                                };
-                        }
-                    }
-                    else
-                    {
-                        parametrobusqueda = new()
-                        {
-                            MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                                CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
-                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
-                            TipoFecha = 1,
-                            Fecha = new()
-                        };
-                    }
-
-
-                }
-                else
-                {
-                    parametrobusqueda = new()
-                    {
-                        MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                            CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
-                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
-                        TipoFecha = 1,
-                        Fecha = new()
-                    };
-                }
+                    MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                    CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
+                        Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : $"{dtoMedicoPaciente.Nombre.Trim()} {dtoMedicoPaciente.Apellido.Trim()}",
+                    TipoFecha = 1,
+                    Fecha = new(),
+                    Expediente=null
+                };
 
                 string json1 = JsonConvert.SerializeObject(parametrobusqueda);
                 var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
@@ -606,58 +557,79 @@ else
                         try
                         {
                             var LstExpedientestmp = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                            foreach (var item in LstExpedientestmp)
+                            {
+                                LstExpedientesActuales.Add(item);
+                            }
 
-                            if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                            if (PostRequiere == "1") //Paciente
                             {
-                                LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                                dtoInfoExpedientePaciente = await Http.GetFromJsonAsync<DtoInfoExpediente>($"{UrlInfoExpediente}{LstExpedientestmp[0].ExpedienteId}");
+                                ExpedienteMostrar = dtoInfoExpedientePaciente.Expediente;
+                                _items = new()
+                                {
+                                    new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
+                                    new BreadcrumbItem($"Consulta de Resultados (Exp: {ExpedienteMostrar})", href: null, disabled: true, icon: Icons.Material.Filled.Badge),
+                                };
                             }
-                            else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+
+                            if (filorig.LstFiltro.Count > 0)
                             {
-                                LstExpedientes = LstExpedientestmp.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
-                            }
-                            else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
-                            {
-                                LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                                var obFilter = filorig.LstFiltro.FirstOrDefault(op => op.OriginPage.Trim().Equals("ConsultaResultadosPaciente"));
+                                if (obFilter != null)
+                                {
+                                    if (obFilter.ExistReg)
+                                    {
+                                        dtoFiltro.DateFinal = obFilter.DateFinal;
+                                        dtoFiltro.DateInicial = obFilter.DateInicial;
+                                        dtoFiltro.Solicitud = obFilter.ExpedienteNombreSol;
+                                        nopag = int.Parse(obFilter.PageNo);
+                                        filorig.LstFiltro.Where(w => w.OriginPage.Equals("ConsultaResultadosPaciente")).ToList().ForEach(i => i.ExistReg = false);
+                                        string json = JsonConvert.SerializeObject(PostRequiere == "1" ? dtoPaciente : PostRequiere == "2" ? dtoMedico : dtoEmpresa);
+                                        string filtro = JsonConvert.SerializeObject(filorig);
+                                        var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+                                        await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+                                            {
+                                                filtros = Cryp.Encripta(filtro),
+                                                testsuncretr = Cryp.Encripta(json),
+                                                Type = PostRequiere == "1" ? 1 : PostRequiere == "2"?2:3,
+                                            });
+                                        
+                                        if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                                        {
+                                            LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                                        }
+                                        else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                                        {
+                                            LstExpedientes = LstExpedientestmp.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
+                                        }
+                                        else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                                        {
+                                            LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                                        }
+                                        else
+                                        {
+                                            LstExpedientes = LstExpedientestmp;
+                                        }
+                                        
+                                    }
+                                    else
+                                    {
+                                        LstExpedientes = LstExpedientestmp;
+                                    }
+                                }
+                                else
+                                {
+                                    LstExpedientes = LstExpedientestmp;
+                                }
+
+
                             }
                             else
                             {
                                 LstExpedientes = LstExpedientestmp;
                             }
-                            //LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                            List<DtoResponseMedicoPaciente> LstExpedientesRemove =new();
-                            foreach (var itemrem in LstExpedientes)
-                            {
-                                if (PostRequiere == "1")
-                                {
-                                    if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoPaciente[0].NombrePaciente.Trim().ToUpper()))
-                                    {
-                                        LstExpedientesRemove.Add(itemrem);
-                                    }
-                                }
-                                else if(PostRequiere == "2")
-                                {
-                                    if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
-                                    {
-                                        LstExpedientesRemove.Add(itemrem);
-                                    }
-                                }
-                                else if (PostRequiere == "3")
-                                {
-                                    if (!dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania))
-                                    {
-                                        LstExpedientesRemove.Add(itemrem);
-                                    }
-                                    else if (dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania) && !itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
-                                    {
-                                        LstExpedientesRemove.Add(itemrem);
-                                    }
-                                }
-                            }
 
-                            foreach (var itemremD in LstExpedientesRemove)
-                            {
-                                LstExpedientes.Remove(itemremD);
-                            }
                             foreach (var itemExp in LstExpedientes)
                             {
                                 foreach (var itemSol in itemExp.Estudios)
@@ -676,6 +648,167 @@ else
 
                         break;
                 }
+
+
+
+                // if (filorig.LstFiltro.Count > 0)
+                // {
+                //     var obFilter = filorig.LstFiltro.FirstOrDefault(op => op.OriginPage.Trim().Equals("ConsultaResultadosPaciente"));
+                //     if (obFilter != null)
+                //     {
+                //         if (obFilter.ExistReg)
+                //         {
+                //             parametrobusqueda = new()
+                //             {
+                //                 MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                //                 CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id} : new(),
+                //                 Buscar = PostRequiere == "1" ? (String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? dtoPaciente[0].NombrePaciente.Trim() : obFilter.ExpedienteNombreSol.ToString()) :
+                //                         PostRequiere == "2" ? String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? dtoMedicoPaciente.Nombre.Trim() : obFilter.ExpedienteNombreSol : 
+                //                             PostRequiere == "3" ? String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? dtoMedicoPaciente.Nombre.Trim() : obFilter.ExpedienteNombreSol : dtoMedicoPaciente.Nombre.Trim(),
+                //                 TipoFecha = 1,
+                //             };
+                            
+
+                //             if (obFilter != null && String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && String.IsNullOrEmpty(obFilter.DateFinal.ToString()))
+                //             {
+                //                 parametrobusqueda.Fecha = new();
+                //             }
+                //             else
+                //             {
+                //                 parametrobusqueda.Fecha = new() { DateTime.Parse(obFilter.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(obFilter.DateFinal.ToString()).ToString("yyyy-MM-dd") };
+                //             }
+                //             dtoFiltro.DateFinal = obFilter.DateFinal;
+                //             dtoFiltro.DateInicial = obFilter.DateInicial;
+                //             dtoFiltro.Solicitud = obFilter.ExpedienteNombreSol;
+                //             nopag = int.Parse(obFilter.PageNo);
+                //             filorig.LstFiltro.Where(w => w.OriginPage.Equals("ConsultaResultadosPaciente")).ToList().ForEach(i => i.ExistReg = false);
+                //             string json = JsonConvert.SerializeObject(PostRequiere == "1" ? dtoPaciente: PostRequiere == "2" ? dtoMedico : dtoEmpresa);
+                //             string filtro = JsonConvert.SerializeObject(filorig);
+                //             var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+                //             await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+                //                 {
+                //                     filtros = Cryp.Encripta(filtro),
+                //                     testsuncretr = Cryp.Encripta(json),
+                //                     Type = 2,
+                //                 });
+                //         }
+                //         else
+                //         {
+                //             parametrobusqueda = new()
+                //                 {
+                //                     MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                //                     CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
+                //                     Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
+                //                     TipoFecha = 1,
+                //                     Fecha = new()
+                //                 };
+                //         }
+                //     }
+                //     else
+                //     {
+                //         parametrobusqueda = new()
+                //         {
+                //             MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                //                 CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
+                //             Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
+                //             TipoFecha = 1,
+                //             Fecha = new()
+                //         };
+                //     }
+
+
+                // }
+                // else
+                // {
+                //     parametrobusqueda = new()
+                //     {
+                //         MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                //             CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
+                //         Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : dtoMedicoPaciente.Nombre.Trim(),
+                //         TipoFecha = 1,
+                //         Fecha = new()
+                //     };
+                // }
+
+                // string json1 = JsonConvert.SerializeObject(parametrobusqueda);
+                // var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
+
+                // switch (sesExpediente.StatusCode)
+                // {
+                //     case System.Net.HttpStatusCode.OK:
+                //         try
+                //         {
+                //             var LstExpedientestmp = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+
+                //             if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                //             {
+                //                 LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                //             }
+                //             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                //             {
+                //                 LstExpedientes = LstExpedientestmp.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
+                //             }
+                //             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                //             {
+                //                 LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                //             }
+                //             else
+                //             {
+                //                 LstExpedientes = LstExpedientestmp;
+                //             }
+                //             //LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                //             List<DtoResponseMedicoPaciente> LstExpedientesRemove =new();
+                //             foreach (var itemrem in LstExpedientes)
+                //             {
+                //                 if (PostRequiere == "1")
+                //                 {
+                //                     if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoPaciente[0].NombrePaciente.Trim().ToUpper()))
+                //                     {
+                //                         LstExpedientesRemove.Add(itemrem);
+                //                     }
+                //                 }
+                //                 else if(PostRequiere == "2")
+                //                 {
+                //                     if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                //                     {
+                //                         LstExpedientesRemove.Add(itemrem);
+                //                     }
+                //                 }
+                //                 else if (PostRequiere == "3")
+                //                 {
+                //                     if (!dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania))
+                //                     {
+                //                         LstExpedientesRemove.Add(itemrem);
+                //                     }
+                //                     else if (dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania) && !itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                //                     {
+                //                         LstExpedientesRemove.Add(itemrem);
+                //                     }
+                //                 }
+                //             }
+
+                //             foreach (var itemremD in LstExpedientesRemove)
+                //             {
+                //                 LstExpedientes.Remove(itemremD);
+                //             }
+                //             foreach (var itemExp in LstExpedientes)
+                //             {
+                //                 foreach (var itemSol in itemExp.Estudios)
+                //                 {
+                //                     itemSol.SolicitudId = itemExp.SolicitudId;
+                //                 }
+                //             }
+
+
+                //         }
+                //         catch (Exception ex)
+                //         {
+                //             //ValidateData = false;
+                //         }
+
+
+                //         break;
+                // }
 
                 //dataLoaded = false;
                 ValidateData = false;
@@ -973,184 +1106,217 @@ else
             }
             else
             {
-                if (PostRequiere == "1") //Paciente
+
+                if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
-                    if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
-                    {
-                        parametrobusqueda = new()
-                        {
-                            MedicoId = new(),
-                            CompañiaId = new(),
-                            Buscar = dtoPaciente[0].NombrePaciente.Trim(),
-                            TipoFecha = 1,
-                            Fecha = new()
-                        };
-                    }
-                    else
-                    {
-                        parametrobusqueda = new()
-                        {
-                            MedicoId = new(),
-                            CompañiaId = new(),
-                            Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoPaciente[0].NombrePaciente.Trim() : dtoFiltro.Solicitud.ToString() : dtoMedicoPaciente.Nombre.Trim(),
-                            TipoFecha = 1,
-                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
-                        };
-                    }
+                    LstExpedientes = LstExpedientesActuales.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
                 }
-                else if (PostRequiere == "2")//Medico
+                else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
-                    if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
-                    {
-                        parametrobusqueda = new()
-                        {
-                            MedicoId = new() { dtoMedico.IdMedico },
-                            CompañiaId = new(),
-                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
-                            TipoFecha = 1,
-                            Fecha = new() { }
-                        };
-                    }
-                    else
-                    {
-                        parametrobusqueda = new()
-                        {
-                            MedicoId = new() { dtoMedico.IdMedico },
-                            CompañiaId = new(),
-                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
-                            TipoFecha = 1,
-                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
-                        };
-                    }
-
-
+                    LstExpedientes = LstExpedientesActuales.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
                 }
-                else if (PostRequiere == "3")//Compañia
+                else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
-                    if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
-                    {
-                        parametrobusqueda = new()
-                        {
-                            MedicoId = new(),
-                            CompañiaId = new() { dtoEmpresa.Id },
-                            Buscar = null,
-                            TipoFecha = 1,
-                            Fecha = new() { }
-                        };
-                    }
-                    else
-                    {
-                        parametrobusqueda = new()
-                        {
-                            MedicoId = new(),
-                            CompañiaId = new() { dtoEmpresa.Id },
-                            Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString().ToString(),
-                            TipoFecha = 1,
-                            Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
-                        };
-                    }
-
+                    LstExpedientes = LstExpedientesActuales.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                }
+                else
+                {
+                    LstExpedientes = LstExpedientesActuales;
                 }
 
-                Http.DefaultRequestHeaders.Remove("branchid");
-                Http.DefaultRequestHeaders.Add("branchid", Sucursal);
-                string json1 = JsonConvert.SerializeObject(parametrobusqueda);
-                var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
-
-
-
-                switch (sesExpediente.StatusCode)
+                foreach (var itemExp in LstExpedientes)
                 {
-                    case System.Net.HttpStatusCode.OK:
-                        try
-                        {
-                            var LstExpedientestmp = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-
-                            if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
-                            {
-                                tmprow = "condicion1";
-                                LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
-                            }
-                            else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
-                            {
-                                tmprow = $"condicion2{DateTime.ParseExact(LstExpedientestmp[0].Registro, "dd/MM/yyyy", CultureInfo.InvariantCulture)}-{dtoFiltro.DateInicial}";
-                                LstExpedientes = LstExpedientestmp.Where(e => DateTime.ParseExact(e.Registro, "dd/MM/yyyy", CultureInfo.InvariantCulture) >= dtoFiltro.DateInicial && DateTime.ParseExact(e.Registro, "dd/MM/yyyy", CultureInfo.InvariantCulture) <= dtoFiltro.DateFinal).ToList();
-                            }
-                            else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
-                            {
-                                tmprow = "condicion11";
-                                LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
-                            }
-                            else
-                            {
-                                tmprow="gral";
-                                LstExpedientes = LstExpedientestmp;
-                            }
-
-                            List<DtoResponseMedicoPaciente> LstExpedientesRemove = new();
-                            foreach (var itemrem in LstExpedientes)
-                            {
-                                if (PostRequiere == "1")
-                                {
-                                    if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoPaciente[0].NombrePaciente.Trim().ToUpper()))
-                                    {
-                                        LstExpedientesRemove.Add(itemrem);
-                                    }
-                                }
-                                else if (PostRequiere == "2")
-                                {
-                                    if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
-                                    {
-                                        LstExpedientesRemove.Add(itemrem);
-                                    }
-                                }
-                                else if (PostRequiere == "3")
-                                {
-                                    if (!dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania))
-                                    {
-                                        LstExpedientesRemove.Add(itemrem);
-
-                                    }
-                                    else if (dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania) && !itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
-                                    {
-                                        LstExpedientesRemove.Add(itemrem);
-                                    }
-                                }
-                            }
-
-                            foreach (var itemremD in LstExpedientesRemove)
-                            {
-                                LstExpedientes.Remove(itemremD);
-                            }
-                            foreach (var itemExp in LstExpedientes)
-                            {
-                                foreach (var itemSol in itemExp.Estudios)
-                                {
-                                    itemSol.SolicitudId = itemExp.SolicitudId;
-                                }
-                            }
-                            // if (LstExpedientes[0].Nombre.Trim().ToUpper().Equals(PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim().ToUpper() : dtoMedicoPaciente.Nombre.Trim().ToUpper()))
-                            // {
-                            //     foreach (var itemExp in LstExpedientes)
-                            //     {
-                            //         foreach (var itemSol in itemExp.Estudios)
-                            //         {
-                            //             itemSol.SolicitudId = itemExp.SolicitudId;
-                            //         }
-                            //     }
-                            // }
-                            // else
-                            // {
-                            //     LstExpedientes = new();
-                            // }
-
-                        }
-                        catch (Exception ex)
-                        {
-                            //ValidateData = false;
-                        }
-                        break;
+                    foreach (var itemSol in itemExp.Estudios)
+                    {
+                        itemSol.SolicitudId = itemExp.SolicitudId;
+                    }
                 }
+
+                // parametrobusqueda = new()
+                // {
+                //     MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
+                //     CompañiaId = PostRequiere == "3" ? new() { dtoEmpresa.Id } : new(),
+                //     Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : null,
+                //     TipoFecha = 1,
+                //     Fecha = new()
+                // };
+
+
+
+                // // if (PostRequiere == "1") //Paciente
+                // // {
+                // //     if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                // //     {
+                // //         parametrobusqueda = new()
+                // //         {
+                // //             MedicoId = new(),
+                // //             CompañiaId = new(),
+                // //             Buscar = dtoPaciente[0].NombrePaciente.Trim(),
+                // //             TipoFecha = 1,
+                // //             Fecha = new()
+                // //         };
+                // //     }
+                // //     else
+                // //     {
+                // //         parametrobusqueda = new()
+                // //         {
+                // //             MedicoId = new(),
+                // //             CompañiaId = new(),
+                // //             Buscar = PostRequiere == "1" ? String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoPaciente[0].NombrePaciente.Trim() : dtoFiltro.Solicitud.ToString() : dtoMedicoPaciente.Nombre.Trim(),
+                // //             TipoFecha = 1,
+                // //             Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                // //         };
+                // //     }
+                // // }
+                // // else if (PostRequiere == "2")//Medico
+                // // {
+                // //     if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                // //     {
+                // //         parametrobusqueda = new()
+                // //         {
+                // //             MedicoId = new() { dtoMedico.IdMedico },
+                // //             CompañiaId = new(),
+                // //             Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
+                // //             TipoFecha = 1,
+                // //             Fecha = new() { }
+                // //         };
+                // //     }
+                // //     else
+                // //     {
+                // //         parametrobusqueda = new()
+                // //         {
+                // //             MedicoId = new() { dtoMedico.IdMedico },
+                // //             CompañiaId = new(),
+                // //             Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString(),
+                // //             TipoFecha = 1,
+                // //             Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                // //         };
+                // //     }
+
+
+                // // }
+                // // else if (PostRequiere == "3")//Compañia
+                // // {
+                // //     if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                // //     {
+                // //         parametrobusqueda = new()
+                // //         {
+                // //             MedicoId = new(),
+                // //             CompañiaId = new() { dtoEmpresa.Id },
+                // //             Buscar = null,
+                // //             TipoFecha = 1,
+                // //             Fecha = new() { }
+                // //         };
+                // //     }
+                // //     else
+                // //     {
+                // //         parametrobusqueda = new()
+                // //         {
+                // //             MedicoId = new(),
+                // //             CompañiaId = new() { dtoEmpresa.Id },
+                // //             Buscar = PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim() : String.IsNullOrEmpty(dtoFiltro.Solicitud) ? dtoMedicoPaciente.Nombre.Trim() : dtoFiltro.Solicitud.ToString().ToString(),
+                // //             TipoFecha = 1,
+                // //             Fecha = String.IsNullOrEmpty(dtoFiltro.Solicitud) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new() { }
+                // //         };
+                // //     }
+
+                // // }
+
+                // // Http.DefaultRequestHeaders.Remove("branchid");
+                // // Http.DefaultRequestHeaders.Add("branchid", Sucursal);
+                // // string json1 = JsonConvert.SerializeObject(parametrobusqueda);
+                // // var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
+
+
+
+                // switch (sesExpediente.StatusCode)
+                // {
+                //     case System.Net.HttpStatusCode.OK:
+                //         try
+                //         {
+                //             var LstExpedientestmp = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+
+                //             if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                //             {
+                //                 LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                //             }
+                //             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                //             {
+                //                 LstExpedientes = LstExpedientestmp.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
+                //             }
+                //             else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                //             {
+                //                 LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
+                //             }
+                //             else
+                //             {
+                //                 LstExpedientes = LstExpedientestmp;
+                //             }
+
+                //             // List<DtoResponseMedicoPaciente> LstExpedientesRemove = new();
+                //             // foreach (var itemrem in LstExpedientes)
+                //             // {
+                //             //     if (PostRequiere == "1")
+                //             //     {
+                //             //         if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoPaciente[0].NombrePaciente.Trim().ToUpper()))
+                //             //         {
+                //             //             LstExpedientesRemove.Add(itemrem);
+                //             //         }
+                //             //     }
+                //             //     else if (PostRequiere == "2")
+                //             //     {
+                //             //         if (!itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                //             //         {
+                //             //             LstExpedientesRemove.Add(itemrem);
+                //             //         }
+                //             //     }
+                //             //     else if (PostRequiere == "3")
+                //             //     {
+                //             //         if (!dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania))
+                //             //         {
+                //             //             LstExpedientesRemove.Add(itemrem);
+
+                //             //         }
+                //             //         else if (dtoEmpresa.NombreComercial.Trim().Equals(itemrem.Compania) && !itemrem.Nombre.Trim().ToUpper().Equals(dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                //             //         {
+                //             //             LstExpedientesRemove.Add(itemrem);
+                //             //         }
+                //             //     }
+                //             // }
+
+                //             // foreach (var itemremD in LstExpedientesRemove)
+                //             // {
+                //             //     LstExpedientes.Remove(itemremD);
+                //             // }
+                //             foreach (var itemExp in LstExpedientes)
+                //             {
+                //                 foreach (var itemSol in itemExp.Estudios)
+                //                 {
+                //                     itemSol.SolicitudId = itemExp.SolicitudId;
+                //                 }
+                //             }
+                //             // if (LstExpedientes[0].Nombre.Trim().ToUpper().Equals(PostRequiere == "1" ? dtoPaciente[0].NombrePaciente.Trim().ToUpper() : dtoMedicoPaciente.Nombre.Trim().ToUpper()))
+                //             // {
+                //             //     foreach (var itemExp in LstExpedientes)
+                //             //     {
+                //             //         foreach (var itemSol in itemExp.Estudios)
+                //             //         {
+                //             //             itemSol.SolicitudId = itemExp.SolicitudId;
+                //             //         }
+                //             //     }
+                //             // }
+                //             // else
+                //             // {
+                //             //     LstExpedientes = new();
+                //             // }
+
+                //         }
+                //         catch (Exception ex)
+                //         {
+                //             //ValidateData = false;
+                //         }
+                //         break;
+                // }
 
             }
 

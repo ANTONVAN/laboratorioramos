@@ -4,6 +4,7 @@
 @using LaboratorioRamos.Data.DtoEmpresa
 @using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
+@using LaboratorioRamos.Data.DtoExpediente
 @using LaboratorioRamos.Data.DtoResultadosEstudios
 @using LaboratorioRamos.Data.DtoPaciente
 
@@ -176,25 +177,25 @@ else
                                                         </MudItem>
                                                     }else{
                                                         if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
-                                                            {
-                                                                <MudItem xs="3" sm="3" md="3">
-                                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
-                                                                </MudItem>
-                                                                <MudItem xs="9" sm="9" md="3">
-                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
-                                                                </MudItem>
-                                                            }
-                                                            else
-                                                            {
-                                                                <MudItem xs="3" sm="3" md="3">
-                                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
-                                                                </MudItem>
-                                                                <MudItem xs="9" sm="9" md="3">
-                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                                </MudItem>
-                                                            }
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3">
+                                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="9" sm="9" md="3">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                            </MudItem>
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3">
+                                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="9" sm="9" md="3">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                            </MudItem>
+                                                        }
                                                     }
-                                                    
+
                                                 }
                                                 else
                                                 {
@@ -510,7 +511,7 @@ else
                                                             </MudItem>
                                                         }
                                                     }
-                                                    
+
                                                 }
                                                 else
                                                 {
@@ -518,7 +519,7 @@ else
                                                         <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                     </MudItem>
                                                 }
-                                                
+
                                             }
                                             else if (itemParam.TipoValor == "3")
                                             {
@@ -547,7 +548,7 @@ else
                                                     </MudItem>
                                                 }
 
-                                                
+
                                             }
                                             else if (itemParam.TipoValor == "4")
                                             {
@@ -575,7 +576,7 @@ else
                                                         <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                     </MudItem>
                                                 }
-                                                
+
 
                                             }
                                             else
@@ -672,7 +673,7 @@ else
                                                                 @if(context.QuintaColumna!=null){
                                                                     <MudTd DataLabel="" Style="font-weight:bolder">@context.QuintaColumna</MudTd>
                                                                 } 
-                                                                
+
                                                             </RowTemplate>
                                                             <NoRecordsContent>
                                                                 <MudText></MudText>
@@ -719,36 +720,36 @@ else
 <style>
 
     .mud-expand-panel .mud-expand-panel-header {
-        width: 100%;
-        align-items: center;
-        display: flex;
-        font-size: .9375rem;
-        line-height: 1;
-        min-height: 48px;
-        outline: none;
-        padding: 0px 9px;
-        position: relative;
-        transition: min-height .3s cubic-bezier(0.25, 0.8, 0.5, 1);
-        user-select: none;
-        background-color: #b4c3c6;
-        color: #0d37a8;
+    width: 100%;
+    align-items: center;
+    display: flex;
+    font-size: .9375rem;
+    line-height: 1;
+    min-height: 48px;
+    outline: none;
+    padding: 0px 9px;
+    position: relative;
+    transition: min-height .3s cubic-bezier(0.25, 0.8, 0.5, 1);
+    user-select: none;
+    background-color: #b4c3c6;
+    color: #0d37a8;
     }
 
 </style>
 
 @code {
 
-    #region Declaración de variables
+        #region Declaración de variables
 
-    [Inject]
-    IDialogService DialogService { get; set; }
+        [Inject]
+        IDialogService DialogService { get; set; }
 
-    [Parameter]
-    public string PostRequiere { get; set; }
-    [Parameter]
-    public string PostSolicitud { get; set; }
-    [Parameter]
-    public string PostEstudio { get; set; }
+        [Parameter]
+        public string PostRequiere { get; set; }
+        [Parameter]
+        public string PostSolicitud { get; set; }
+        [Parameter]
+        public string PostEstudio { get; set; }
 
     public string resDecrip { get; set; }
 
@@ -766,6 +767,7 @@ else
     private DtoResultadosEstudios dtoResultadosEstudiosGral = new();
     private DtoResultadosEstudios dtoResultadosEstudios = new();
     private DtoResponseMedicoPacienteStudios dtoResponseMedicoPacienteStudios = new();
+    private DtoInfoExpediente dtoMedicoPaciente = new();
 
 
 
@@ -773,12 +775,13 @@ else
 
     private bool dataLoaded = true;
 
-    private string UrlUsuario = "services/records/api/ClinicResults/getList";
-    private string UrlPaciente = "services/records/api/MassSearch/GetAllCaptureResults";
-    private string UrlImprimeResultados = "services/records/api/ClinicResults/printResultFile";
-    private string UrlSolicitudInfoGral = "services/records/api/Request/general/";
-    private string UrlMedicoInfoGral = "services/catalogo/api/Medic/";
-    private string UrlClinicResultados = "services/records/api/ClinicResults/studies_params/";
+    private string UrlUsuario = "services/gateway/api/ClinicResults/getList";
+    private string UrlPaciente = "services/gateway/api/MassSearch/GetAllCaptureResults";
+    private string UrlImprimeResultados = "services/gateway/api/ClinicResults/printResultFile";
+    private string UrlSolicitudInfoGral = "services/gateway/api/Request/general/";
+    private string UrlMedicoInfoGral = "services/gateway/api/Medic/";
+    private string UrlClinicResultados = "services/gateway/api/ClinicResults/studies_params/";
+    private string UrlInfoExpediente = "services/gateway/api/MedicalRecord/";
 
 
     DateTime? dateInicial = DateTime.Today;
@@ -789,6 +792,7 @@ else
 
     private bool visiblePrintResult = false;
     private DtoEmpresa dtoEmpresa = new();
+    private DtoInfoExpediente ExpedienteId =new();
 
 
     private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true };
@@ -816,6 +820,7 @@ else
                 var resPacDecrip = resPacDecripInicial.Split("!"); //0=solicitud, 1=Estudio,2=paginallamado
                 var idenUser = authState.User.Claims.ToList();
                 //var args = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip[0].ToString());
+
                 if (PostRequiere == "1") //Paciente
                 {
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
@@ -834,13 +839,16 @@ else
 
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
                     dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
+                    //var expedienteInfo = JsonConvert.DeserializeObject<DtoInfoExpediente>(resPacDecrip[2]);
+                    dtoMedicoPaciente  = JsonConvert.DeserializeObject<DtoInfoExpediente>(resPacDecrip[2]);
+                    //dtoMedicoPaciente = await Http.GetFromJsonAsync<DtoInfoExpediente>($"{UrlInfoExpediente}{expedienteInfo.ExpedienteId}");
                     if (resPacDecrip[3].ToString().Equals("ConsultaResultadosPaciente"))
                     {
                         _items = new List<BreadcrumbItem>
                         {
                             new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
                             new BreadcrumbItem("Consulta de Expedientes", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Badge,disabled:false),
-                            new BreadcrumbItem("Consulta de Resultados", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(resPacDecrip[2])}", icon: Icons.Material.Filled.Badge,disabled:false),
+                            new BreadcrumbItem("Consulta de Resultados", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(dtoMedicoPaciente.Id)}", icon: Icons.Material.Filled.Badge,disabled:false),
                             new BreadcrumbItem("Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                         };
                     }else
@@ -852,10 +860,11 @@ else
                             new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                         };
                     }
-                    
+
                     // var resPacDecrip = Cryp.Desencripta(PostPaciente);
                     // dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
                     // ShowNombre = true;
+                    
 
                 }
                 else if (PostRequiere == "3")//Compañia
@@ -868,14 +877,14 @@ else
                     // };
                     var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
                     dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
-
+                    dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoInfoExpediente>(resPacDecrip[2]);
                     if (resPacDecrip[3].ToString().Equals("ConsultaResultadosPaciente"))
                     {
                         _items = new List<BreadcrumbItem>
                         {
                             new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
                             new BreadcrumbItem("Paciente", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge,disabled:false),
-                            new BreadcrumbItem("Consulta de Resultados", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(resPacDecrip[2])}", icon: Icons.Material.Filled.Badge,disabled:false),
+                            new BreadcrumbItem("Consulta de Resultados", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(dtoMedicoPaciente.Id)}", icon: Icons.Material.Filled.Badge,disabled:false),
                             new BreadcrumbItem("Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                         };
                     }
@@ -911,6 +920,7 @@ else
                             LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
                             foreach (var itemExp in LstExpedientes)
                             {
+                                itemExp.Expediente = PostRequiere == "1" ? dtoPaciente[0].Expediente:dtoMedicoPaciente.Expediente;
                                 foreach (var itemSol in itemExp.Estudios)
                                 {
                                     itemSol.SolicitudId = itemExp.SolicitudId;

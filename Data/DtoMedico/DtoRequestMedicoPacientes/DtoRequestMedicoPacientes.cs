@@ -6,6 +6,7 @@
         public List<string> CompañiaId { get; set; }
         public List<string> Fecha { get; set; }
         public string Buscar { get; set; }
+        public string Expediente { get; set; }
         public int TipoFecha { get; set; } = 1;
     }
 

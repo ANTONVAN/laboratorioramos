@@ -4,6 +4,7 @@
 @using LaboratorioRamos.Data.DtoFiltro
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
 @using LaboratorioRamos.Data.DtoStateProvider
+@using LaboratorioRamos.Data.DtoExpediente
 @inject HttpClient Http;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider _authStateProvider
@@ -72,13 +73,13 @@ else
                             @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" /> *@
                             @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                         <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                            <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
+                            <MudDatePicker Clearable="true" Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
                         </MudItem>
                         <MudItem xs="12" sm="12" md="3">
                             @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" /> *@
                             @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                         <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                            <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
+                            <MudDatePicker Clearable="true" Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
                         </MudItem>
                         <MudItem xs="12" sm="12" md="2">
                             @if (ValidateData)
@@ -183,16 +184,20 @@ else
     private DtoEmpresaInfo dtoEmpresaInfo = new();
     private List<DtoResponseMedicoPaciente> dtoMedicoPacienteDump = new();
     private List<DtoResponseMedicoPaciente> dtoMedicoPaciente = new();
+    private List<DtoExpedienteResponse> dtoMedicoPacienteExpediente = new();
+    private List<DtoResponseMedicoPaciente> dtoMedicoPacienteTmp = new();
 
     private MudTable<DtoResponseMedicoPaciente> _table;
 
     private bool ValidateData = true;
 
     private bool dataLoaded = true;
-    private string UrlUsuario = "services/records/api/ClinicResults/getList";
-    private string UrlMedicoPaciente = "services/records/api/MassSearch/GetAllCaptureResults";
-    private string UrlMedicoPacienteExpediente = "services/records/api/MedicalRecord/report/expedientes";
-    private string UrlMedicoInfo = "services/catalogo/api/Company/";
+    private string UrlUsuario = "services/gateway/api/ClinicResults/getList";
+    private string UrlMedicoPaciente = "services/gateway/api/medicalRecord/now";
+    private string UrlPacienteExpediente = "services/gateway/api/deliveryResults/GetAllCaptureResults";
+    //private string UrlMedicoPaciente = "services/gateway/api/MassSearch/GetAllCaptureResults";
+    private string UrlMedicoPacienteExpediente = "services/gateway/api/MedicalRecord/report/expedientes";
+    private string UrlMedicoInfo = "services/gateway/api/Company/";
     private string searchString1 = "";
 
     private DtoFiltroNavega filorig = new();
@@ -231,6 +236,7 @@ else
                     dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
                     dtoEmpresaInfo = await Http.GetFromJsonAsync<DtoEmpresaInfo>(UrlMedicoInfo + dtoEmpresa.Id);
                     DtoRequestMedicoPacientes parametrobusqueda = new();
+                    bool result = false;
                     if (filorig.LstFiltro.Count > 0)
                     {
                         var obFilter = filorig.LstFiltro.FirstOrDefault(op => op.OriginPage.Trim().Equals("ConsultaExpedientesEmpresa"));
@@ -238,14 +244,44 @@ else
                         {
                             if (obFilter.ExistReg)
                             {
-                                parametrobusqueda = new()
+
+                                result = VerificaString(obFilter.ExpedienteNombreSol);
+                                if (result)
                                 {
-                                    MedicoId = new(),
-                                    CompañiaId = new() { dtoEmpresa.Id },
-                                    Buscar = obFilter != null ? !String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? obFilter.ExpedienteNombreSol : null : null,
-                                    TipoFecha = 1,
-                                    Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
-                                };
+                                    //para buscar por expediente
+                                    parametrobusqueda = new()
+                                    {
+                                        MedicoId = new(),
+                                        CompañiaId = new(),
+                                        Buscar = null,
+                                        TipoFecha = 1,
+                                        Expediente = obFilter.ExpedienteNombreSol,
+                                        Fecha = new()
+                                    };
+
+                                }
+                                else
+                                {
+                                    parametrobusqueda = new()
+                                    {
+                                        MedicoId = new(),
+                                        CompañiaId = new() { dtoEmpresa.Id },
+                                        Buscar = obFilter != null ? !String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? obFilter.ExpedienteNombreSol : null : null,
+                                        TipoFecha = 1,
+                                        Expediente = null,
+                                        //Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
+                                    };
+                                    
+                                }
+
+                                // parametrobusqueda = new()
+                                // {
+                                //     MedicoId = new(),
+                                //     CompañiaId = new() { dtoEmpresa.Id },
+                                //     Buscar = obFilter != null ? !String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? obFilter.ExpedienteNombreSol : null : null,
+                                //     TipoFecha = 1,
+                                //     Fecha = new() { DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.ToString("yyyy-MM-dd") }
+                                // };
 
                                 if (obFilter != null && String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && String.IsNullOrEmpty(obFilter.DateFinal.ToString()))
                                 {
@@ -307,29 +343,65 @@ else
                         };
                     }
 
-
-                    var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
+                    string json1 = JsonConvert.SerializeObject(parametrobusqueda);
+                    //var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
+                    var sesPacientes = result ? await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda) : await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPacienteExpediente, parametrobusqueda);
+                    DtoRequestMedicoPacientes parametrobusquedaExpediente = new();
 
                     switch (sesPacientes.StatusCode)
                     {
                         case System.Net.HttpStatusCode.OK:
                             try
                             {
-                                dtoMedicoPaciente.Clear();
-                                dtoMedicoPacienteDump = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                                List<string> refExpe = new();
-                                foreach (var item in dtoMedicoPacienteDump)
+                                if (result)
                                 {
-                                    refExpe.Add(item.ExpedienteId.ToString());
+                                    dtoMedicoPacienteExpediente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoExpedienteResponse>>();
+                                    parametrobusqueda = new()
+                                    {
+                                        MedicoId = new(),
+                                        CompañiaId = new() { dtoEmpresa.Id },
+                                        Buscar = dtoMedicoPacienteExpediente[0].NombrePaciente,
+                                        TipoFecha = 1,
+                                        Expediente = null,
+                                        Fecha = new()
+                                    };
+                                    var solicitud = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPacienteExpediente, parametrobusqueda);
+                                    dtoMedicoPacienteDump = await solicitud.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                                    foreach (var item2 in dtoMedicoPacienteDump)
+                                    {
+                                        item2.Expediente = dtoMedicoPacienteExpediente[0].Expediente;
+                                    }
+                                    //dtoMedicoPacienteDump[0].Expediente = dtoMedicoPacienteExpediente[0].Expediente;
+                                }
+                                else
+                                {
+                                    dtoMedicoPacienteDump = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                                    var idexp = dtoMedicoPacienteDump.Where(e => e.ExpedienteId != null).Select(e => e.ExpedienteId).ToList();
+                                    List<string> refExpe = new(idexp);
+                                    string json = JsonConvert.SerializeObject(refExpe);
+                                    var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                                    var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                                    foreach (var item2 in dtoMedicoPacienteDump)
+                                    {
+                                        item2.Expediente = sesExpediente.FirstOrDefault(e => e.Id.Equals(item2.ExpedienteId)).Expediente;
+                                    }
                                 }
 
-                                string json = JsonConvert.SerializeObject(refExpe);
-                                var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
-                                var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
-                                foreach (var item2 in dtoMedicoPacienteDump)
-                                {
-                                    item2.Expediente = sesExpediente.FirstOrDefault(e=>e.Id.Equals(item2.ExpedienteId)).Expediente;
-                                }
+                                dtoMedicoPaciente.Clear();
+                                // dtoMedicoPacienteDump = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                                // List<string> refExpe = new();
+                                // foreach (var item in dtoMedicoPacienteDump)
+                                // {
+                                //     refExpe.Add(item.ExpedienteId.ToString());
+                                // }
+
+                                // string json = JsonConvert.SerializeObject(refExpe);
+                                // var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+                                // var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                                // foreach (var item2 in dtoMedicoPacienteDump)
+                                // {
+                                //     item2.Expediente = sesExpediente.FirstOrDefault(e=>e.Id.Equals(item2.ExpedienteId)).Expediente;
+                                // }
                                 
 
                                 foreach (var itemExp in dtoMedicoPacienteDump)
@@ -461,7 +533,7 @@ else
             });
 
         string json1 = JsonConvert.SerializeObject(item);
-        NavigationManager.NavigateTo($"/ConsultaResultadosPaciente/3/{Cryp.Encripta(json1)}");
+        NavigationManager.NavigateTo($"/ConsultaResultadosPaciente/3/{Cryp.Encripta(item.ExpedienteId)}");
     }
     private void NavigateToGraphPaciente(DtoResponseMedicoPaciente item)
     {
@@ -488,16 +560,18 @@ else
         else
         {
             DtoRequestMedicoPacientes parametrobusqueda = new();
+            bool result = false;
             if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre))
             {
                 parametrobusqueda = new()
-                    {
-                        MedicoId = new(),
-                        CompañiaId = new() { dtoEmpresa.Id },
-                        Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre.ToString(),
-                        TipoFecha = 1,
-                        Fecha = new()
-                    };
+                {
+                    MedicoId = new(),
+                    CompañiaId = new() { dtoEmpresa.Id },
+                    Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre.ToString(),
+                    Expediente = null,
+                    TipoFecha = 1,
+                    Fecha = new()
+                };
             }
             else
             {
@@ -509,23 +583,120 @@ else
                         TipoFecha = 1,
                         Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
                     };
+
+                result = VerificaString(dtoFiltro.ExpedienteNombre);
+
+                if (result)
+                {
+                    //para buscar por expediente
+                    parametrobusqueda = new()
+                        {
+                            MedicoId = new(),
+                            CompañiaId = new(),
+                            Buscar = null,
+                            TipoFecha = 1,
+                            Expediente = dtoFiltro.ExpedienteNombre,
+                            Fecha = new()
+                        };
+
+                }
+                else
+                {
+                    parametrobusqueda = new()
+                        {
+                            MedicoId = new(),
+                            CompañiaId = new() { dtoEmpresa.Id },
+                            Buscar = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? null : dtoFiltro.ExpedienteNombre.ToString(),
+                            TipoFecha = 1,
+                            Fecha = String.IsNullOrEmpty(dtoFiltro.ExpedienteNombre) ? new() { DateTime.Parse(dtoFiltro.DateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dtoFiltro.DateFinal.ToString()).ToString("yyyy-MM-dd") } : new()
+                        };
+
+                }
             }
             dtoMedicoPaciente.Clear();
-            var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
-            dtoMedicoPacienteDump = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-            List<string> refExpe = new();
-            foreach (var item in dtoMedicoPacienteDump)
+            string json1 = JsonConvert.SerializeObject(parametrobusqueda);
+            //var sesPacientes = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda);
+            var sesPacientes = result ? await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlMedicoPaciente, parametrobusqueda) : await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPacienteExpediente, parametrobusqueda);
+            DtoRequestMedicoPacientes parametrobusquedaExpediente = new();
+
+            switch (sesPacientes.StatusCode)
             {
-                refExpe.Add(item.ExpedienteId.ToString());
+                case System.Net.HttpStatusCode.OK:
+                    try
+                    {
+                        if (result)
+                        {
+                            dtoMedicoPacienteExpediente = await sesPacientes.Content.ReadFromJsonAsync<List<DtoExpedienteResponse>>();
+                            parametrobusqueda = new()
+                            {
+                                MedicoId = new(),
+                                CompañiaId = new() { dtoEmpresa.Id },
+                                Buscar = dtoMedicoPacienteExpediente[0].NombrePaciente,
+                                TipoFecha = 1,
+                                Expediente = null,
+                                Fecha = new()
+                            };
+                            string jsonexcp = JsonConvert.SerializeObject(parametrobusqueda);
+                            var solicitud = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPacienteExpediente, parametrobusqueda);
+                            dtoMedicoPacienteDump = await solicitud.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                            foreach (var item2 in dtoMedicoPacienteDump)
+                            {
+                                item2.Expediente = dtoMedicoPacienteExpediente[0].Expediente;
+                            }
+                            //dtoMedicoPacienteDump[0].Expediente = dtoMedicoPacienteExpediente[0].Expediente;
+                        }
+                        else
+                        {
+                            dtoMedicoPacienteDump = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                            var idexp = dtoMedicoPacienteDump.Where(e => e.ExpedienteId != null).Select(e => e.ExpedienteId).ToList();
+                            List<string> refExpe1 = new(idexp);
+                            string json2 = JsonConvert.SerializeObject(refExpe1);
+                            var sesResponseExpediente1 = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe1);
+                            var sesExpediente2 = await sesResponseExpediente1.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+                            foreach (var item2 in dtoMedicoPacienteDump)
+                            {
+                                item2.Expediente = sesExpediente2.FirstOrDefault(e => e.Id.Equals(item2.ExpedienteId)).Expediente;
+                            }
+                        }
+
+                        // dtoMedicoPaciente.Clear();
+                        // foreach (var itemExp in dtoMedicoPacienteDump)
+                        // {
+                        //     var existeexp = dtoMedicoPaciente.Where(e => e.Expediente.Equals(itemExp.Expediente)).Count();
+                        //     if (existeexp == 0)
+                        //     {
+                        //         dtoMedicoPaciente.Add(itemExp);
+                        //     }
+                        // }
+                    }
+                    catch (Exception ex)
+                    {
+                        //ValidateData = false;
+                    }
+
+
+                    break;
+                case System.Net.HttpStatusCode.InternalServerError:
+                    //ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!");
+                    break;
             }
 
-            string json = JsonConvert.SerializeObject(refExpe);
-            var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
-            var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
-            foreach (var item2 in dtoMedicoPacienteDump)
-            {
-                item2.Expediente = sesExpediente.FirstOrDefault(e => e.Id.Equals(item2.ExpedienteId)).Expediente;
-            }
+
+
+            // dtoMedicoPacienteDump = await sesPacientes.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+            // List<string> refExpe = new();
+            // foreach (var item in dtoMedicoPacienteDump)
+            // {
+            //     refExpe.Add(item.ExpedienteId.ToString());
+            // }
+
+            // string json = JsonConvert.SerializeObject(refExpe);
+            // var sesResponseExpediente = await Http.PostAsJsonAsync<List<string>>(UrlMedicoPacienteExpediente, refExpe);
+            // var sesExpediente = await sesResponseExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPacienteExpediente>>();
+            // foreach (var item2 in dtoMedicoPacienteDump)
+            // {
+            //     item2.Expediente = sesExpediente.FirstOrDefault(e => e.Id.Equals(item2.ExpedienteId)).Expediente;
+            // }
 
             foreach (var itemExp in dtoMedicoPacienteDump)
             {
@@ -546,4 +717,15 @@ else
     }
 
 	#endregion
+
+    #region Functions Grals
+
+    public bool VerificaString(string ExpedienteNombreSol)
+    {
+        long num = 0;
+        bool canConvert = long.TryParse(ExpedienteNombreSol, out num);
+        return canConvert;
+
+    }
+    #endregion
 }
