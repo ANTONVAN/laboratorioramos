@@ -1089,7 +1089,7 @@ else
         ValidateData = true;
         LstExpedientes.Clear();
         DtoRequestMedicoPacientes parametrobusqueda = new();
-
+        Fecha1 = $"Iniciando";
         try
         {
             if (dtoFiltro.DateFinal < dtoFiltro.DateInicial)
@@ -1110,6 +1110,7 @@ else
             }
             else
             {
+                Fecha1 = $"Rows Inicial: {LstExpedientesActuales.Count}";
 
                 if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
@@ -1129,6 +1130,7 @@ else
                 {
                     LstExpedientes = LstExpedientesActuales.ToList();
                 }
+                Fecha1 = $"RowsExp: {LstExpedientes.Count}";
 
                 foreach (var itemExp in LstExpedientes)
                 {
