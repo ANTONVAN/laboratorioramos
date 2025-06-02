@@ -530,7 +530,7 @@ else
                     filorig = JsonConvert.DeserializeObject<DtoFiltroNavega>(filtros);
                     dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
                     //dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoExpedienteResponse>(resPacDecrip);
-                    
+
                     ShowNombre = true;
                 }
 
@@ -594,7 +594,7 @@ else
                                                 testsuncretr = Cryp.Encripta(json),
                                                 Type = PostRequiere == "1" ? 1 : PostRequiere == "2"?2:3,
                                             });
-                                        
+
                                         if (String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                                         {
                                             LstExpedientes = LstExpedientestmp.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
@@ -611,7 +611,7 @@ else
                                         {
                                             LstExpedientes = LstExpedientestmp;
                                         }
-                                        
+
                                     }
                                     else
                                     {
@@ -667,7 +667,7 @@ else
                 //                             PostRequiere == "3" ? String.IsNullOrEmpty(obFilter.ExpedienteNombreSol) ? dtoMedicoPaciente.Nombre.Trim() : obFilter.ExpedienteNombreSol : dtoMedicoPaciente.Nombre.Trim(),
                 //                 TipoFecha = 1,
                 //             };
-                            
+
 
                 //             if (obFilter != null && String.IsNullOrEmpty(obFilter.DateInicial.ToString()) && String.IsNullOrEmpty(obFilter.DateFinal.ToString()))
                 //             {
@@ -1113,7 +1113,9 @@ else
                 }
                 else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
-                    LstExpedientes = LstExpedientesActuales.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
+                    Console.WriteLine($"fecha1: {DateTime.Parse(LstExpedientesActuales[0].Registro)}");
+                    Console.WriteLine($"fecha1: {DateTime.Parse(dtoFiltro.DateInicial.ToString())}");
+                    LstExpedientes = LstExpedientesActuales.Where(e => DateTime.Parse(e.Registro) >= DateTime.Parse(dtoFiltro.DateInicial.ToString()) && DateTime.Parse(e.Registro) <= DateTime.Parse(dtoFiltro.DateFinal.ToString())).ToList();
                 }
                 else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
@@ -1327,6 +1329,7 @@ else
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Error: {ex.Message}");
             var t = "";
         }
 
