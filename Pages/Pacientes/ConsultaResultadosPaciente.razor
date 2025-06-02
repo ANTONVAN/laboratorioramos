@@ -293,6 +293,8 @@ else
                         <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
                     </PagerContent>
                 </MudTable>
+                @Fecha1<br/>
+                @Fecha2
             </MudItem>
         </MudGrid>
     </MudPaper>
@@ -434,6 +436,8 @@ else
     private bool ValidateDataMod = false;
     private bool ShowNombre = false;
     private string ExpedienteMostrar = "";
+    private string Fecha1 = "";
+    private string Fecha2= "";
 
     private bool dataLoaded = true;
     private int nopag = 0;
@@ -1113,8 +1117,8 @@ else
                 }
                 else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
-                    Console.WriteLine($"fecha1: {DateTime.Parse(LstExpedientesActuales[0].Registro)}");
-                    Console.WriteLine($"fecha1: {DateTime.Parse(dtoFiltro.DateInicial.ToString())}");
+                    Fecha1=$"fecha1: {DateTime.Parse(LstExpedientesActuales[0].Registro)}";
+                    Fecha2=$"fecha1: {DateTime.Parse(dtoFiltro.DateInicial.ToString())}";
                     LstExpedientes = LstExpedientesActuales.Where(e => DateTime.Parse(e.Registro) >= DateTime.Parse(dtoFiltro.DateInicial.ToString()) && DateTime.Parse(e.Registro) <= DateTime.Parse(dtoFiltro.DateFinal.ToString())).ToList();
                 }
                 else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
