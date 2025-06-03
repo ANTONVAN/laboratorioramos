@@ -561,12 +561,13 @@ else
                         try
                         {
                             var LstExpedientestmp = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                            Fecha1 = $"InicioExpediente: {LstExpedientestmp.Count}";
                             foreach (var item in LstExpedientestmp)
                             {
                                 item.RegistroTmp = DateTime.Parse(item.Registro);
                                 LstExpedientesActuales.Add(item);
                             }
-
+                            Fecha1 = $"Expediente: {LstExpedientestmp.Count} - Actual{LstExpedientesActuales.Count}";
                             if (PostRequiere == "1") //Paciente
                             {
                                 dtoInfoExpedientePaciente = await Http.GetFromJsonAsync<DtoInfoExpediente>($"{UrlInfoExpediente}{LstExpedientestmp[0].ExpedienteId}");
@@ -606,6 +607,7 @@ else
                                         }
                                         else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
                                         {
+                                            Fecha1 = $"EntroFecha";
                                             LstExpedientes = LstExpedientestmp.Where(e => e.RegistroTmp >= dtoFiltro.DateInicial && e.RegistroTmp <= dtoFiltro.DateFinal).ToList();
                                         }
                                         else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
@@ -653,7 +655,7 @@ else
 
                         break;
                 }
-
+                Fecha1 = $"Expedientes: {LstExpedientes.Count} - Actuales{LstExpedientesActuales.Count}";
 
 
                 // if (filorig.LstFiltro.Count > 0)
