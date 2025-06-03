@@ -1,6 +1,4 @@
-﻿using ApexCharts;
-using LaboratorioRamos.Data.DtoFiltro;
-using LaboratorioRamos.Data.DtoStateProvider;
+﻿using LaboratorioRamos.Data.DtoStateProvider;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;

@@ -1116,11 +1116,11 @@ else
                 {
                     LstExpedientes = LstExpedientesActuales.Where(e => e.Solicitud.Contains(dtoFiltro.Solicitud) || e.Nombre.Contains(dtoFiltro.Solicitud)).ToList();
                 }
-                else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
+                else if ((!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString())) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
                     Fecha1=$"fecha1: {DateTime.Parse(LstExpedientesActuales[0].Registro)}";
                     Fecha2=$"fecha2: {DateTime.Parse(dtoFiltro.DateInicial.ToString())}";
-                    LstExpedientes = LstExpedientesActuales.Where(e => DateTime.Parse(e.Registro) >= DateTime.Parse(dtoFiltro.DateInicial.ToString()) && DateTime.Parse(e.Registro) <= DateTime.Parse(dtoFiltro.DateFinal.ToString())).ToList();
+                    LstExpedientes = LstExpedientesActuales.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
                 }
                 else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
