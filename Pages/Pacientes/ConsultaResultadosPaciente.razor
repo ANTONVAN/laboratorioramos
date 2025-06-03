@@ -565,6 +565,7 @@ else
                             foreach (var item in LstExpedientestmp)
                             {
                                 item.RegistroTmp = DateTime.Parse(item.Registro);
+                                Fecha2 += item.RegistroTmp.ToString();
                                 LstExpedientesActuales.Add(item);
                             }
                             Fecha1 = $"Expediente: {LstExpedientestmp.Count} - Actual{LstExpedientesActuales.Count}";
@@ -616,18 +617,18 @@ else
                                         }
                                         else
                                         {
-                                            LstExpedientes = LstExpedientestmp.ToList();
+                                            LstExpedientes = LstExpedientestmp;
                                         }
 
                                     }
                                     else
                                     {
-                                        LstExpedientes = LstExpedientestmp.ToList();
+                                        LstExpedientes = LstExpedientestmp;
                                     }
                                 }
                                 else
                                 {
-                                    LstExpedientes = LstExpedientestmp.ToList();
+                                    LstExpedientes = LstExpedientestmp;
                                 }
 
 
