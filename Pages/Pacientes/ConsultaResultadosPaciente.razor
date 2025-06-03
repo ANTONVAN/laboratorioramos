@@ -561,7 +561,7 @@ else
                         try
                         {
                             var LstExpedientestmp = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                            Fecha1 = $"InicioExpediente: {LstExpedientestmp.Count}";
+                            Fecha2 = $"InicioExpediente: {LstExpedientestmp.Count}";
                             foreach (var item in LstExpedientestmp)
                             {
                                 item.RegistroTmp = DateTime.Parse(item.Registro);
