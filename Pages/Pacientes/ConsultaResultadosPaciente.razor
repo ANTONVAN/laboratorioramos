@@ -1120,7 +1120,7 @@ else
                 {
                     Fecha1=$"fecha1: {DateTime.Parse(LstExpedientesActuales[0].Registro)}";
                     Fecha2=$"fecha2: {DateTime.Parse(dtoFiltro.DateInicial.ToString())}";
-                    LstExpedientes = LstExpedientesActuales.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
+                    LstExpedientes = LstExpedientesActuales.Where(e => DateTime.ParseExact(e.Registro, "dd/MM/yyyy", CultureInfo.InvariantCulture) >= dtoFiltro.DateInicial && DateTime.ParseExact(e.Registro, "dd/MM/yyyy", CultureInfo.InvariantCulture) <= dtoFiltro.DateFinal).ToList();
                 }
                 else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {
