@@ -563,6 +563,7 @@ else
                             var LstExpedientestmp = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
                             foreach (var item in LstExpedientestmp)
                             {
+                                item.RegistroTmp = DateTime.Parse(item.Registro);
                                 LstExpedientesActuales.Add(item);
                             }
 
@@ -605,7 +606,7 @@ else
                                         }
                                         else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
                                         {
-                                            LstExpedientes = LstExpedientestmp.Where(e => DateTime.Parse(e.Registro) >= dtoFiltro.DateInicial && DateTime.Parse(e.Registro) <= dtoFiltro.DateFinal).ToList();
+                                            LstExpedientes = LstExpedientestmp.Where(e => e.RegistroTmp >= dtoFiltro.DateInicial && e.RegistroTmp <= dtoFiltro.DateFinal).ToList();
                                         }
                                         else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                                         {
@@ -1120,7 +1121,7 @@ else
                 {
                     Fecha1=$"fecha1: {DateTime.Parse(LstExpedientesActuales[0].Registro)}";
                     Fecha2=$"fecha2: {DateTime.Parse(dtoFiltro.DateInicial.ToString())}";
-                    LstExpedientes = LstExpedientesActuales.Where(e => DateTime.ParseExact(e.Registro, "dd/MM/yyyy", CultureInfo.InvariantCulture) >= dtoFiltro.DateInicial && DateTime.ParseExact(e.Registro, "dd/MM/yyyy", CultureInfo.InvariantCulture) <= dtoFiltro.DateFinal).ToList();
+                    LstExpedientes = LstExpedientesActuales.Where(e => e.RegistroTmp >= dtoFiltro.DateInicial && e.RegistroTmp <= dtoFiltro.DateFinal).ToList();
                 }
                 else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
                 {

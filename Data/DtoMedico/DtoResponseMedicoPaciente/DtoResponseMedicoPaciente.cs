@@ -9,6 +9,7 @@
         public string? Solicitud { get; set; }
         public string? Nombre { get; set; }
         public string? Registro { get; set; }
+        public DateTime? RegistroTmp { get; set; }
         public string? Sucursal { get; set; }
         public int Edad { get; set; }
         public string? Sexo { get; set; }
