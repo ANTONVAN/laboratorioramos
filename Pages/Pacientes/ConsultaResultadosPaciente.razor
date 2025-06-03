@@ -608,7 +608,7 @@ else
                                         }
                                         else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && String.IsNullOrEmpty(dtoFiltro.Solicitud))
                                         {
-                                            Fecha1 = $"EntroFecha";
+                                            Fecha1 += $"--EntroFecha";
                                             LstExpedientes = LstExpedientestmp.Where(e => e.RegistroTmp >= dtoFiltro.DateInicial && e.RegistroTmp <= dtoFiltro.DateFinal).ToList();
                                         }
                                         else if (!String.IsNullOrEmpty(dtoFiltro.DateInicial.ToString()) && !String.IsNullOrEmpty(dtoFiltro.DateFinal.ToString()) && !String.IsNullOrEmpty(dtoFiltro.Solicitud))
@@ -617,17 +617,20 @@ else
                                         }
                                         else
                                         {
+                                            Fecha1 += $"--11--";
                                             LstExpedientes = LstExpedientestmp;
                                         }
 
                                     }
                                     else
                                     {
+                                        Fecha1 += $"--12--";
                                         LstExpedientes = LstExpedientestmp;
                                     }
                                 }
                                 else
                                 {
+                                    Fecha1 += $"--13--";
                                     LstExpedientes = LstExpedientestmp;
                                 }
 
@@ -635,6 +638,7 @@ else
                             }
                             else
                             {
+                                Fecha1 += $"--14--";
                                 LstExpedientes = LstExpedientestmp;
                             }
 
@@ -646,7 +650,6 @@ else
                                 }
                             }
 
-
                         }
                         catch (Exception ex)
                         {
@@ -656,7 +659,7 @@ else
 
                         break;
                 }
-                Fecha1 = $"Expedientes: {LstExpedientes.Count} - Actuales{LstExpedientesActuales.Count}";
+                Fecha1 += $"--Expedientes: {LstExpedientes.Count} - Actuales{LstExpedientesActuales.Count}";
 
 
                 // if (filorig.LstFiltro.Count > 0)
