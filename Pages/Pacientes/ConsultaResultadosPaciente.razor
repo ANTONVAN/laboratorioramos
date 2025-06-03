@@ -564,11 +564,13 @@ else
                             Fecha2 = $"InicioExpediente: {LstExpedientestmp.Count}";
                             foreach (var item in LstExpedientestmp)
                             {
-                                item.RegistroTmp = DateTime.Parse(item.Registro);
-                                Fecha2 += item.RegistroTmp.ToString();
+                                //item.RegistroTmp = DateTime.Parse(item.Registro);
+                                //Fecha2 += item.RegistroTmp.ToString();
                                 LstExpedientesActuales.Add(item);
                             }
-                            Fecha1 = $"Expediente: {LstExpedientestmp.Count} - Actual{LstExpedientesActuales.Count}";
+                            LstExpedientesActuales.ForEach(i => i.RegistroTmp = DateTime.Parse(i.Registro));
+                            string jsontmp = JsonConvert.SerializeObject(LstExpedientesActuales);
+                            Fecha1 = $"Expediente: {LstExpedientestmp.Count} - Actual{LstExpedientesActuales.Count}--josn{jsontmp}";
                             if (PostRequiere == "1") //Paciente
                             {
                                 dtoInfoExpedientePaciente = await Http.GetFromJsonAsync<DtoInfoExpediente>($"{UrlInfoExpediente}{LstExpedientestmp[0].ExpedienteId}");
