@@ -1287,6 +1287,10 @@ else
         {
             ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!", 4);
         }
+        else if (String.IsNullOrEmpty(_busquedaCotizacion.dateInicial.ToString()) && String.IsNullOrEmpty(_busquedaCotizacion.dateFinal.ToString()) && String.IsNullOrEmpty(_busquedaCotizacion.searchString1))
+        {
+            ShowSnack("¡Por favor Ingresa Fecha Inicial, Fecha Final o Número de orden!", 4);
+        }
         else
         {
             //dataLoaded = true;
