@@ -250,8 +250,8 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public int? EstudioId { get; set; }
         public string Clave { get; set; }
         public string Nombre { get; set; }
-        //public int PaqueteId { get; set; }
-        //public string Paquete { get; set; }
+        public int? PaqueteId { get; set; }
+        public string? Paquete { get; set; }
         public string ListaPrecioId { get; set; }
         public string ListaPrecio { get; set; }
         public int? PromocionId { get; set; }
@@ -264,8 +264,9 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public double? DescuentoPorcentaje { get; set; } = 0;
         public double? PrecioFinal { get; set; } = 0;
         public string TipoMuestra { get; set; }
+        public string Type { get; set; } = "study";
         public List<Promociones> Promociones { get; set; }
-        //public List<Parametros> Parametros { get; set; }
+        public List<Parametros> Parametros { get; set; }
         public List<Indicaciones> Indicaciones { get; set; }
     }
 
@@ -290,6 +291,7 @@ namespace LaboratorioRamos.Data.DtoEstudio
         public double DescuentoPorcentaje { get; set; }
         public double PrecioFinal { get; set; }
         public string TipoMuestra { get; set; }
+        public string Type { get; set; } = "study";
         public List<Promociones> Promociones { get; set; }
         public List<Parametros> Parametros { get; set; }
         public List<Indicaciones> Indicaciones { get; set; }

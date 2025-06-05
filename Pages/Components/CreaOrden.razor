@@ -116,7 +116,15 @@ else
                             </TemplateColumn>
                             <TemplateColumn HeaderStyle="color:#921313" Title="Estudios">
                                 <CellTemplate>
-                                    <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" OnClick="@(()=>OpenDialog(context.Item))" />
+                                    @{
+                                        if(context.Item.Estudios.Count>0)
+                                        {
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" OnClick="@(()=>OpenDialog(context.Item))" />
+                                        }else{
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Disabled/>
+                                        }
+                                    }
+                                    
                                 </CellTemplate>
                             </TemplateColumn>
                             <TemplateColumn HeaderStyle="color:#921313" Title="Acciones">
@@ -2058,84 +2066,78 @@ else
         _oEstudioResponsePrice = new();
         IsEdition = false;
         CotizacionDraft = new();
-        _oEstudioResponsePrice = new();
-        var sesEstudio = await Http.GetFromJsonAsync<List<DtoEstudiosOrden>>($"{UrlEstudios}{EstudioSearch}");
-        var sesPackEstudio = await Http.GetFromJsonAsync<List<DtoPackEstudioOrden>>($"{UrlPaquete}{EstudioSearch}");
-        if (sesEstudio.Count == 0)
-        {
-            ShowSnack("¡El ESTUDIO no existe, favor de verificar!", 3);
-            visibleInfoEstudio = false;
-            searchEstudiosTxt = false;
-        }
-        else
-        {
-            foreach (var itemEstudio in sesEstudio)
-            {
-                var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudio.Clave));
-                if (studioagregado == null)
-                {
-                    DtoEstudioRequestPrice oPriceStudio = new()
-                        {
-                            SucursalId = SucursalID,
-                            CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                        //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                            MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
-                            EstudioId = itemEstudio.Id
-                        };
-                    string json1 = JsonConvert.SerializeObject(oPriceStudio);
-                    var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
-                    if (responseDraft.IsSuccessStatusCode)
-                    {
-                        var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                        _oEstudioResponsePrice.Add(ostudioResponse);
-                    }
-                    // else
-                    // {
-                    //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
-                    //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
-                    // }
-                }
-            }
 
-            searchEstudiosTxt = false;
-            //visibleInfoEstudio = true;
-            //StateHasChanged();
-        }
+        // var sesEstudio = await Http.GetFromJsonAsync<List<DtoEstudiosOrden>>($"{UrlEstudios}{EstudioSearch}");
+        // var sesPackEstudio = await Http.GetFromJsonAsync<List<DtoPackEstudioOrden>>($"{UrlPaquete}{EstudioSearch}");
+        // if (sesEstudio.Count == 0)
+        // {
+        //     ShowSnack("¡El ESTUDIO no existe, favor de verificar!", 3);
+        //     visibleInfoEstudio = false;
+        //     searchEstudiosTxt = false;
+        // }
+        // else
+        // {
+        //     foreach (var itemEstudio in sesEstudio)
+        //     {
+        //         var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudio.Clave));
+        //         if (studioagregado == null)
+        //         {
+        //             DtoEstudioRequestPrice oPriceStudio = new()
+        //                 {
+        //                     SucursalId = SucursalID,
+        //                     CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+        //                 //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+        //                     MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+        //                     EstudioId = itemEstudio.Id
+        //                 };
+        //             string json1 = JsonConvert.SerializeObject(oPriceStudio);
+        //             var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
+        //             if (responseDraft.IsSuccessStatusCode)
+        //             {
+        //                 var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+        //                 _oEstudioResponsePrice.Add(ostudioResponse);
+        //             }
+        //         }
+        //     }
 
-        if (sesPackEstudio.Count > 0)
-        {
-            foreach (var itemEstudio in sesPackEstudio)
-            {
-                var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudio.Clave));
-                if (studioagregado == null)
-                {
-                    DtoPaqueteEstudioRequestPrice oPackPriceStudio = new()
-                        {
-                            SucursalId = SucursalID,
-                            CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                        //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                            MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
-                            PaqueteId = itemEstudio.Id
-                        };
-                    string json1 = JsonConvert.SerializeObject(oPackPriceStudio);
-                    var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPackPriceStudio);
-                    if (responseDraft.IsSuccessStatusCode)
-                    {
-                        var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                        _oEstudioResponsePrice.Add(ostudioResponse);
-                    }
-                    // else
-                    // {
-                    //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
-                    //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
-                    // }
-                }
-            }
+        //     searchEstudiosTxt = false;
+            
+        // }
 
-            searchEstudiosTxt = false;
-            //visibleInfoEstudio = true;
-            //StateHasChanged();
-        }
+        // if (sesPackEstudio.Count > 0)
+        // {
+        //     foreach (var itemEstudio in sesPackEstudio)
+        //     {
+        //         var studioagregado = selectedEstudios.FirstOrDefault(x => x.Clave.Equals(itemEstudio.Clave));
+        //         if (studioagregado == null)
+        //         {
+        //             DtoPaqueteEstudioRequestPrice oPackPriceStudio = new()
+        //                 {
+        //                     SucursalId = SucursalID,
+        //                     CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+        //                 //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+        //                     MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+        //                     PaqueteId = itemEstudio.Id
+        //                 };
+        //             string json1 = JsonConvert.SerializeObject(oPackPriceStudio);
+        //             var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPackPriceStudio);
+        //             if (responseDraft.IsSuccessStatusCode)
+        //             {
+        //                 var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+        //                 _oEstudioResponsePrice.Add(ostudioResponse);
+        //             }
+        //             // else
+        //             // {
+        //             //     ShowSnack("¡No se puede crear la Cotización,Por favor contacte con su laboratorio!", 3);
+        //             //     ShowSnack("¡Error en el Servicio,Por favor contacte con su laboratorio!", 4);
+        //             // }
+        //         }
+        //     }
+
+        //     searchEstudiosTxt = false;
+        //     //visibleInfoEstudio = true;
+        //     //StateHasChanged();
+        // }
     }
 
     async Task ContnueProcess()
@@ -2669,7 +2671,7 @@ else
                     Parametros = new(NewParametros),
                     Promociones = new(NewPromociones),
                     Indicaciones = new(NewIndicaciones),
-
+                    Type="study"
                 };
                 NewEstudiosOrden.Add(_Estudio);
             }
@@ -2716,6 +2718,48 @@ else
                         };
                         NewPackEstudiosIndicaciones.Add(RowIndica);
                     }
+
+                    foreach (var itemParam in itemEstudios.Parametros)
+                    {
+                        Parametros RowParam = new()
+                            {
+                                Activo = itemParam.Activo,
+                                Area = itemParam.Area,
+                                Asignado = false,
+                                Clave = itemParam.Clave,
+                                CriticoMaximo = null,
+                                CriticoMinimo = null,
+                                DeltaCheck = false,
+                                Departamento = itemParam.Departamento,
+                                EstudioId = 0,
+                                Fcsi = null,
+                                Formula = null,
+                                HasHistory = false,
+                                Id = itemParam.Id,
+                                MostrarFormato = false,
+                                Nombre = itemParam.Nombre,
+                                NombreCorto = itemParam.NombreCorto,
+                                ObservacionesId = null,
+                                OcultarSiNulo = false,
+                                Orden = 0,
+                                Requerido = false,
+                                Resultado = null,
+                                ResultadoId = null,
+                                SolicitudEstudioId = 0,
+                                TipoValor = itemParam.TipoValor,
+                                TipoValores = null,
+                                UltimaSolicitud = null,
+                                UltimaSolicitudId = null,
+                                UltimoExpedienteId = null,
+                                UltimoResultado = null,
+                                Unidades = 0,
+                                UnidadNombre = null,
+                                ValorFinal = null,
+                                ValorInicial = null,
+                            };
+                        NewParametros.Add(RowParam);
+                    }
+
                     Estudios _Estudio = new()
                     {
                         Id = itemEstudios.EstudioId,
@@ -2731,16 +2775,16 @@ else
                         ListaPrecioId = itemEstudios.ListaPrecioId,
                         Nombre = itemEstudios.Nombre,
                         //Paquete=null,
-                        //PaqueteId=0,
+                        PaqueteId = item.PackTempId,
                         Precio = itemEstudios.Precio,
                         PrecioFinal = itemEstudios.PrecioFinal,
                         Promocion = itemEstudios.Promocion,
                         PromocionId = itemEstudios.PromocionId,
                         TipoMuestra = itemEstudios.TipoMuestra,
-                        //Parametros=new(NewParametros),
+                        Parametros=new(NewParametros),
                         Promociones = new(NewPackEstudiosPromociones),
                         Indicaciones = new(NewPackEstudiosIndicaciones),
-
+                        Type = "pack"
                     };
                     NewPackEstudios.Add(_Estudio);
                     //selectedEstudiosOriginal.Add(item);
