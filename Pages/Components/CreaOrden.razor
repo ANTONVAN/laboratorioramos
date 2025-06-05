@@ -1306,7 +1306,7 @@ else
                 MedicoId = PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
                 Expediente = (String.IsNullOrEmpty(_busquedaCotizacion.searchString1) ? null : _busquedaCotizacion.searchString1),
                 CompañiaId = PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
-                Fecha = new() { DateTime.Parse(_busquedaCotizacion.dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_busquedaCotizacion.dateFinal.ToString()).ToString("yyyy-MM-dd") }
+                Fecha = String.IsNullOrEmpty(_busquedaCotizacion.searchString1) ? new() { DateTime.Parse(_busquedaCotizacion.dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(_busquedaCotizacion.dateFinal.ToString()).ToString("yyyy-MM-dd") }:new()
             };
 
             string json1 = JsonConvert.SerializeObject(parametrobusqueda);
