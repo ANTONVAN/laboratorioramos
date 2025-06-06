@@ -2042,8 +2042,58 @@ else
             ShowSnack("¡Por favor selecciona \"ESTUDIOS\" para continuar!", 4);
         }
 
+        selectedEstudios.Clear();
+        selectedEstudiosOriginal.Clear();
+        var studiogral = await Http.GetFromJsonAsync<DtoEstudiosByOrdenActual>($"{UrlOrdenesNew}/{CotizacionDraft.CotizacionId}");
+        if (studiogral != null)
+        {
+            foreach (var itemEstudio in studiogral.Estudios)
+            {
+                //_oCotizacionEstudios.Add(itemEstudio);
+                var studioActualOrden = studiogral.Estudios.FirstOrDefault(op => op.Id.Equals(itemEstudio.Id));
 
 
+                DtoEstudioRequestPrice oPriceStudio = new()
+                    {
+                        SucursalId = SucursalID,
+                        CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                    //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                        MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                        EstudioId = itemEstudio.EstudioId
+                    };
+
+                string json1 = JsonConvert.SerializeObject(oPriceStudio);
+                var responseDraft = await Http.PostAsJsonAsync<DtoEstudioRequestPrice>(UrlEstudiosPrecio, oPriceStudio);
+                if (responseDraft.IsSuccessStatusCode)
+                {
+                    var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                    selectedEstudios.Add(ostudioResponse);
+                    selectedEstudiosOriginal.Add(ostudioResponse);
+                }
+
+            }
+            foreach (var itemEstudioPack in studiogral.Paquetes)
+            {
+                DtoPaqueteEstudioRequestPrice oPriceStudiopack = new()
+                    {
+                        SucursalId = SucursalID,
+                        CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                    //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                        MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                        PaqueteId = itemEstudioPack.PaqueteId
+                    };
+                string json1 = JsonConvert.SerializeObject(oPriceStudiopack);
+                var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPriceStudiopack);
+                if (responseDraft.IsSuccessStatusCode)
+                {
+                    var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                    ostudioResponse.PackTempId = itemEstudioPack.Id;
+                    selectedEstudios.Add(ostudioResponse);
+                    selectedEstudiosOriginal.Add(ostudioResponse);
+                }
+
+            }
+        }
 
         //dataLoaded = false;
         _index = 2;
