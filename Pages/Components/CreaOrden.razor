@@ -1770,7 +1770,7 @@ else
                                 }
                             };
 
-                        if (NewEstudios.Count > 0)
+                        if (NewEstudios.Count > 0 || NewPaquetes.Count > 0)
                         {
                             string jsonupd = JsonConvert.SerializeObject(newOrdenUpd);
                             var sesOrdenesupd = await Http.PostAsJsonAsync<DtoNewEstudiosByOrden>(UrlOrdenesNew, newOrdenUpd);
