@@ -2277,7 +2277,7 @@ else
             mudTable.SelectedItems.Add(rowActual);
             priAct=1;
         }
-        
+
     }
 
     private string SelectedRowPaciente(DtoPaciente element, int rowNumber)
@@ -2468,7 +2468,7 @@ else
             // var ostudioResponseTmp = await responseDraft.Content.ReadFromJsonAsync<List<DtoEstudioResponsePrice>>();
             // var ostudioResponse = ostudioResponseTmp.Where(e => e.Activo == true).ToList();
             var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<List<DtoEstudioResponsePrice>>();
-            
+
 
             if (sesEstudio.Count == 0)
             {
@@ -2530,26 +2530,33 @@ else
 
                         if (sesEstudioVis.Visible)
                         {
-                            // DtoPaqueteEstudioRequestPrice oPackPriceStudio = new()
-                            //     {
-                            //         SucursalId = SucursalID,
-                            //         CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
-                            //     //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
-                            //         MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
-                            //         PaqueteId = itemEstudio.Id
-                            //     };
-                            // string json1 = JsonConvert.SerializeObject(oPackPriceStudio);
-                            // var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPackPriceStudio);
-                            // if (responseDraft.IsSuccessStatusCode)
-                            // {
-                            //     var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
-                            //     _oEstudioResponsePrice.Add(ostudioResponse);
-                            // }
-                            var studpack = ostudioResponse.FirstOrDefault(e => e.PaqueteId.Equals(itemEstudioPack.Id));
-                            if (studpack != null)
+                            var packPrice = ostudioResponse.FirstOrDefault(e => e.PaqueteId.Equals(itemEstudioPack.Id));
+                            if (packPrice!=null)
                             {
-                                studpack.PackTempId = itemEstudioPack.Id;
-                                _oEstudioResponsePrice.Add(studpack);
+                                if (packPrice.Activo)
+                                {
+                                    // DtoPaqueteEstudioRequestPrice oPackPriceStudio = new()
+                                    //     {
+                                    //         SucursalId = SucursalID,
+                                    //         CompañiaId = PostRequiere == "2" ? "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4" : dtoEmpresa.Id,
+                                    //     //CompañiaId = "1B84FA7E-9B41-41FA-B8E0-F1D029BB94D4",
+                                    //         MedicoId = PostRequiere == "2" ? dtoMedico.IdMedico : "aadb8f2b-3ce1-4848-956e-3ae8ed94b44f",
+                                    //         PaqueteId = itemEstudio.Id
+                                    //     };
+                                    // string json1 = JsonConvert.SerializeObject(oPackPriceStudio);
+                                    // var responseDraft = await Http.PostAsJsonAsync<DtoPaqueteEstudioRequestPrice>(UrlPaquetesPrecio, oPackPriceStudio);
+                                    // if (responseDraft.IsSuccessStatusCode)
+                                    // {
+                                    //     var ostudioResponse = await responseDraft.Content.ReadFromJsonAsync<DtoEstudioResponsePrice>();
+                                    //     _oEstudioResponsePrice.Add(ostudioResponse);
+                                    // }
+                                    var studpack = ostudioResponse.FirstOrDefault(e => e.PaqueteId.Equals(itemEstudioPack.Id));
+                                    if (studpack != null)
+                                    {
+                                        studpack.PackTempId = itemEstudioPack.Id;
+                                        _oEstudioResponsePrice.Add(studpack);
+                                    }
+                                }
                             }
                         }
 
