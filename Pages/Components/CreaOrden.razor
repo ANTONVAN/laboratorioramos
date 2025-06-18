@@ -2530,11 +2530,11 @@ else
 
                         if (sesEstudioVis.Visible)
                         {
-                            var packPrice = ostudioResponse.FirstOrDefault(e => e.PaqueteId.Equals(itemEstudioPack.Id));
-                            if (packPrice!=null)
-                            {
-                                if (packPrice.Activo)
-                                {
+                            //var packPrice = ostudioResponse.FirstOrDefault(e => e.PaqueteId.Equals(itemEstudioPack.Id));
+                            //if (packPrice!=null)
+                            //{
+                                //if (packPrice.Activo)
+                                //{
                                     // DtoPaqueteEstudioRequestPrice oPackPriceStudio = new()
                                     //     {
                                     //         SucursalId = SucursalID,
@@ -2556,8 +2556,8 @@ else
                                         studpack.PackTempId = itemEstudioPack.Id;
                                         _oEstudioResponsePrice.Add(studpack);
                                     }
-                                }
-                            }
+                                //}
+                            //}
                         }
 
                         
