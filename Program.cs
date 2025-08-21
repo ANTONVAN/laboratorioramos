@@ -23,6 +23,7 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
+builder.Services.AddApexCharts();
 //builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddScoped<Cryp>();

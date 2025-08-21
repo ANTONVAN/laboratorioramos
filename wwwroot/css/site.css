@@ -82,3 +82,7 @@ body {
     height: 61vh;
     padding-left:5px;
 }
+
+.mud-elevation-12 {
+    box-shadow: var(--mud-elevation-0) !important;
+}
