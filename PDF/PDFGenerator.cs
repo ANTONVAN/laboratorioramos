@@ -1,29 +1,32 @@
-﻿using LaboratorioRamos.Data.DtoImpresionResultados;
+﻿using LaboratorioRamos.Data.DtoCotizacion;
+using LaboratorioRamos.Data.DtoEstudio;
+using LaboratorioRamos.Data.DtoImpresionResultados;
 using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente;
-using Microsoft.JSInterop;
+using LaboratorioRamos.Data.DtoPaciente;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
-using static MudBlazor.CategoryTypes;
-using static System.Net.WebRequestMethods;
-using System.IO;
-using System.Xml.Linq;
-using PdfSharp.Pdf;
-using PdfSharp.Drawing;
-using System.Reflection.Metadata;
+using Microsoft.JSInterop;
+using MigraDoc;
 using MigraDoc.DocumentObjectModel;
-using Document = MigraDoc.DocumentObjectModel.Document;
 using MigraDoc.DocumentObjectModel.Shapes;
-using Image = MigraDoc.DocumentObjectModel.Shapes.Image;
+using MigraDoc.DocumentObjectModel.Tables;
+using MigraDoc.DocumentObjectModel.Visitors;
 using MigraDoc.Rendering;
 using MudBlazor.Charts;
-using MigraDoc.DocumentObjectModel.Tables;
 using PdfSharp;
 using PdfSharp.Charting;
-using LaboratorioRamos.Data.DtoCotizacion;
-using LaboratorioRamos.Data.DtoEstudio;
-using LaboratorioRamos.Data.DtoPaciente;
+using PdfSharp.Drawing;
+using PdfSharp.Fonts;
+using PdfSharp.Pdf;
+using PdfSharp.Quality;
 using System.Collections.Generic;
-using MigraDoc.DocumentObjectModel.Visitors;
-using Microsoft.AspNetCore.DataProtection;
+using System.IO;
+using System.Reflection.Metadata;
+using System.Xml.Linq;
+using static MudBlazor.CategoryTypes;
+using static System.Net.WebRequestMethods;
+using Document = MigraDoc.DocumentObjectModel.Document;
+using Image = MigraDoc.DocumentObjectModel.Shapes.Image;
 using Table = MigraDoc.DocumentObjectModel.Tables.Table;
 namespace LaboratorioRamos.PDF
 {
@@ -164,22 +167,32 @@ namespace LaboratorioRamos.PDF
         public async Task<MemoryStream> CreatePDFOrder(DtoGeneralesCotizacion _dtoGeneralesCotizacion, DtoPaciente _dtoPaciente, HashSet<DtoEstudioResponsePrice> _dtoEstudioResponsePrices, DtoCotizacion _cotizacionDraft)
         {
             MemoryStream _ms = new();
+            try
+            {
+                Document doc = new();
 
-            Document doc = new();
+                CrearDoctoOrder(doc, _dtoGeneralesCotizacion, _dtoPaciente, _dtoEstudioResponsePrices, _cotizacionDraft);
 
-            CrearDoctoOrder(doc, _dtoGeneralesCotizacion, _dtoPaciente, _dtoEstudioResponsePrices, _cotizacionDraft);
+                PdfDocumentRenderer document = new PdfDocumentRenderer();
+                document.Document = doc;
+                document.RenderDocument();
+                var ter = document.PdfDocument;
 
-            PdfDocumentRenderer document = new PdfDocumentRenderer();
-            document.Document = doc;
-            document.RenderDocument();
-            var ter = document.PdfDocument;
+                ter.Save(_ms);
+            }
+            catch (Exception ex)
+            {
+                var ter10 = ex.Message;
+            }
+            
 
-            ter.Save(_ms);
+            
             return _ms;
         }
 
         private void CrearDoctoOrder(Document doc, DtoGeneralesCotizacion _dtoGeneralesCotizacion, DtoPaciente _dtoPaciente, HashSet<DtoEstudioResponsePrice> _dtoEstudioResponsePrices, DtoCotizacion _cotizacionDraft)
         {
+            //PredefinedFontsAndChars.ErrorFontName = "Arial";
             Section Sec1 = doc.AddSection();
             Image imgLabRamos = Sec1.Headers.Primary.AddImage(@"wwwroot/Images/logo.png");
             imgLabRamos.Height = "2.5cm";
@@ -192,6 +205,7 @@ namespace LaboratorioRamos.PDF
             imgLabRamos.WrapFormat.Style = WrapStyle.Through;
 
             var paragra = Sec1.Headers.Primary.AddParagraph();
+            //paragra.Format.Font.Name = "Arial";
             paragra.Format.Font.Size = 15;
             paragra.Format.Alignment = ParagraphAlignment.Left;
             paragra.Format.Font.Bold = true;
@@ -253,6 +267,7 @@ namespace LaboratorioRamos.PDF
                 rowt.BottomPadding = 0;
                 rowt.Format.LineSpacing = 1;
                 //rowt.Format.Font.Size = 12;
+                //rowt.Format.Font.Name = "Arial";
                 rowt.Format.Font.Bold = true;
                 rowt.Cells[0].AddParagraph($"{(item.Estudios != null?"Pack: ":"Clave: ")} {item.Clave}");
                 //rowt.Format.Font.Size = 15;
@@ -320,6 +335,7 @@ namespace LaboratorioRamos.PDF
             paragra.AddLineBreak();
             paragra.Format.Alignment = ParagraphAlignment.Left;
             paragra.Format.Font.Bold = true;
+            //paragra.Format.Font.Name = "Arial";
             //paragra.Format.Font.Size = 12;
             paragra.AddText($"OBSERVACIONES:");
             paragra.AddLineBreak();
