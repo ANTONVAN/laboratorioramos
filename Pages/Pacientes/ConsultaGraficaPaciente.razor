@@ -5,6 +5,7 @@
 @using LaboratorioRamos.Data.DtoEstudio.DtoRequestEstudio;
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
 @using Newtonsoft.Json.Linq
+@using System.Text.RegularExpressions
 @inject HttpClient Http;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider _authStateProvider
@@ -474,11 +475,12 @@
                     {
                         if (!String.IsNullOrEmpty(EstudioTemp[0].Valor))
                         {
+                            string ObtengoNum = Regex.Replace(EstudioTemp[0].Valor, @"[^0-9.]", "");
                             DtoEstudioGrafica tempRes = new()
                                 {
                                     Fecha = $"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}",
                                     Estudio = ValEstudio,
-                                    Valor = EstudioTemp[0].Valor
+                                    Valor = ObtengoNum
                                 };
                             oResulEstudios.Add(tempRes);
                         }

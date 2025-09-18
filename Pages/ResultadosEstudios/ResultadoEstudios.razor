@@ -1,4 +1,5 @@
 ﻿@page "/ResultadoEstudios/{PostRequiere}/{PostSolicitud}"
+@using LaboratorioRamos.Data.DtoEdenImagenologia
 @using LaboratorioRamos.Data.DtoEstudio
 @using LaboratorioRamos.Data.DtoMedico
 @using LaboratorioRamos.Data.DtoEmpresa
@@ -99,6 +100,68 @@ else
         <MudGrid>
             <MudItem xs="12" sm="12" md="12">
                 <MudExpansionPanels MultiExpansion="true">
+                    @if (_dtoEdenImagenologia.Count>0)
+                    {
+                        <MudExpansionPanel Class="mt-2" Dense="false" Gutters="false" Expanded="true" HideIcon="true">
+                            <TitleContent>
+                                <div class="d-flex" style="color:#1d2223;">
+                                    <MudText Align="Align.Justify" Typo="Typo.subtitle2"><strong>Resultados Imagenología</strong></MudText>
+                                </div>
+                            </TitleContent>
+                            <ChildContent>
+                                <MudGrid Class="d-flex d-sm-flex mt-2" Style="padding-left: 35px;">
+                                    <MudTable Class="rounded-0 pt-1" Items="@_dtoEdenImagenologia" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:98%;" FixedHeader="true" FixedFooter="false">
+                                        <ColGroup>
+                                            @* <col />
+                                            <col /> *@
+                                            <col />
+                                        </ColGroup>
+                                        <HeaderContent>
+                                            @* <MudTh Style="color:#921313">Estudio</MudTh> *@
+                                            @* <MudTh Style="color:#921313">Ver PDF</MudTh> *@
+                                            <MudTh Style="color:#921313">Ver y Imagen e Interpretación</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            @* <MudTd DataLabel="Estudio">@context.management_study.modality.identifier - @context.management_study.name</MudTd> 
+                                            @if (!String.IsNullOrEmpty(context.pdf_url))
+                                            {
+                                                <MudTd DataLabel="Ver PDF">
+                                                    <a target="_blank" href="@context.pdf_url"><MudIconButton Icon="@Icons.Material.Outlined.PictureAsPdf" Size="Size.Small" Color="Color.Warning"></MudIconButton></a>
+                                                </MudTd>
+                                            }
+                                            else
+                                            {
+                                                <MudTd DataLabel="Ver PDF">
+                                                </MudTd>
+                                            }*@
+
+                                            @if (!String.IsNullOrEmpty(context.url))
+                                            {
+                                                <MudTd DataLabel="Gráfica">
+                                                    <a target="_blank" href="@context.url"><MudIconButton Icon="@Icons.Material.Filled.PictureInPicture" Size="Size.Small" Color="Color.Info"></MudIconButton></a>                                                    
+                                                </MudTd>
+                                            }
+                                            else
+                                            {
+                                                <MudTd DataLabel="Ver Imagen">
+                                                </MudTd>
+                                            }
+                                        </RowTemplate>
+                                        <LoadingContent>
+                                            <MudText>Cargando....</MudText>
+                                        </LoadingContent>
+                                        <NoRecordsContent>
+                                            <MudText>Sin Registros para mostrar</MudText>
+                                        </NoRecordsContent>
+                                        <PagerContent>
+                                            <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
+                                        </PagerContent>
+                                    </MudTable>
+                                    
+                                </MudGrid>
+                            </ChildContent>
+                        </MudExpansionPanel>
+                    }
                     @if (dtoResultadosEstudios.Estudios != null)
                     {
                         foreach (var item in dtoResultadosEstudios.Estudios)
@@ -713,6 +776,25 @@ else
 
 }
 
+<MudDialog @bind-Visible="visibleVerSeleccion" Options="_fullScreen">
+    <TitleContent>
+        <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center">
+            <MudIcon Icon="@Icons.Material.Filled.Visibility" Color="Color.Error" Class="mr-3" Size="Size.Large" />Visor de Documentos e Imágenes
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12">
+                <iframe src="@LnkObject"
+                        width="100%"
+                        height="0" onload="resizeIframe(this)"
+                        allowfullscreen>
+                </iframe>
+            </MudItem>
+        </MudGrid>
+
+    </DialogContent>
+</MudDialog>
 
 
 
@@ -735,23 +817,39 @@ else
     color: #0d37a8;
     }
 
+    .mud-table-container {
+        width: 100%;
+        overflow-y: auto;
+        height: auto !important;
+        padding-left: 5px;
+    }
+
 </style>
+
+<script>
+        function resizeIframe(iframe) {
+        iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
+    }
+</script>
 
 @code {
 
-        #region Declaración de variables
+    #region Declaración de variables
 
-        [Inject]
-        IDialogService DialogService { get; set; }
+    [Inject]
+    IDialogService DialogService { get; set; }
 
-        [Parameter]
-        public string PostRequiere { get; set; }
-        [Parameter]
-        public string PostSolicitud { get; set; }
-        [Parameter]
-        public string PostEstudio { get; set; }
+    [Parameter]
+    public string PostRequiere { get; set; }
+    [Parameter]
+    public string PostSolicitud { get; set; }
+    [Parameter]
+    public string PostEstudio { get; set; }
 
     public string resDecrip { get; set; }
+
+    private readonly DialogOptions _fullScreen = new() { FullScreen = true, CloseButton = true };
+    private bool visibleVerSeleccion = false;
 
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
@@ -784,6 +882,8 @@ else
     private string UrlInfoExpediente = "services/gateway/api/MedicalRecord/";
 
 
+
+
     DateTime? dateInicial = DateTime.Today;
     DateTime? dateFinal = DateTime.Today;
     private string Sucursal = "";
@@ -793,158 +893,202 @@ else
     private bool visiblePrintResult = false;
     private DtoEmpresa dtoEmpresa = new();
     private DtoInfoExpediente ExpedienteId =new();
+    private List<DtoEdenImagenologia> _dtoEdenImagenologia = new();
 
 
     private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true };
+    private string LnkObject = "";
 
-
+    HttpClient HttpEDEN = new();
     #endregion
 
     #region Funsiones Página
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-        var authState = await _authStateProvider.GetAuthenticationStateAsync();
-        if (!authState.User.Identity.IsAuthenticated)
+        try
         {
-            NavigationManager.NavigateTo("/", true);
-        }
-        else
-        {
+            //HttpEDEN.BaseAddress = new Uri(_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim());
+            HttpEDEN.DefaultRequestHeaders.Add("Token", _config.GetSection("TokenAPIS:Eden").Value.Trim());
 
-            try
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            if (!authState.User.Identity.IsAuthenticated)
+            {
+                NavigationManager.NavigateTo("/", true);
+            }
+            else
             {
 
-                Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
-                var resPacDecripInicial = Cryp.Desencripta(PostSolicitud);
-                var resPacDecrip = resPacDecripInicial.Split("!"); //0=solicitud, 1=Estudio,2=paginallamado
-                var idenUser = authState.User.Claims.ToList();
-                //var args = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip[0].ToString());
-
-                if (PostRequiere == "1") //Paciente
+                try
                 {
-                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
-                    dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
 
-                    _items = new List<BreadcrumbItem>
+                    Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
+                    var resPacDecripInicial = Cryp.Desencripta(PostSolicitud);
+                    var resPacDecrip = resPacDecripInicial.Split("!"); //0=solicitud, 1=Estudio,2=paginallamado
+                    var idenUser = authState.User.Claims.ToList();
+                    //var args = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip[0].ToString());
+
+                    if (PostRequiere == "1") //Paciente
+                    {
+                        var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                        dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
+
+                        _items = new List<BreadcrumbItem>
                     {
                         new BreadcrumbItem("Home", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(resPacDecrip[0])}", icon: Icons.Material.Filled.Home),
                         new BreadcrumbItem("Consulta de Resultados", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(resPacDecrip[0])}", icon: Icons.Material.Filled.Badge),
                         new BreadcrumbItem("Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                     };
 
-                }
-                else if (PostRequiere == "2")//Medico
-                {
-
-                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
-                    dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
-                    //var expedienteInfo = JsonConvert.DeserializeObject<DtoInfoExpediente>(resPacDecrip[2]);
-                    dtoMedicoPaciente  = JsonConvert.DeserializeObject<DtoInfoExpediente>(resPacDecrip[2]);
-                    //dtoMedicoPaciente = await Http.GetFromJsonAsync<DtoInfoExpediente>($"{UrlInfoExpediente}{expedienteInfo.ExpedienteId}");
-                    if (resPacDecrip[3].ToString().Equals("ConsultaResultadosPaciente"))
+                    }
+                    else if (PostRequiere == "2")//Medico
                     {
-                        _items = new List<BreadcrumbItem>
+
+                        var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                        dtoMedico = JsonConvert.DeserializeObject<DtoMedicoPwd>(resDecrip);
+                        //var expedienteInfo = JsonConvert.DeserializeObject<DtoInfoExpediente>(resPacDecrip[2]);
+                        dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoInfoExpediente>(resPacDecrip[2]);
+                        //dtoMedicoPaciente = await Http.GetFromJsonAsync<DtoInfoExpediente>($"{UrlInfoExpediente}{expedienteInfo.ExpedienteId}");
+                        if (resPacDecrip[3].ToString().Equals("ConsultaResultadosPaciente"))
+                        {
+                            _items = new List<BreadcrumbItem>
                         {
                             new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
                             new BreadcrumbItem("Consulta de Expedientes", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Badge,disabled:false),
                             new BreadcrumbItem("Consulta de Resultados", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(dtoMedicoPaciente.Id)}", icon: Icons.Material.Filled.Badge,disabled:false),
                             new BreadcrumbItem("Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                         };
-                    }else
-                    {
-                        _items = new List<BreadcrumbItem>
+                        }
+                        else
+                        {
+                            _items = new List<BreadcrumbItem>
                         {
                             new BreadcrumbItem("Home", href: $"ConsultaSolicitudes/{PostRequiere}", icon: Icons.Material.Filled.Home),
                             new BreadcrumbItem("Consulta de Solicitudes", href: $"ConsultaSolicitudes/{PostRequiere}", icon: Icons.Material.Filled.Badge,disabled:false),
                             new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                         };
+                        }
+
+                        // var resPacDecrip = Cryp.Desencripta(PostPaciente);
+                        // dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+                        // ShowNombre = true;
+
+
                     }
-
-                    // var resPacDecrip = Cryp.Desencripta(PostPaciente);
-                    // dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
-                    // ShowNombre = true;
-                    
-
-                }
-                else if (PostRequiere == "3")//Compañia
-                {
-                    // _items = new List<BreadcrumbItem>
-                    // {
-                    //     new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
-                    //     new BreadcrumbItem("Empresa", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
-                    //     new BreadcrumbItem("Paciente", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
-                    // };
-                    var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
-                    dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
-                    dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoInfoExpediente>(resPacDecrip[2]);
-                    if (resPacDecrip[3].ToString().Equals("ConsultaResultadosPaciente"))
+                    else if (PostRequiere == "3")//Compañia
                     {
-                        _items = new List<BreadcrumbItem>
+                        // _items = new List<BreadcrumbItem>
+                        // {
+                        //     new BreadcrumbItem("Home", href: null, icon: Icons.Material.Filled.Home),
+                        //     new BreadcrumbItem("Empresa", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge),
+                        //     new BreadcrumbItem("Paciente", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
+                        // };
+                        var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                        dtoEmpresa = JsonConvert.DeserializeObject<DtoEmpresa>(resDecrip);
+                        dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoInfoExpediente>(resPacDecrip[2]);
+                        if (resPacDecrip[3].ToString().Equals("ConsultaResultadosPaciente"))
+                        {
+                            _items = new List<BreadcrumbItem>
                         {
                             new BreadcrumbItem("Home", href: "ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
                             new BreadcrumbItem("Paciente", href: "ConsultaExpedientesEmpresa", icon: Icons.Material.Filled.Badge,disabled:false),
                             new BreadcrumbItem("Consulta de Resultados", href: $"ConsultaResultadosPaciente/{PostRequiere}/{Cryp.Encripta(dtoMedicoPaciente.Id)}", icon: Icons.Material.Filled.Badge,disabled:false),
                             new BreadcrumbItem("Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                         };
-                    }
-                    else
-                    {
-                        _items = new List<BreadcrumbItem>
+                        }
+                        else
+                        {
+                            _items = new List<BreadcrumbItem>
                         {
                             new BreadcrumbItem("Home", href: $"ConsultaSolicitudes/{PostRequiere}", icon: Icons.Material.Filled.Home),
                             new BreadcrumbItem("Consulta de Solicitudes", href: $"ConsultaSolicitudes/{PostRequiere}", icon: Icons.Material.Filled.Badge,disabled:false),
                             new BreadcrumbItem("Consulta de Resultados", href: null, icon: Icons.Material.Filled.VerifiedUser,disabled: true),
                         };
+                        }
+                        //ShowNombre = true;
                     }
-                    //ShowNombre = true;
-                }
 
-                DtoRequestMedicoPacientes parametrobusqueda = new()
+                    DtoRequestMedicoPacientes parametrobusqueda = new()
                     {
                         MedicoId = PostRequiere == "1" ? new() : PostRequiere == "2" ? new() { dtoMedico.IdMedico } : new(),
-                        CompañiaId = PostRequiere == "1" ? new() : PostRequiere == "2" ? new():new() { dtoEmpresa.Id },
+                        CompañiaId = PostRequiere == "1" ? new() : PostRequiere == "2" ? new() : new() { dtoEmpresa.Id },
                         Buscar = resPacDecrip[0].Replace("\"", ""),
                         TipoFecha = 1,
                         Fecha = new()
                     };
 
-                string json1 = JsonConvert.SerializeObject(parametrobusqueda);
-                var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
+                    string json1 = JsonConvert.SerializeObject(parametrobusqueda);
+                    var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
 
-                switch (sesExpediente.StatusCode)
-                {
-                    case System.Net.HttpStatusCode.OK:
-                        try
-                        {
-                            LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                            foreach (var itemExp in LstExpedientes)
+                    switch (sesExpediente.StatusCode)
+                    {
+                        case System.Net.HttpStatusCode.OK:
+                            try
                             {
-                                itemExp.Expediente = PostRequiere == "1" ? dtoPaciente[0].Expediente:dtoMedicoPaciente.Expediente;
-                                foreach (var itemSol in itemExp.Estudios)
+                                LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
+                                foreach (var itemExp in LstExpedientes)
                                 {
-                                    itemSol.SolicitudId = itemExp.SolicitudId;
-                                }
-                            }
-                            SexoPaciente = LstExpedientes[0].Sexo;
-                            EdadPaciente = LstExpedientes[0].Edad;
-                            var sesEstudiosInfoGral = await Http.GetFromJsonAsync<DtoResponseEstudioInfoGral>($"{UrlSolicitudInfoGral}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
-                            dtoMedicoSolicitud = await Http.GetFromJsonAsync<DtoMedicoPwd>($"{UrlMedicoInfoGral}{sesEstudiosInfoGral.MedicoId}");
-                            dtoResultadosEstudiosGral = await Http.GetFromJsonAsync<DtoResultadosEstudios>($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
-                            //var ddtoResultadosEstudiosGral = await Http.GetFromJsonAsync<DtoResultadosEstudios>($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
-
-                            if (resPacDecrip.Count()>1)
-                            {
-                                var estuido = resPacDecrip[1].Replace("\\", "");
-                                if (!String.IsNullOrEmpty(estuido))
-                                {
-                                    //estuido = estuido[..^1];
-                                    dtoResponseMedicoPacienteStudios = JsonConvert.DeserializeObject<DtoResponseMedicoPacienteStudios>(estuido);
-                                    var studioselec = dtoResultadosEstudiosGral.Estudios.FirstOrDefault(e => e.Id.Equals(dtoResponseMedicoPacienteStudios.EstudioId));
-                                    if (studioselec.EstatusId == 7 || studioselec.EstatusId == 6)
+                                    itemExp.Expediente = PostRequiere == "1" ? dtoPaciente[0].Expediente : dtoMedicoPaciente.Expediente;
+                                    foreach (var itemSol in itemExp.Estudios)
                                     {
-                                        dtoResultadosEstudios.Estudios = new() { studioselec };
+                                        itemSol.SolicitudId = itemExp.SolicitudId;
                                     }
+                                }
+                                SexoPaciente = LstExpedientes[0].Sexo;
+                                EdadPaciente = LstExpedientes[0].Edad;
+                                var InitialDate = DateTime.Parse(LstExpedientes[0].Registro).AddDays(-1);
+                                var finalDate = DateTime.Parse(LstExpedientes[0].Registro).AddDays(+1);
+
+
+                                //var _dtoEdena1 = HttpEDEN.GetStringAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}");
+
+                                HttpResponseMessage rest = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}");
+                                _dtoEdenImagenologia = new();
+                                switch (rest.StatusCode)
+                                {
+                                    case System.Net.HttpStatusCode.OK:
+                                        _dtoEdenImagenologia.Add(await rest.Content.ReadFromJsonAsync<DtoEdenImagenologia>());
+                                        break;
+                                }
+
+                                
+                                //var _dtoEdenImagenologia1 = await _dtoEdena1;
+                                ////var _dtoEdenImagenologia1 = await HttpEDEN.GetStringAsync($"https://middleware-staging.dev-land.space/api/v1/orders/?start_date=2025-09-01T00%3A00%3A00-06%3A00&end_date=2025-09-30T00%3A00%3A00-06%3A00");
+                                //var ConverResultEden = JsonConvert.DeserializeObject<DtoEdenImagenologiaCount>(_dtoEdenImagenologia1);
+                                //var _dtoEdenImagenologia2 = ConverResultEden.success ? JsonConvert.DeserializeObject<DtoEdenImagenologia>(_dtoEdenImagenologia1) : new();
+
+                                //_dtoEdenImagenologia.Add(_dtoEdenImagenologia2);
+
+                                var sesEstudiosInfoGral = await Http.GetFromJsonAsync<DtoResponseEstudioInfoGral>($"{UrlSolicitudInfoGral}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
+                                dtoMedicoSolicitud = await Http.GetFromJsonAsync<DtoMedicoPwd>($"{UrlMedicoInfoGral}{sesEstudiosInfoGral.MedicoId}");
+                                dtoResultadosEstudiosGral = await Http.GetFromJsonAsync<DtoResultadosEstudios>($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
+                                //var ddtoResultadosEstudiosGral = await Http.GetFromJsonAsync<DtoResultadosEstudios>($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
+
+                                if (resPacDecrip.Count() > 1)
+                                {
+                                    var estuido = resPacDecrip[1].Replace("\\", "");
+                                    if (!String.IsNullOrEmpty(estuido))
+                                    {
+                                        //estuido = estuido[..^1];
+                                        dtoResponseMedicoPacienteStudios = JsonConvert.DeserializeObject<DtoResponseMedicoPacienteStudios>(estuido);
+                                        var studioselec = dtoResultadosEstudiosGral.Estudios.FirstOrDefault(e => e.Id.Equals(dtoResponseMedicoPacienteStudios.EstudioId));
+                                        if (studioselec.EstatusId == 7 || studioselec.EstatusId == 6)
+                                        {
+                                            dtoResultadosEstudios.Estudios = new() { studioselec };
+                                        }
+                                    }
+                                    else
+                                    {
+                                        dtoResultadosEstudios.Estudios = new();
+                                        foreach (var itemStudiosgr in dtoResultadosEstudiosGral.Estudios)
+                                        {
+                                            if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 6)
+                                            {
+                                                dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
+                                            }
+                                        }
+                                    }
+
+
                                 }
                                 else
                                 {
@@ -956,45 +1100,40 @@ else
                                             dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
                                         }
                                     }
+                                    //dtoResultadosEstudios = dtoResultadosEstudiosGral;
+
                                 }
-                                
+
 
                             }
-                            else
+                            catch (Exception ex)
                             {
-                                dtoResultadosEstudios.Estudios = new();
-                                foreach (var itemStudiosgr in dtoResultadosEstudiosGral.Estudios)
-                                {
-                                    if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 6)
-                                    {
-                                        dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
-                                    }
-                                }
-                                //dtoResultadosEstudios = dtoResultadosEstudiosGral;
-
+                                //ValidateData = false;
                             }
 
 
-                        }
-                        catch (Exception ex)
-                        {
-                            //ValidateData = false;
-                        }
+                            break;
+                    }
 
+                    dataLoaded = false;
+                }
+                catch (Exception ex)
+                {
 
-                        break;
+                    var t = "";
                 }
 
-                dataLoaded = false;
-            }
-            catch (Exception ex)
-            {
 
-                var t = "";
             }
-
 
         }
+        catch (Exception ex)
+        {
+            
+            throw;
+        }
+        
+        await base.OnInitializedAsync();
         StateHasChanged();
 
     }
@@ -1026,6 +1165,13 @@ else
     private void NavigationInicio()
     {
         
+    }
+
+    private void VerObj(string linkObj)
+    {
+        LnkObject = linkObj;
+        visibleVerSeleccion=true;
+
     }
 
     #endregion
