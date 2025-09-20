@@ -13,6 +13,7 @@
         //public bool success { get; set; }
         //public int total_count { get; set; } = 0;
         public string url { get; set; }
+        public string TypeImage { get; set; }
         public bool success { get; set; }
     }
 

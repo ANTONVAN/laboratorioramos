@@ -138,7 +138,7 @@ else
                                             @if (!String.IsNullOrEmpty(context.url))
                                             {
                                                 <MudTd DataLabel="Gráfica">
-                                                    <a target="_blank" href="@context.url"><MudIconButton Icon="@Icons.Material.Filled.PictureInPicture" Size="Size.Small" Color="Color.Info"></MudIconButton></a>                                                    
+                                                    <a target="_blank" href="@context.url">@context.TypeImage<MudIconButton Icon="@Icons.Material.Filled.PictureInPicture" Size="Size.Small" Color="Color.Info"></MudIconButton></a>
                                                 </MudTd>
                                             }
                                             else
@@ -1047,6 +1047,53 @@ else
                                 {
                                     case System.Net.HttpStatusCode.OK:
                                         _dtoEdenImagenologia.Add(await rest.Content.ReadFromJsonAsync<DtoEdenImagenologia>());
+                                        break;
+                                    case System.Net.HttpStatusCode.InternalServerError:
+                                        HttpResponseMessage restUS = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}-US");
+                                        switch (restUS.StatusCode)
+                                        {
+                                            case System.Net.HttpStatusCode.OK:
+                                                var imgurl = await restUS.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                                imgurl.TypeImage = "US   ";
+                                                _dtoEdenImagenologia.Add(imgurl);
+                                                break;
+                                            case System.Net.HttpStatusCode.InternalServerError:
+                                                var intSerMsg = await restUS.Content.ReadAsStringAsync();
+                                                //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                                break;
+                                        }
+                                        HttpResponseMessage restMC = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}-MG");
+                                        switch (restMC.StatusCode)
+                                        {
+                                            case System.Net.HttpStatusCode.OK:
+                                                var imgurl = await restMC.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                                imgurl.TypeImage = "MG   ";
+                                                _dtoEdenImagenologia.Add(imgurl);
+                                                break;
+                                            case System.Net.HttpStatusCode.InternalServerError:
+                                                var intSerMsg = await restMC.Content.ReadAsStringAsync();
+                                                //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                                break;
+                                        }
+                                        HttpResponseMessage restRX = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}-RX");
+                                        switch (restRX.StatusCode)
+                                        {
+                                            case System.Net.HttpStatusCode.OK:
+                                                var imgurl = await restRX.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                                imgurl.TypeImage = "RX   ";
+                                                _dtoEdenImagenologia.Add(imgurl);
+                                                break;
+                                            case System.Net.HttpStatusCode.InternalServerError:
+                                                var intSerMsg = await restRX.Content.ReadAsStringAsync();
+                                                //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                                break;
+                                        }
+                                        
+
+                                        break;
+                                    case System.Net.HttpStatusCode.NotFound:
+                                        var notFoundMsg = await rest.Content.ReadAsStringAsync();
+                                        ShowSnack($"Servicio no encontrado: {notFoundMsg}", 4);
                                         break;
                                 }
 
