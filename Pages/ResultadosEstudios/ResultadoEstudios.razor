@@ -1035,8 +1035,8 @@ else
                                 }
                                 SexoPaciente = LstExpedientes[0].Sexo;
                                 EdadPaciente = LstExpedientes[0].Edad;
-                                var InitialDate = DateTime.Parse(LstExpedientes[0].Registro).AddDays(-1);
-                                var finalDate = DateTime.Parse(LstExpedientes[0].Registro).AddDays(+1);
+                                // var InitialDate = DateTime.Parse(DateTime.ParseExact(LstExpedientes[0].Registro, "dd/MM/yyyy", null).ToString("yyyy/MM/dd")).AddDays(-1);
+                                // var finalDate = DateTime.Parse(LstExpedientes[0].Registro).AddDays(+1);
 
 
                                 //var _dtoEdena1 = HttpEDEN.GetStringAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}");
