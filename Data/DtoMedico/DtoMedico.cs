@@ -45,7 +45,7 @@ namespace LaboratorioRamos.Data.DtoMedico
         public string NumeroExterior { get; set; }
         public string NumeroInterior { get; set; }
         public string Calle { get; set; }
-        public string ColoniaId { get; set; }
+        public int? ColoniaId { get; set; }
         public string Correo { get; set; }
         public string Celular { get; set; }
         public string Telefono { get; set; }

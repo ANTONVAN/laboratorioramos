@@ -2,16 +2,19 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;
+using Microsoft.Extensions.Options;
 
 namespace LaboratorioRamos.Helper
 {
     public class AuthStateProvider : AuthenticationStateProvider
     {
         private readonly ProtectedSessionStorage _sessionStorage;
+        private readonly LaboratorioRamos.Configuration.SessionSettings _sessionSettings;
 
-        public AuthStateProvider(ProtectedSessionStorage sessionStorage)
+        public AuthStateProvider(ProtectedSessionStorage sessionStorage, IOptions<LaboratorioRamos.Configuration.SessionSettings> sessionOptions)
         {
             _sessionStorage = sessionStorage;
+            _sessionSettings = sessionOptions.Value;
         }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
@@ -23,6 +26,34 @@ namespace LaboratorioRamos.Helper
                 if (userSes == null)
                 {
                     return await Task.FromResult(new AuthenticationState(claimsPrincipal));
+                }
+
+                // Merge defaults from configuration if storage doesn't have them set (backward compatibility)
+                if (userSes.TimeoutMinutes <= 0) userSes.TimeoutMinutes = _sessionSettings.TimeoutMinutes;
+                if (userSes.AbsoluteExpirationMinutes <= 0) userSes.AbsoluteExpirationMinutes = _sessionSettings.AbsoluteExpirationMinutes;
+                userSes.SlidingExpiration = _sessionSettings.SlidingExpiration;
+
+                // Absolute expiration check
+                var absoluteLifetime = DateTime.UtcNow - userSes.CreatedAtUtc;
+                if (absoluteLifetime.TotalMinutes > userSes.AbsoluteExpirationMinutes)
+                {
+                    await _sessionStorage.DeleteAsync("TerSession");
+                    return await Task.FromResult(new AuthenticationState(claimsPrincipal));
+                }
+
+                // Inactivity timeout check
+                var inactivity = DateTime.UtcNow - userSes.LastActivityUtc;
+                if (inactivity.TotalMinutes > userSes.TimeoutMinutes)
+                {
+                    await _sessionStorage.DeleteAsync("TerSession");
+                    return await Task.FromResult(new AuthenticationState(claimsPrincipal));
+                }
+
+                // Sliding expiration: refresh last activity on access
+                if (userSes.SlidingExpiration)
+                {
+                    userSes.LastActivityUtc = DateTime.UtcNow;
+                    await _sessionStorage.SetAsync("TerSession", userSes);
                 }
 
                 //var sucursalesUser = "";
@@ -52,6 +83,13 @@ namespace LaboratorioRamos.Helper
             ClaimsPrincipal claimsPrincipal;
             if (userSession != null)
             {
+                // Initialize timestamps on sign-in
+                if (userSession.CreatedAtUtc == default)
+                {
+                    userSession.CreatedAtUtc = DateTime.UtcNow;
+                }
+                userSession.LastActivityUtc = DateTime.UtcNow;
+
                 await _sessionStorage.SetAsync("TerSession", userSession);
 
                 //var sucursalesUser = "";

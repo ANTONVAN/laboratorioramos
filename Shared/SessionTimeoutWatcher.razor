@@ -1,0 +1,142 @@
+@using LaboratorioRamos.Data.DtoStateProvider
+@using LaboratorioRamos.Shared.Components
+@inject AuthenticationStateProvider AuthStateProvider
+@inject Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage.ProtectedSessionStorage SessionStorage
+@inject NavigationManager Navigation
+@inject MudBlazor.IDialogService DialogService
+@inject Microsoft.Extensions.Options.IOptions<LaboratorioRamos.Configuration.SessionSettings> SessionOptions
+
+@code {
+    // Configuration
+    private readonly TimeSpan checkInterval = TimeSpan.FromSeconds(10);
+    private readonly TimeSpan warnBefore = TimeSpan.FromMinutes(5);
+
+    private System.Threading.PeriodicTimer? periodicTimer;
+    private bool warningShown = false;
+    private bool isActive = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        periodicTimer = new System.Threading.PeriodicTimer(checkInterval);
+        _ = MonitorLoop();
+    }
+
+    private async Task MonitorLoop()
+    {
+        while (isActive && periodicTimer != null && await periodicTimer.WaitForNextTickAsync())
+        {
+            try
+            {
+                var result = await SessionStorage.GetAsync<DtoUserProvider>("TerSession");
+                var user = result.Success ? result.Value : null;
+                if (user == null)
+                {
+                    warningShown = false;
+                    continue;
+                }
+
+                // Fill defaults for backward compatibility
+                var settings = SessionOptions.Value;
+                if (user.TimeoutMinutes <= 0) user.TimeoutMinutes = settings.TimeoutMinutes;
+                if (user.AbsoluteExpirationMinutes <= 0) user.AbsoluteExpirationMinutes = settings.AbsoluteExpirationMinutes;
+                user.SlidingExpiration = settings.SlidingExpiration;
+
+                var now = DateTime.UtcNow;
+                var inactivityElapsed = now - user.LastActivityUtc;
+                var inactivityRemaining = TimeSpan.FromMinutes(user.TimeoutMinutes) - inactivityElapsed;
+
+                var absoluteElapsed = now - user.CreatedAtUtc;
+                var absoluteRemaining = TimeSpan.FromMinutes(user.AbsoluteExpirationMinutes) - absoluteElapsed;
+
+                // If expired by either policy -> logout
+                if (inactivityRemaining <= TimeSpan.Zero || absoluteRemaining <= TimeSpan.Zero)
+                {
+                    await ForceLogout();
+                    continue;
+                }
+
+                // Show warning dialog if nearing inactivity timeout
+                if (!warningShown && inactivityRemaining <= warnBefore)
+                {
+                    warningShown = true;
+                    await ShowWarningDialog(inactivityRemaining);
+                }
+            }
+            catch
+            {
+                // Swallow errors to avoid breaking UI; next tick will retry
+            }
+        }
+    }
+
+    private async Task ShowWarningDialog(TimeSpan inactivityRemaining)
+    {
+        var minutes = Math.Max(0, (int)inactivityRemaining.TotalMinutes);
+        var seconds = Math.Max(0, (int)inactivityRemaining.TotalSeconds % 60);
+        var timeText = minutes > 0 ? $"{minutes} minuto(s) y {seconds} segundo(s)" : $"{seconds} segundo(s)";
+        
+        var parameters = new MudBlazor.DialogParameters
+        {
+            { "ContentText", $"Tu sesión expirará por inactividad en {timeText}. ¿Deseas continuar trabajando?" },
+            { "ButtonText", "Continuar sesión" },
+            { "Color", MudBlazor.Color.Warning }
+        };
+
+        var options = new MudBlazor.DialogOptions { 
+            CloseOnEscapeKey = false,
+            BackdropClick = false,
+            MaxWidth = MudBlazor.MaxWidth.Medium, 
+            FullWidth = true,
+            CloseButton = false
+        };
+        var dialog = DialogService.Show<SessionTimeoutDialog>("⚠️ Sesión a punto de expirar", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await ExtendSession();
+            warningShown = false;
+        }
+        else
+        {
+            // If user cancels, keep running; may show again on next near-expiration window
+            warningShown = false;
+        }
+    }
+
+    private async Task ExtendSession()
+    {
+        var res = await SessionStorage.GetAsync<DtoUserProvider>("TerSession");
+        var user = res.Success ? res.Value : null;
+        if (user == null) return;
+
+        user.LastActivityUtc = DateTime.UtcNow;
+        await SessionStorage.SetAsync("TerSession", user);
+
+        // Also notify auth provider so claims state can propagate
+        var provider = (AuthStateProvider)AuthStateProvider;
+        await provider.UpdAuthenticationState(user);
+    }
+
+    private async Task ForceLogout()
+    {
+        try
+        {
+            var provider = (AuthStateProvider)AuthStateProvider;
+            await provider.UpdAuthenticationState(null);
+        }
+        finally
+        {
+            Navigation.NavigateTo("/", true);
+        }
+    }
+
+    public void Dispose()
+    {
+        isActive = false;
+        periodicTimer?.Dispose();
+    }
+}
+
+

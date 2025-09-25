@@ -9,6 +9,7 @@ using ApexCharts;
 using MudBlazor;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ProtectedSessionStorage>();
@@ -44,6 +45,10 @@ builder.Services.AddSingleton(new HttpClient
     BaseAddress = new Uri(builder.Configuration.GetSection("UrlAPI:UrlGral").Value)
 });
 builder.Services.AddDistributedMemoryCache();
+
+// Session settings options binding
+builder.Services.Configure<LaboratorioRamos.Configuration.SessionSettings>(
+    builder.Configuration.GetSection("SessionSettings"));
 
 
 var app = builder.Build();
