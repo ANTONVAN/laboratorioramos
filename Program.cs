@@ -28,6 +28,7 @@ builder.Services.AddApexCharts();
 //builder.Services.AddSingleton<WeatherForecastService>();
 
 builder.Services.AddScoped<Cryp>();
+builder.Services.AddScoped<LaboratorioRamos.Services.IApiResponseHandler, LaboratorioRamos.Services.ApiResponseHandler>();
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;

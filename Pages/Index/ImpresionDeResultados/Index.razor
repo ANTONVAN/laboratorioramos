@@ -11,6 +11,7 @@
 @inject Cryp Cryp;
 @inject ISnackbar Snackbar
 @inject IJSRuntime IJSRuntime
+@inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 
 <PageTitle>Login</PageTitle>
 
@@ -59,7 +60,7 @@
     private DtoRequestPaciente dtoRequestPaciente = new();
     private bool ValidateData = false;
     private string UrlAuth = "services/identity/api/profile/login";
-    private string UrlUsuario = "services/records/api/MedicalRecord/now";
+    private string UrlUsuario = "services/gateway/api/MedicalRecord/now";
     #endregion
 
     #region Funcionalidad Página
@@ -84,67 +85,66 @@
             Usuario = _config.GetSection("UsrLoginGral:User").Value,
             Contraseña = _config.GetSection("UsrLoginGral:Pwd").Value,
         };
-        var ses = await Http.PostAsJsonAsync<DtoLogin>(UrlAuth, dtoLogin);
-        Http.DefaultRequestHeaders.Remove("Authorization");
-        Http.DefaultRequestHeaders.Remove("branchid");
-        switch (ses.StatusCode)
+        try
         {
-            case System.Net.HttpStatusCode.OK:
+            // Autenticación inicial
+            var ses = await Http.PostAsJsonAsync<DtoLogin>(UrlAuth, dtoLogin);
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Remove("branchid");
+
+            // Manejar respuesta de autenticación
+            var authSuccess = await ApiHandler.HandleResponseAsync<DtoLogin>(ses, "autenticación");
+            
+            if (authSuccess && ses.StatusCode == System.Net.HttpStatusCode.OK)
+            {
                 var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
                 dtoRequestPaciente = new()
                 {
-                        Expediente = dtoLoginPaciente.Usuario
+                    Expediente = dtoLoginPaciente.Usuario
                 };
                 Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
                 
+                // Consulta de datos del paciente para impresión
                 var sesPaciente = await Http.PostAsJsonAsync<DtoRequestPaciente>(UrlUsuario, dtoRequestPaciente);
-                switch (sesPaciente.StatusCode)
+                var pacienteSuccess = await ApiHandler.HandleResponseAsync<DtoRequestPaciente>(sesPaciente, "consulta de paciente para impresión");
+                
+                if (pacienteSuccess && sesPaciente.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    case System.Net.HttpStatusCode.OK:
-                        try
-                        {
-                            dtoPaciente = await sesPaciente.Content.ReadFromJsonAsync<List<DtoPaciente>>();
-                            if (dtoPaciente.Count>0)
+                    dtoPaciente = await sesPaciente.Content.ReadFromJsonAsync<List<DtoPaciente>>();
+                    
+                    if (dtoPaciente.Count > 0)
+                    {
+                        // Login exitoso para impresión
+                        dtoPaciente[0].SolicitudIMR = dtoLoginPaciente.Contraseña;
+                        dtoPaciente[0].Token = result.Token;
+                        string json = JsonConvert.SerializeObject(dtoPaciente);
+                        
+                        var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+                        await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
                             {
-                                dtoPaciente[0].SolicitudIMR = dtoLoginPaciente.Contraseña;
-                                dtoPaciente[0].Token = result.Token;
-                                string json = JsonConvert.SerializeObject(dtoPaciente);
-                                var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
-                                await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
-                                    {
-                                        testsuncretr = Cryp.Encripta(json),
-                                        Type=4
-                                    });
-                                Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
-                                await IJSRuntime.InvokeAsync<object>("open", CancellationToken.None, "/ImpresionResultados");
-                                //NavigationManager.NavigateTo("/ImpresionResultados", true);
-                                ValidateData = false;
-                            }
-                            else
-                            {
-                                Http.DefaultRequestHeaders.Remove("Authorization");
-                                Http.DefaultRequestHeaders.Remove("branchid");
-                                ShowSnack("¡El Paciente no existe, favor de verificar!");
-                                ValidateData = false;
-                            }
-
-                        }
-                        catch (Exception ex)
-                        {
-                            ValidateData = false;
-                        }
-
-
-                        break;
+                                testsuncretr = Cryp.Encripta(json),
+                                Type = 4
+                            });
+                        
+                        Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
+                        ApiHandler.ShowSuccessMessage("¡Login exitoso! Accediendo a impresión de resultados.");
+                        await IJSRuntime.InvokeAsync<object>("open", CancellationToken.None, "/ImpresionResultados");
+                        ValidateData = false;
+                    }
+                    else
+                    {
+                        Http.DefaultRequestHeaders.Remove("Authorization");
+                        Http.DefaultRequestHeaders.Remove("branchid");
+                        ApiHandler.ShowWarningMessage("¡El Paciente no existe, favor de verificar!");
+                        ValidateData = false;
+                    }
                 }
-
-
-                break;
-            case System.Net.HttpStatusCode.NoContent:
-                ValidateData = false;
-                break;
-            default:
-                break;
+            }
+        }
+        catch (Exception ex)
+        {
+            ApiHandler.ShowErrorMessage($"Error inesperado durante el login: {ex.Message}");
+            ValidateData = false;
         }
         StateHasChanged();
     }

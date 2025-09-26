@@ -11,6 +11,7 @@
 @inject NavigationManager NavigationManager
 @inject Cryp Cryp;
 @inject ISnackbar Snackbar
+@inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 
 <PageTitle>Login</PageTitle>
 
@@ -87,33 +88,47 @@
                 Usuario = _config.GetSection("UsrLoginGral:User").Value.Trim(),
                 Contraseña = _config.GetSection("UsrLoginGral:Pwd").Value.Trim(),
             };
-        var ses = await Http.PostAsJsonAsync<DtoLoginEmpresa>(UrlAuth, dtoLogin);
-        Http.DefaultRequestHeaders.Remove("Authorization");
-        Http.DefaultRequestHeaders.Remove("branchid");
-        switch (ses.StatusCode)
+        try
         {
-            case System.Net.HttpStatusCode.OK:
-                try
+            // Autenticación inicial
+            var ses = await Http.PostAsJsonAsync<DtoLoginEmpresa>(UrlAuth, dtoLogin);
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Remove("branchid");
+
+            // Manejar respuesta de autenticación
+            var authSuccess = await ApiHandler.HandleResponseAsync<DtoLoginEmpresa>(ses, "autenticación",false);
+            
+            if (authSuccess && ses.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
+                Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
+                
+                // Consulta de datos de la empresa
+                var empresaResponse = await Http.GetAsync(UrlEmpresa + "/" + dtoLoginEmpresa.Usuario.Trim());
+                var empresaSuccess = await ApiHandler.HandleResponseAsync<List<DtoEmpresa>>(empresaResponse, "consulta de empresa",false);
+                
+                if (empresaSuccess)
                 {
-                    var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
-                    Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
+                    LstEmpresa = await empresaResponse.Content.ReadFromJsonAsync<List<DtoEmpresa>>();
                     
-                    LstEmpresa = await Http.GetFromJsonAsync<List<DtoEmpresa>>(UrlEmpresa + "/" + dtoLoginEmpresa.Usuario.Trim());
                     if (LstEmpresa.Count() == 0)
                     {
                         Http.DefaultRequestHeaders.Remove("Authorization");
                         Http.DefaultRequestHeaders.Remove("branchid");
-                        ShowSnack("¡La Empresa no existe, favor de verificar!");
+                        ApiHandler.ShowWarningMessage("¡La Empresa no existe, favor de verificar!");
                         ValidateData = false;
                     }
                     else
                     {
                         ObjEmpresa = LstEmpresa.FirstOrDefault(op => op.Clave.Trim().ToUpper().Equals(dtoLoginEmpresa.Usuario.Trim().ToUpper()));
+                        
                         if (ObjEmpresa.Contrasena.Trim().Equals(dtoLoginEmpresa.Contraseña.Trim()))
                         {
+                            // Login exitoso
                             ObjEmpresa.Token = result.Token;
                             string json = JsonConvert.SerializeObject(ObjEmpresa);
                             string filtro = JsonConvert.SerializeObject(filorig);
+                            
                             var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
                             await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
                                 {
@@ -121,7 +136,9 @@
                                     testsuncretr = Cryp.Encripta(json),
                                     Type = 3,
                                 });
+                            
                             Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
+                            ApiHandler.ShowSuccessMessage("¡Login exitoso! Bienvenida empresa.");
                             NavigationManager.NavigateTo("/ConsultaExpedientesEmpresa/", true);
                             ValidateData = false;
                         }
@@ -129,22 +146,17 @@
                         {
                             Http.DefaultRequestHeaders.Remove("Authorization");
                             Http.DefaultRequestHeaders.Remove("branchid");
-                            ShowSnack("¡La Contraseña es incorrecta, favor de verificar!");
+                            ApiHandler.ShowWarningMessage("¡La Contraseña es incorrecta, favor de verificar!");
                             ValidateData = false;
-                        }                        
+                        }
                     }
                 }
-                catch (Exception ex)
-                {
-                    var t = "";
-                }
-                
-                break;
-            case System.Net.HttpStatusCode.NoContent:
-                ValidateData = false;
-                break;
-            default:
-                break;
+            }
+        }
+        catch (Exception ex)
+        {
+            ApiHandler.ShowErrorMessage($"Error inesperado durante el login: {ex.Message}");
+            ValidateData = false;
         }
         StateHasChanged();
     }

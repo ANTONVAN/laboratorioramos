@@ -1,0 +1,215 @@
+﻿@using ApexCharts;
+@using LaboratorioRamos.Data.DtoPaciente
+@using LaboratorioRamos.Data.DtoEstudio;
+@using LaboratorioRamos.Data.DtoEstudio.DtoRequestEstudio;
+@using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
+@using System.Text.RegularExpressions
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider _authStateProvider
+@inject Cryp Cryp
+@inject ISnackbar Snackbar
+@inject IJSRuntime IJSRuntime
+
+@if (ShowBreadcrumbs)
+{
+    <MudBreadcrumbs Items="_items" Style="padding-bottom: 2px; padding-top:0px;"></MudBreadcrumbs>
+}
+
+<MudGrid>
+    <MudPaper Class="mt-4" Elevation="4" Style="width:100%;">
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12" Class="ml-4">
+                <MudGrid>
+                    @* <MudItem xs="12" sm="7" md="12" Class="mt-2">
+                        <MudText Align="MudBlazor.Align.Center" Typo="Typo.h5" style="color: #0d37a8;">Consulta Gráfica del Paciente</MudText>
+                    </MudItem> *@
+                    <MudItem xs="12" sm="7" md="6" Class="pt-5">
+                        <MudText Align="MudBlazor.Align.Left" Typo="Typo.body1" style="color: #0d37a8;">Expediente: @PacienteInfo.Expediente</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="7" md="6" Class="pt-5">
+                        <MudText Align="MudBlazor.Align.Left" Typo="Typo.body1" style="color: #0d37a8;">Paciente: @PacienteInfo.Nombre</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12" Class="ml-4 pt-4">
+                <MudGrid>
+                    <MudItem xs="12" sm="7" md="3" Class="pt-2">
+                        <MudAutocomplete T="string" @bind-Value="ValEstudio"
+                                         SearchFunc="SearchEstudio"
+                                         Label="Estudio"
+                                         Clearable="true" />
+                    </MudItem>
+                    <MudItem xs="12" sm="5" md="3" Class="pt-2">
+                        <MudDatePicker Clearable="true" Label="Fecha Inicio(dd/MM/yyyy)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="MudBlazor.Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
+                    </MudItem>
+                    <MudItem xs="12" sm="5" md="3" Class="pt-2">
+                        <MudDatePicker Clearable="true" Label="Fecha Final(dd/MM/yyyy)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="MudBlazor.Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
+                    </MudItem>
+                    <MudItem xs="12" sm="7" md="2" Class="pt-2">
+                        <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="MudBlazor.Color.Default" aria-label="Buscar" Class="rounded-0 ml-auto" Style="width:100%;" OnClick="() => BuscaFecha()">Buscar</MudButton>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    @if (oResulEstudios.Count > 0)
+    {
+        <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
+            <MudGrid>
+                <MudItem xs="12" sm="12" md="12">
+                    @{ var titleGrafica = $"Gráfica de Resultados ({ValEstudio})"; }
+                    <MudItem xs="12" sm="12" md="12">
+                        <ApexChart TItem="DtoEstudioGrafica" Title="@titleGrafica" Width="@("100%")" Height="400" Options="@options">
+                            <ApexPointSeries TItem="DtoEstudioGrafica"
+                                             Items="oResulEstudios"
+                                             Name="@ValEstudio"
+                                             SeriesType="SeriesType.Line"
+                                             XValue="@(e => e.Fecha)"
+                                             YAggregate="@(e => e.Sum(e => decimal.Parse(e.Valor)))"
+                                             OrderBy="e=>e.X"
+                                             ShowDataLabels />
+                        </ApexChart>
+                    </MudItem>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    }
+</MudGrid>
+
+@code {
+    [Parameter] public string? PostRequiere { get; set; }
+    [Parameter] public string? PostPaciente { get; set; }
+    [Parameter] public bool RequireAuth { get; set; } = true;
+    [Parameter] public bool ShowBreadcrumbs { get; set; } = true;
+    [Parameter] public DtoResponseMedicoPaciente? PacienteInfo { get; set; }
+
+    private string ValEstudio { get; set; }
+    private DateRange _dateRange = new DateRange(DateTime.Now.AddDays(-5).Date, DateTime.Now.Date);
+    private string UrlGraficas = "services/gateway/api/MassSearch/GetByFilter";
+    private List<BreadcrumbItem> _items = new() { new BreadcrumbItem("Gráficas", href: null, disabled: true, icon: Icons.Material.Filled.StackedBarChart) };
+    private DtoEstudio dtoEstudio = new();
+    private List<DtoPaciente> dtoPaciente = new();
+    private List<DtoEstudioGrafica> oResulEstudios = new();
+    private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
+    private ApexChartOptions<DtoEstudioGrafica> options { get; set; } = new();
+    DateTime? dateInicial = DateTime.Today;
+    DateTime? dateFinal = DateTime.Today;
+    private string[] _estudios = new[]
+    {
+        "GLUCOSA","UREA","CREATININA","ACIDO URICO","COLESTEROL HDL","COLESTEROL LDL","COLESTEROL TOTAL","TRIGLICERIDOS","HEMOGLOBINA GLICOSILADA",
+        "HEMOGLOBINA","PLAQUETAS","ANTÍGENO PROSTÁTICO ESPECÍFICO","CA125","ALFA FETO PROTEÍNA","ANTÍGENO CARCINOEMBRIONARIO","CA 19-9","ACIDO VALPROICO SERICO",
+        "TOPIRAMATO","KEPPRA (LEVETIRACETAM)","CARBAMAZEPINA","DIFENILHIDANTOINA (EPAMIN)"
+    };
+
+    protected async override void OnInitialized()
+    {
+        await base.OnInitializedAsync();
+        if (RequireAuth)
+        {
+            var authState = await _authStateProvider.GetAuthenticationStateAsync();
+            if (!authState.User.Identity.IsAuthenticated)
+            {
+                NavigationManager.NavigateTo("/", true);
+                return;
+            }
+            if (PostRequiere == "1")
+            {
+                var idenUser = authState.User.Claims.ToList();
+                var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
+                dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
+                dtoMedicoPaciente = new DtoResponseMedicoPaciente { Nombre = dtoPaciente.Count > 0 ? dtoPaciente[0].NombrePaciente : string.Empty, Expediente = string.Empty };
+            }
+            else if (PostRequiere == "2" || PostRequiere == "3")
+            {
+                var resPacDecrip = Cryp.Desencripta(PostPaciente);
+                dtoMedicoPaciente = JsonConvert.DeserializeObject<DtoResponseMedicoPaciente>(resPacDecrip);
+            }
+        }
+        else if (PacienteInfo != null)
+        {
+            dtoMedicoPaciente = PacienteInfo;
+        }
+
+        options.Responsive = new List<Responsive<DtoEstudioGrafica>> {
+            new Responsive<DtoEstudioGrafica> { Breakpoint=700, Options = new ApexChartOptions<DtoEstudioGrafica> { Chart = new Chart { Toolbar = new Toolbar { Show = true } }, DataLabels = new ApexCharts.DataLabels { OffsetY = -6d }, Grid = new Grid { BorderColor = "#e7e7e7", Row = new GridRow { Colors = new List<string> { "#f3f3f3", "transparent" }, Opacity = 0.5d } }, Colors = new List<string> { "#77B6EA", "#545454" }, Markers = new Markers { Shape = ShapeEnum.Circle, Size = 5, FillOpacity = new Opacity(0.8d) }, Stroke = new Stroke { Curve = Curve.Smooth }, Legend = new Legend { Position = LegendPosition.Top, HorizontalAlign = ApexCharts.Align.Right, Floating = true, OffsetX = -5, OffsetY = -25 } } },
+            new Responsive<DtoEstudioGrafica> { Breakpoint=9001, Options = new ApexChartOptions<DtoEstudioGrafica> { Chart = new Chart { Toolbar = new Toolbar { Show = true } }, DataLabels = new ApexCharts.DataLabels { OffsetY = -6d }, Grid = new Grid { BorderColor = "#e7e7e7", Row = new GridRow { Colors = new List<string> { "#f3f3f3", "transparent" }, Opacity = 0.5d } }, Colors = new List<string> { "#77B6EA", "#545454" }, Markers = new Markers { Shape = ShapeEnum.Circle, Size = 5, FillOpacity = new Opacity(0.8d) }, Stroke = new Stroke { Curve = Curve.Smooth }, Legend = new Legend { Position = LegendPosition.Top, HorizontalAlign = ApexCharts.Align.Right, Floating = true, OffsetX = -5, OffsetY = -25 } } }
+        };
+        StateHasChanged();
+    }
+
+    void ShowSnack(string message) => Snackbar.Add($"Atención: {message}", Severity.Error);
+
+    async Task BuscaFecha()
+    {
+        if (String.IsNullOrEmpty(ValEstudio)) { ShowSnack("¡Por favor Seleccione un Estudio!"); return; }
+        if (dateFinal < dateInicial) { ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!"); return; }
+
+        oResulEstudios = new();
+        DtoRequestEstudio parametrobusqueda = new()
+        {
+            Fecha = new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") },
+            Buscar = dtoMedicoPaciente != null ? dtoMedicoPaciente.Nombre : string.Empty,
+        };
+
+        var ValorEstudioBusqueda = "";
+        switch (ValEstudio)
+        {
+            case "ACIDO URICO": parametrobusqueda.Estudio = new() { 897, 173 }; ValorEstudioBusqueda = "_ACUR_SU"; break;
+            case "COLESTEROL HDL": parametrobusqueda.Estudio = new() { 458 }; ValorEstudioBusqueda = "_HDL_SU"; break;
+            case "COLESTEROL LDL": parametrobusqueda.Estudio = new() { 458 }; ValorEstudioBusqueda = "_LDL_SU"; break;
+            case "COLESTEROL TOTAL": parametrobusqueda.Estudio = new() { 458, 677, 173 }; ValorEstudioBusqueda = "_COL_SU"; break;
+            case "CREATININA": parametrobusqueda.Estudio = new() { 644, 173 }; ValorEstudioBusqueda = "_CREA_SU"; break;
+            case "GLUCOSA": parametrobusqueda.Estudio = new() { 479, 480, 483, 516, 631, 932, 1133, 1183, 1830, 173 }; ValorEstudioBusqueda = "_GLU_SU"; break;
+            case "HEMOGLOBINA GLICOSILADA": parametrobusqueda.Estudio = new() { 486 }; ValorEstudioBusqueda = "_HGA1C_ST"; break;
+            case "TRIGLICERIDOS": parametrobusqueda.Estudio = new() { 49, 173, 458 }; ValorEstudioBusqueda = "_TAG_SU"; break;
+            case "UREA": parametrobusqueda.Estudio = new() { 36, 173 }; ValorEstudioBusqueda = "_UREA_SU"; break;
+            case "HEMOGLOBINA": parametrobusqueda.Estudio = new() { 928 }; ValorEstudioBusqueda = "_HB_ST"; break;
+            case "PLAQUETAS": parametrobusqueda.Estudio = new() { 928 }; ValorEstudioBusqueda = "_PLAQ_ST"; break;
+            case "ANTÍGENO PROSTÁTICO ESPECÍFICO": parametrobusqueda.Estudio = new() { 876 }; ValorEstudioBusqueda = "_ANTI_SU"; break;
+            case "CA125": parametrobusqueda.Estudio = new() { 773 }; ValorEstudioBusqueda = "_CA125_SU"; break;
+            case "ALFA FETO PROTEÍNA": parametrobusqueda.Estudio = new() { 509 }; ValorEstudioBusqueda = "_AFP_SU2"; break;
+            case "ANTÍGENO CARCINOEMBRIONARIO": parametrobusqueda.Estudio = new() { 739 }; ValorEstudioBusqueda = "_CEA_SU"; break;
+            case "CA 19-9": parametrobusqueda.Estudio = new() { 774 }; ValorEstudioBusqueda = "_CA199_SU"; break;
+            case "CA 15.3": parametrobusqueda.Estudio = new() { 389 }; ValorEstudioBusqueda = "_CA153_SU"; break;
+            case "ACIDO VALPROICO SERICO": parametrobusqueda.Estudio = new() { 22 }; ValorEstudioBusqueda = "_ACVA_SU"; break;
+            case "TOPIRAMATO": parametrobusqueda.Estudio = new() { 62 }; ValorEstudioBusqueda = "_TOP_SU"; break;
+            case "KEPPRA (LEVETIRACETAM)": parametrobusqueda.Estudio = new() { 337 }; ValorEstudioBusqueda = "_KEPR"; break;
+            case "CARBAMAZEPINA": parametrobusqueda.Estudio = new() { 761 }; ValorEstudioBusqueda = "_CARBA_SU"; break;
+            case "DIFENILHIDANTOINA (EPAMIN)": parametrobusqueda.Estudio = new() { 614 }; ValorEstudioBusqueda = "_DIFE_SU"; break;
+        }
+
+        var sesPacientes = await Http.PostAsJsonAsync<DtoRequestEstudio>(UrlGraficas, parametrobusqueda);
+        dtoEstudio = await sesPacientes.Content.ReadFromJsonAsync<DtoEstudio>();
+
+        foreach (var item in dtoEstudio.Results)
+        {
+            var rowExiste = oResulEstudios.FirstOrDefault(op => op.Fecha.Equals($"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}"));
+            if (rowExiste == null)
+            {
+                var EstudioTemp = item.Parameters.Where(op => op.Clave.Equals(ValorEstudioBusqueda)).ToList();
+                if (EstudioTemp.Count > 0 && !String.IsNullOrEmpty(EstudioTemp[0].Valor))
+                {
+                    string ObtengoNum = Regex.Replace(EstudioTemp[0].Valor, @"[^0-9.]", "");
+                    oResulEstudios.Add(new DtoEstudioGrafica
+                    {
+                        Fecha = $"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}",
+                        Estudio = ValEstudio,
+                        Valor = ObtengoNum
+                    });
+                }
+            }
+        }
+        oResulEstudios = oResulEstudios.OrderByDescending(op => op.Fecha).ToList();
+        StateHasChanged();
+    }
+
+    private async Task<IEnumerable<string>> SearchEstudio(string value, CancellationToken token)
+    {
+        await Task.Delay(5, token);
+        if (string.IsNullOrEmpty(value)) return _estudios;
+        return _estudios.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+    }
+}
+
+

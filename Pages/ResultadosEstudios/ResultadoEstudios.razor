@@ -8,7 +8,16 @@
 @using LaboratorioRamos.Data.DtoExpediente
 @using LaboratorioRamos.Data.DtoResultadosEstudios
 @using LaboratorioRamos.Data.DtoPaciente
-
+@using LaboratorioRamos.Shared.Components
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+@using Microsoft.Extensions.Configuration
+@using MudBlazor
+@using LaboratorioRamos.Helper
+@using LaboratorioRamos.Services
+@using System.Text.RegularExpressions
+@using LaboratorioRamos.PDF;
 
 @inject HttpClient Http;
 @inject NavigationManager NavigationManager
@@ -17,6 +26,9 @@
 @inject ISnackbar Snackbar
 @inject IJSRuntime IJSRuntime
 @inject IConfiguration _config;
+@inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler;
+@inject IDialogService DialogService
+
 
 <PageTitle>Resultados</PageTitle>
 
@@ -83,6 +95,9 @@ else
             <MudItem xs="12" sm="6" md="3" Style="padding-top: 0px;">
                 <MudText Align="Align.Justify" Typo="Typo.body1"><MudIcon Icon="@Icons.Material.Filled.FolderShared" Color="Color.Primary" />&nbsp;<b>Expediente:</b> &nbsp; @LstExpedientes[0].Expediente</MudText>
             </MudItem>
+            @* <MudItem xs="12" sm="6" md="2" Style="padding-top: 0px; text-align:right;">
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" StartIcon="@Icons.Material.Filled.StackedBarChart" OnClick="OpenDialogGrafica">Ver Gráfica</MudButton>
+            </MudItem> *@
 
 
             <MudItem xs="12" sm="6" md="4" Style="padding-top: 0px;">
@@ -94,12 +109,22 @@ else
             <MudItem xs="12" sm="6" md="3" Style="padding-top: 0px;">
                 <MudText Align="Align.Justify" Typo="Typo.body1"><MudIcon Icon="@Icons.Material.Filled.PhoneAndroid" Color="Color.Primary" />&nbsp;<b>Celular:</b> &nbsp; @LstExpedientes[0].EnvioWhatsapp</MudText>
             </MudItem>
+            <MudItem xs="12" sm="3" md="2" Style="padding-top: 0px;">
+                <MudIconButton Icon="@Icons.Material.Outlined.Download" Color="Color.Primary" Size="Size.Large" aria-label="Imprimir Estudios" OnClick="() => ImprimirExpGral(LstExpedientes[0])"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Large" aria-label="Imprimir Estudios" OnClick="() => OpenDialog(LstExpedientes[0])"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.BarChart" Size="Size.Large" Color="Color.Info" OnClick="OpenDialogGrafica"></MudIconButton>
+            </MudItem>
+            <MudItem xs="12" sm="3" md="1" Style="padding-top: 0px;">
+                
+            </MudItem>
         </MudGrid>
     </MudPaper>
-    <MudPaper Class="pa-1 mt-1" Elevation="4" Style="width:100%;">
-        <MudGrid>
-            <MudItem xs="12" sm="12" md="12">
-                <MudExpansionPanels MultiExpansion="true">
+    <!-- Contenedor de resultados con altura fija y scroll -->
+    <MudPaper Class="pa-1 mt-1" Elevation="4" Style="width:100%; height: calc(110vh - 280px); min-height: 400px; max-height: 800px;">
+        <MudGrid Style="height: 100%;">
+            <MudItem xs="12" sm="12" md="12" Style="height: 100%;">
+                <div class="results-container">
+                    <MudExpansionPanels MultiExpansion="true" Class="results-expansion-panels">
                     @if (_dtoEdenImagenologia.Count>0)
                     {
                         <MudExpansionPanel Class="mt-2" Dense="false" Gutters="false" Expanded="true" HideIcon="true">
@@ -192,7 +217,8 @@ else
                                                 var valFinal = itemParam.ValorFinal == null ? "0" : itemParam.ValorFinal;
                                                 if (!String.IsNullOrEmpty(itemParam.Resultado))
                                                 {
-                                                    if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                    string ObtengoNum = Regex.Replace(itemParam.Resultado, @"[^0-9.]", "");
+                                                    if (double.Parse(ObtengoNum) < double.Parse(valini) || double.Parse(ObtengoNum) > double.Parse(valFinal))
                                                     {
                                                         <MudItem xs="3" sm="3" md="3">
                                                             <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
@@ -524,7 +550,8 @@ else
                                                 var valFinal = itemParam.ValorFinal == null ? "0" : itemParam.ValorFinal;
                                                 if (!String.IsNullOrEmpty(itemParam.Resultado))
                                                 {
-                                                    if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                    string ObtengoNum = Regex.Replace(itemParam.Resultado, @"[^0-9.]", "");
+                                                    if (double.Parse(ObtengoNum) < double.Parse(valini) || double.Parse(ObtengoNum) > double.Parse(valFinal))
                                                     {
                                                         <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
                                                             <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
@@ -769,7 +796,8 @@ else
                         }
                     }
 
-                </MudExpansionPanels>
+                    </MudExpansionPanels>
+                </div>
             </MudItem>
         </MudGrid>
     </MudPaper>
@@ -796,38 +824,254 @@ else
     </DialogContent>
 </MudDialog>
 
+<MudDialog @bind-Visible="visibleGrafica" Options="_fullScreen">
+    <TitleContent>
+        <MudText Typo="Typo.h5" Color="Color.Primary" Align="Align.Center" style="color: #0d37a8;">
+            <MudIcon Icon="@Icons.Material.Filled.StackedBarChart" Color="Color.Primary" Class="mr-3" />Gráfica de Resultados
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12">
+                <GraficaPaciente RequireAuth="false" ShowBreadcrumbs="false" PacienteInfo="@LstExpedientes[0]" />
+            </MudItem>
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" OnClick="CloseDialogGrafica">Cerrar</MudButton>
+    </DialogActions>
+</MudDialog>
 
+<MudDialog @bind-Visible="visiblePrintResult" Options="diaOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center">
+            <MudIcon Icon="@Icons.Material.Filled.Print" Color="Color.Error" Class="mr-3" Size="Size.Large" />Impresión de Resultados
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12" sm="12" md="12">
+                <MudText Typo="Typo.h6" Align="Align.Left">Paciente: <k>@SolicitudMedicaPrint.Nombre</k></MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3" Class="pt-0">
+                <MudText Typo="Typo.h6">Solicitud: @SolicitudMedicaPrint.Solicitud</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3" Class="pt-0">
+                <MudText Typo="Typo.h6">Fecha Ingreso: @SolicitudMedicaPrint.Registro</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3" Class="pt-0">
+                <MudText Typo="Typo.h6">Sexo: @SolicitudMedicaPrint.Sexo</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="3" Class="pt-0">
+                <MudText Typo="Typo.h6">Edad: @SolicitudMedicaPrint.Edad</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12" Class="d-flex d-sm-none d-none d-sm-flex d-md-none pb-2 pt-0">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" aria-label="Buscar" Class="ml-auto" OnClick="@SelAllRog">Seleccionar Todos</MudButton>
+            </MudItem>
+            <MudItem xs="12" sm="12" md="12" Class="pt-0">
+                <MudTable Class="rounded-0" MultiSelection="true" @bind-SelectedItems="selectedItems" Items="@SolicitudMedicaPrint.Estudios" Context="EstContext" @ref="_table" T="DtoResponseMedicoPacienteStudios" Hover="true" Breakpoint="Breakpoint.Sm" Bordered="true" Elevation="1" Striped="true" HeaderClass="table-head-bordered" Style="width:100%;" Dense="true" Filter="new Func<DtoResponseMedicoPacienteStudios, bool>(FilterFuncEstudios)">
+                    <HeaderContent>
+                        <MudTh>Estudio</MudTh>
+                        <MudTh>Fecha de Entrega</MudTh>
+                        <MudTh>Estatus</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
+                        <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
+                        <MudTd DataLabel="Estatus">@EstContext.Estatus</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
+                    </PagerContent>
+                </MudTable>
+            </MudItem>
+
+        </MudGrid>
+
+    </DialogContent>
+    <DialogActions>
+        @if (ValidateDataMod)
+        {
+            <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+        }
+        else
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Print" aria-label="Imprimir" Color="Color.Error" OnClick="ImprimirExp"></MudIconButton>
+        }
+        <MudIconButton Icon="@Icons.Material.Filled.Cancel" aria-label="Cancelar" Color="Color.Error" OnClick="CancelPrint"></MudIconButton>
+    </DialogActions>
+</MudDialog>
 
 
 <style>
-
-    .mud-expand-panel .mud-expand-panel-header {
-    width: 100%;
-    align-items: center;
-    display: flex;
-    font-size: .9375rem;
-    line-height: 1;
-    min-height: 48px;
-    outline: none;
-    padding: 0px 9px;
-    position: relative;
-    transition: min-height .3s cubic-bezier(0.25, 0.8, 0.5, 1);
-    user-select: none;
-    background-color: #b4c3c6;
-    color: #0d37a8;
+    /* Contenedor principal de resultados con scroll personalizado */
+    .results-container {
+        height: 100%;
+        overflow: hidden;
+        position: relative;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
     }
 
+    /* Estilos para los paneles de expansión */
+    .results-expansion-panels {
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 8px;
+        scrollbar-width: thin;
+        scrollbar-color: #0d37a8 #f1f1f1;
+    }
+
+    /* Scrollbar personalizado para WebKit (Chrome, Safari, Edge) */
+    .results-expansion-panels::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .results-expansion-panels::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .results-expansion-panels::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #0d37a8 0%, #1976d2 100%);
+        border-radius: 4px;
+        transition: background 0.3s ease;
+    }
+
+    .results-expansion-panels::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #0a2d7a 0%, #1565c0 100%);
+    }
+
+    /* Estilos para los headers de los paneles */
+    .mud-expand-panel .mud-expand-panel-header {
+        width: 100%;
+        align-items: center;
+        display: flex;
+        font-size: .9375rem;
+        line-height: 1;
+        min-height: 48px;
+        outline: none;
+        padding: 16px 20px;
+        position: relative;
+        transition: all 0.3s ease;
+        user-select: none;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e3f2fd 100%);
+        color: #0d37a8;
+        border-bottom: 2px solid #e3f2fd;
+        border-radius: 8px 8px 0 0;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .mud-expand-panel .mud-expand-panel-header:hover {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
+    /* Contenido de los paneles */
+    .mud-expand-panel .mud-expand-panel-content {
+        overflow-y: auto;
+        height: auto !important;
+        padding: 20px;
+        background: #ffffff;
+        border-radius: 0 0 8px 8px;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    /* Mejoras para las tablas dentro de los paneles */
+    .results-expansion-panels .mud-table {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .results-expansion-panels .mud-table .mud-table-head {
+        background: linear-gradient(135deg, #0d37a8 0%, #1976d2 100%);
+        color: white;
+    }
+
+    .results-expansion-panels .mud-table .mud-table-head .mud-th {
+        color: white !important;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* Animaciones suaves para los paneles */
+    .mud-expansion-panel {
+        margin-bottom: 16px;
+        border-radius: 8px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .mud-expansion-panel:hover {
+        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        transform: translateY(-2px);
+    }
+
+    /* Contenedor de tabla mejorado */
     .mud-table-container {
         width: 100%;
         overflow-y: auto;
         height: auto !important;
         padding-left: 5px;
+        border-radius: 8px;
+    }
+
+    /* Responsive design */
+    @@media (max-width: 768px) {
+        .results-container {
+            height: calc(100vh - 320px);
+            min-height: 300px;
+        }
+        
+        .mud-expand-panel .mud-expand-panel-header {
+            padding: 12px 16px;
+        }
+        
+        .mud-expand-panel .mud-expand-panel-content {
+            padding: 16px;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .results-container {
+            height: calc(100vh - 360px);
+            min-height: 250px;
+        }
+        
+        .mud-expand-panel .mud-expand-panel-header {
+            padding: 10px 12px;
+        }
+        
+        .mud-expand-panel .mud-expand-panel-content {
+            padding: 12px;
+        }
+    }
+
+    /* Indicador de scroll */
+    .results-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(to bottom, 
+            rgba(13, 55, 168, 0.3) 0%, 
+            rgba(13, 55, 168, 0.1) 50%, 
+            rgba(13, 55, 168, 0.3) 100%);
+        pointer-events: none;
+        z-index: 1;
     }
 
 </style>
 
 <script>
-        function resizeIframe(iframe) {
+    function resizeIframe(iframe) {
         iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
     }
 </script>
@@ -836,8 +1080,7 @@ else
 
     #region Declaración de variables
 
-    [Inject]
-    IDialogService DialogService { get; set; }
+
 
     [Parameter]
     public string PostRequiere { get; set; }
@@ -891,6 +1134,7 @@ else
     private int EdadPaciente = 0;
 
     private bool visiblePrintResult = false;
+    private bool visibleGrafica = false;
     private DtoEmpresa dtoEmpresa = new();
     private DtoInfoExpediente ExpedienteId =new();
     private List<DtoEdenImagenologia> _dtoEdenImagenologia = new();
@@ -900,6 +1144,15 @@ else
     private string LnkObject = "";
 
     HttpClient HttpEDEN = new();
+
+    private PDFGenerator _PdfGenerator = new();
+    private DtoResponseMedicoPaciente SolicitudMedicaPrint = new();
+    private List<int> LstEstatusPrint = new();
+    private HashSet<DtoResponseMedicoPacienteStudios> selectedItems = new HashSet<DtoResponseMedicoPacienteStudios>();
+    private MudTable<DtoResponseMedicoPacienteStudios> _table;
+    private bool ValidateDataMod = false;
+    private string searchEstudios = "";
+
     #endregion
 
     #region Funsiones Página
@@ -920,6 +1173,11 @@ else
 
                 try
                 {
+                    var estatusSep = _config.GetSection("IdImpresion").Value.Trim().Split(",");
+                    foreach (var itemST in estatusSep)
+                    {
+                        LstEstatusPrint.Add(int.Parse(itemST));
+                    }
 
                     Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
                     var resPacDecripInicial = Cryp.Desencripta(PostSolicitud);
@@ -1017,11 +1275,15 @@ else
                     };
 
                     string json1 = JsonConvert.SerializeObject(parametrobusqueda);
-                    var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
-
-                    switch (sesExpediente.StatusCode)
+                    
+                    try
                     {
-                        case System.Net.HttpStatusCode.OK:
+                        // Consulta de expedientes para resultados
+                        var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
+                        var expedienteSuccess = await ApiHandler.HandleResponseAsync<DtoRequestMedicoPacientes>(sesExpediente, "consulta de expedientes para resultados",false);
+                        
+                        if (expedienteSuccess && sesExpediente.StatusCode == System.Net.HttpStatusCode.OK)
+                        {
                             try
                             {
                                 LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
@@ -1118,9 +1380,29 @@ else
 
                                 //_dtoEdenImagenologia.Add(_dtoEdenImagenologia2);
 
-                                var sesEstudiosInfoGral = await Http.GetFromJsonAsync<DtoResponseEstudioInfoGral>($"{UrlSolicitudInfoGral}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
-                                dtoMedicoSolicitud = await Http.GetFromJsonAsync<DtoMedicoPwd>($"{UrlMedicoInfoGral}{sesEstudiosInfoGral.MedicoId}");
-                                dtoResultadosEstudiosGral = await Http.GetFromJsonAsync<DtoResultadosEstudios>($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
+                                // Consulta de información general de estudios
+                                var estudiosInfoResponse = await Http.GetAsync($"{UrlSolicitudInfoGral}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
+                                var estudiosInfoSuccess = await ApiHandler.HandleResponseAsync<DtoResponseEstudioInfoGral>(estudiosInfoResponse, "consulta de información general de estudios");
+                                if (estudiosInfoSuccess)
+                                {
+                                    var sesEstudiosInfoGral = await estudiosInfoResponse.Content.ReadFromJsonAsync<DtoResponseEstudioInfoGral>();
+                                    
+                                    // Consulta de información del médico
+                                    var medicoInfoResponse = await Http.GetAsync($"{UrlMedicoInfoGral}{sesEstudiosInfoGral.MedicoId}");
+                                    var medicoInfoSuccess = await ApiHandler.HandleResponseAsync<DtoMedicoPwd>(medicoInfoResponse, "consulta de información del médico",false);
+                                    if (medicoInfoSuccess)
+                                    {
+                                        dtoMedicoSolicitud = await medicoInfoResponse.Content.ReadFromJsonAsync<DtoMedicoPwd>();
+                                    }
+                                    
+                                    // Consulta de resultados de estudios
+                                    var resultadosResponse = await Http.GetAsync($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
+                                    var resultadosSuccess = await ApiHandler.HandleResponseAsync<DtoResultadosEstudios>(resultadosResponse, "consulta de resultados de estudios",false);
+                                    if (resultadosSuccess)
+                                    {
+                                        dtoResultadosEstudiosGral = await resultadosResponse.Content.ReadFromJsonAsync<DtoResultadosEstudios>();
+                                    }
+                                }
                                 //var ddtoResultadosEstudiosGral = await Http.GetFromJsonAsync<DtoResultadosEstudios>($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
 
                                 if (resPacDecrip.Count() > 1)
@@ -1171,9 +1453,16 @@ else
                                 ShowSnack($"Error 2:{ex.Message}", 4);
                                 //ValidateData = false;
                             }
-
-
-                            break;
+                        }
+                        else
+                        {
+                            ApiHandler.ShowErrorMessage("Error al consultar los expedientes");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ShowSnack($"Error:{ex.Message}", 4);
+                        var t = "";
                     }
 
                     dataLoaded = false;
@@ -1197,6 +1486,16 @@ else
         await base.OnInitializedAsync();
         StateHasChanged();
 
+    }
+
+    private void OpenDialogGrafica()
+    {
+        visibleGrafica = true;
+    }
+
+    private void CloseDialogGrafica()
+    {
+        visibleGrafica = false;
     }
 
     void ShowSnack(string message, int sev)
@@ -1235,6 +1534,119 @@ else
 
     }
 
+    async Task ImprimirExp()
+    {
+        ValidateDataMod = true;
+        if (selectedItems.Count == 0)
+        {
+            ShowSnack("¡Por favor selecciona estudios!", 3);
+            ValidateDataMod = false;
+        }
+        else
+        {
+
+            var archivopdf = await _PdfGenerator.CreatePDF(_config, IJSRuntime, Http, selectedItems.ToList());
+            _PdfGenerator.DownloadPDF(IJSRuntime, archivopdf);
+            
+            Http.DefaultRequestHeaders.Remove("branchid");
+            Http.DefaultRequestHeaders.Add("branchid", Sucursal);
+            //StateHasChanged();
+        }
+        ValidateDataMod = false;
+    }
+
+    async Task ImprimirExpGral(DtoResponseMedicoPaciente itemSolicitud)
+    {
+        try
+        {
+            var archivopdf = await _PdfGenerator.CreatePDF(_config, IJSRuntime, Http, itemSolicitud.Estudios);
+            _PdfGenerator.ViewPDFInNewTab(IJSRuntime, archivopdf);
+
+            Http.DefaultRequestHeaders.Remove("branchid");
+            Http.DefaultRequestHeaders.Add("branchid", Sucursal);
+        }
+        catch (Exception ex)
+        {
+            ShowSnack($"Error al Imprimir los resultados: {ex.Message}", 4);
+
+        }
+    }
+
+    async Task SelAllRog()
+    {
+        foreach (var item in SolicitudMedicaPrint.Estudios)
+        {
+            // _table.SetSelectedItem(item);
+            _table.SelectedItems.Add(item);
+        }
+
+
+        StateHasChanged();
+
+    }
+
+
     #endregion
+
+
+    #region Funciones Modales
+
+    private void OpenDialog(DtoResponseMedicoPaciente itemSolicitud)
+    {
+        SolicitudMedicaPrint = new()
+        {
+            ClavePatologica = itemSolicitud.ClavePatologica,
+            Compania = itemSolicitud.Compania,
+            Edad = itemSolicitud.Edad,
+            EnvioCorreo = itemSolicitud.EnvioCorreo,
+            EnvioWhatsapp = itemSolicitud.EnvioWhatsapp,
+            Expediente = itemSolicitud.Expediente,
+            ExpedienteId = itemSolicitud.ExpedienteId,
+            FechaNacimiento = itemSolicitud.FechaNacimiento,
+            Nombre = itemSolicitud.Nombre,
+            Parcialidad = itemSolicitud.Parcialidad,
+            Registro = itemSolicitud.Registro,
+            Saldo = itemSolicitud.Saldo,
+            SaldoPendiente = itemSolicitud.SaldoPendiente,
+            Sexo = itemSolicitud.Sexo,
+            ShowEstudios = itemSolicitud.ShowEstudios,
+            Solicitud = itemSolicitud.Solicitud,
+            SolicitudId = itemSolicitud.SolicitudId,
+            Sucursal = itemSolicitud.Sucursal,
+            Telefono = itemSolicitud.Telefono,
+            Estudios = new()
+        };
+
+        foreach (var item in itemSolicitud.Estudios)
+        {
+            if (LstEstatusPrint.Contains(item.EstatusId))
+            {
+                SolicitudMedicaPrint.Estudios.Add(item);
+            }
+        }
+        visiblePrintResult = true;
+    }
+
+    private void CancelPrint()
+    {
+        visiblePrintResult = false;
+        selectedItems = new();
+        SolicitudMedicaPrint = new();
+    }
+
+    #endregion
+
+    private bool FilterFuncEstudios(DtoResponseMedicoPacienteStudios element) => FilterFuncExp(element, searchEstudios);
+    private bool FilterFuncExp(DtoResponseMedicoPacienteStudios element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Estudio.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.FechaEntrega.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
 
 }

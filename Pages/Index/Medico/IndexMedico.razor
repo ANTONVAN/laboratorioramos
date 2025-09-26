@@ -11,13 +11,14 @@
 @inject NavigationManager NavigationManager
 @inject Cryp Cryp;
 @inject ISnackbar Snackbar
+@inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 
 <PageTitle>Login</PageTitle>
 
 
 <MudGrid Justify="Justify.Center">
     <MudItem xs="12" sm="7" md="12" Class="d-flex absolute justify-center" style="top:15%;">
-        <EditForm Model="@dtoLoginMedico" OnValidSubmit="OnValidSubmit" style="width: 500px;">
+        <EditForm Model="@dtoLoginMedico" OnValidSubmit="OnValidSubmitAsync" style="width: 500px;">
             <DataAnnotationsValidator />
             <MudGrid>
                 <MudItem xs="12" md="12" sm="12">
@@ -75,83 +76,169 @@
         Snackbar.Add($"Atención: {message}", Severity.Warning);
     }
 
+    private void ClearAuthHeaders()
+    {
+        Http.DefaultRequestHeaders.Remove("Authorization");
+        Http.DefaultRequestHeaders.Remove("branchid");
+    }
+
     #endregion
 
     #region Operaciones
-    async void OnValidSubmit(EditContext context)
+    private async Task OnValidSubmitAsync(EditContext context)
     {
+        if (context is null) return;
+        
         ValidateData = true;
         filorig.LstFiltro = new();
+        
+        var generalUser = _config.GetSection("UsrLoginGral:User").Value;
+        var generalPassword = _config.GetSection("UsrLoginGral:Pwd").Value;
+        
+        if (string.IsNullOrWhiteSpace(generalUser) || string.IsNullOrWhiteSpace(generalPassword))
+        {
+            ApiHandler.ShowErrorMessage("Configuración de usuario general no encontrada");
+            ValidateData = false;
+            return;
+        }
+        
         dtoLogin = new()
         {
-            Usuario = _config.GetSection("UsrLoginGral:User").Value,
-            Contraseña = _config.GetSection("UsrLoginGral:Pwd").Value,
+            Usuario = generalUser,
+            Contraseña = generalPassword,
         };
-        var ses = await Http.PostAsJsonAsync<DtoLoginMedico>(UrlAuth, dtoLogin);
-        Http.DefaultRequestHeaders.Remove("Authorization");
-        Http.DefaultRequestHeaders.Remove("branchid");
-        switch (ses.StatusCode)
+
+        try
         {
-            case System.Net.HttpStatusCode.OK:
-                try
+            // Autenticación inicial
+            using var authResponse = await Http.PostAsJsonAsync<DtoLoginMedico>(UrlAuth, dtoLogin);
+            
+            // Limpiar headers previos
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Remove("branchid");
+
+            // Manejar respuesta de autenticación
+            var authSuccess = await ApiHandler.HandleResponseAsync<DtoLoginMedico>(authResponse, "autenticación",false);
+            
+            if (authSuccess && authResponse.IsSuccessStatusCode)
+            {
+                var result = await authResponse.Content.ReadFromJsonAsync<DtoUserSession>();
+                if (result?.Token is null)
                 {
-                    var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
-                    Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
+                    ApiHandler.ShowErrorMessage("Token de autenticación no recibido");
+                    ValidateData = false;
+                    return;
+                }
+                
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {result.Token}");
 
-                    dtoMedico = await Http.GetFromJsonAsync<List<DtoMedico>>(UrlMedico + "all/" + dtoLoginMedico.Usuario);
-                    if (dtoMedico.Count() == 0)
+                // Obtener datos del médico
+                using var medicoResponse = await Http.GetAsync($"{UrlMedico}all/{dtoLoginMedico.Usuario}");
+                var medicoSuccess = await ApiHandler.HandleResponseAsync<List<DtoMedico>>(medicoResponse, "consulta de médico",false);
+                
+                if (medicoSuccess && medicoResponse.IsSuccessStatusCode)
+                {
+                    dtoMedico = await medicoResponse.Content.ReadFromJsonAsync<List<DtoMedico>>() ?? new List<DtoMedico>();
+                    
+                    if (!dtoMedico.Any())
                     {
-                        Http.DefaultRequestHeaders.Remove("Authorization");
-                        Http.DefaultRequestHeaders.Remove("branchid");
-                        ShowSnack("¡El Médico no existe, favor de verificar!");
+                        ClearAuthHeaders();
+                        ApiHandler.ShowWarningMessage("¡El Médico no existe, favor de verificar!");
                         ValidateData = false;
+                        return;
                     }
-                    else
+                    
+                    var realMedico = dtoMedico.FirstOrDefault(op => 
+                        string.Equals(op.Clave?.Trim(), dtoLoginMedico.Usuario?.Trim(), StringComparison.OrdinalIgnoreCase));
+                    
+                    if (realMedico is null)
                     {
-                        var RealMedico = dtoMedico.FirstOrDefault(op => op.Clave.Trim().ToUpper().Equals(dtoLoginMedico.Usuario.Trim().ToUpper()));
-                        dtoMedicoPWD = await Http.GetFromJsonAsync<DtoMedicoPwd>(UrlMedico + RealMedico.IdMedico);
-                        dtoMedicoPWD.Password = dtoMedicoPWD.Password == null ? "00" : dtoMedicoPWD.Password;
+                        ClearAuthHeaders();
+                        ApiHandler.ShowWarningMessage("¡Clave de médico no encontrada!");
+                        ValidateData = false;
+                        return;
+                    }
+                    
+                    // Verificar contraseña del médico
+                    using var pwdResponse = await Http.GetAsync($"{UrlMedico}{realMedico.IdMedico}");
+                    var pwdSuccess = await ApiHandler.HandleResponseAsync<DtoMedicoPwd>(pwdResponse, "verificación de contraseña",false);
+                    
+                    if (pwdSuccess && pwdResponse.IsSuccessStatusCode)
+                    {
+                        dtoMedicoPWD = await pwdResponse.Content.ReadFromJsonAsync<DtoMedicoPwd>();
+                        dtoMedicoPWD.Password ??= "00";
 
-                        if (!dtoMedicoPWD.Password.Trim().Equals(dtoLoginMedico.Contraseña.Trim()))
+                        if (!string.Equals(dtoMedicoPWD.Password.Trim(), dtoLoginMedico.Contraseña?.Trim(), StringComparison.Ordinal))
                         {
-                            Http.DefaultRequestHeaders.Remove("Authorization");
-                            Http.DefaultRequestHeaders.Remove("branchid");
-                            ShowSnack("¡La Contraseña es incorrecta, favor de verificar!");
+                            ClearAuthHeaders();
+                            ApiHandler.ShowWarningMessage("¡La Contraseña es incorrecta, favor de verificar!");
                             ValidateData = false;
                         }
                         else
                         {
+                            // Login exitoso
                             dtoMedicoPWD.Token = result.Token;
                             dtoMedicoPWD.Sucursal = result.Sucursal;
                             string json = JsonConvert.SerializeObject(dtoMedicoPWD);
                             string filtro = JsonConvert.SerializeObject(filorig);
+                            
                             var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
                             await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
-                                {
-                                    filtros = Cryp.Encripta(filtro),
-                                    testsuncretr = Cryp.Encripta(json),
-                                    Type = 2,
-                                });
+                            {
+                                filtros = Cryp.Encripta(filtro),
+                                testsuncretr = Cryp.Encripta(json),
+                                Type = 2,
+                            });
+                            
                             Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
+                            ApiHandler.ShowSuccessMessage("¡Login exitoso! Bienvenido médico.");
                             NavigationManager.NavigateTo("/ConsultaExpedientesMedico/", true);
                             ValidateData = false;
                         }
-                        
+                    }
+                    else
+                    {
+                        ClearAuthHeaders();
+                        ApiHandler.ShowErrorMessage("Error al consultar los datos del médico");
+                        ValidateData = false;
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    var t = "";
+                    ClearAuthHeaders();
+                    ApiHandler.ShowErrorMessage("Error en la autenticación");
+                    ValidateData = false;
                 }
-                
-                break;
-            case System.Net.HttpStatusCode.NoContent:
+            }
+            else
+            {
+                ClearAuthHeaders();
+                ApiHandler.ShowErrorMessage("Error en la autenticación inicial");
                 ValidateData = false;
-                break;
-            default:
-                break;
+            }
         }
-        StateHasChanged();
+        catch (HttpRequestException ex)
+        {
+            ClearAuthHeaders();
+            ApiHandler.ShowErrorMessage($"Error de conexión: {ex.Message}");
+            ValidateData = false;
+        }
+        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+        {
+            ClearAuthHeaders();
+            ApiHandler.ShowErrorMessage("Tiempo de espera agotado. Intente nuevamente.");
+            ValidateData = false;
+        }
+        catch (Exception ex)
+        {
+            ClearAuthHeaders();
+            ApiHandler.ShowErrorMessage($"Error inesperado durante el login: {ex.Message}");
+            ValidateData = false;
+        }
+        finally
+        {
+            StateHasChanged();
+        }
     }
     #endregion
 

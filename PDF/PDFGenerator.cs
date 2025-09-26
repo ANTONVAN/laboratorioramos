@@ -35,6 +35,9 @@ namespace LaboratorioRamos.PDF
         public void DownloadPDF(IJSRuntime js, MemoryStream archivo) {
             js.InvokeVoidAsync("DownloadPDF", "Estudio.pdf", Convert.ToBase64String(archivo.ToArray()));
         }
+        public void ViewPDFInNewTab(IJSRuntime js, MemoryStream archivo) {
+            js.InvokeVoidAsync("ViewPDFInNewTab", "Estudio.pdf", Convert.ToBase64String(archivo.ToArray()));
+        }
         public void ViewPDF(IJSRuntime js, string idIFrame, MemoryStream archivo) {
             js.InvokeVoidAsync("ViewPDF", idIFrame, Convert.ToBase64String(archivo.ToArray()));
         }
@@ -99,7 +102,7 @@ namespace LaboratorioRamos.PDF
 
             if (prinResultadoTrue.Estudios.Count > 0)
             {
-                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>("services/records/api/ClinicResults/printResultFilePreview", prinResultadoTrue);
+                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>("services/gateway/api/ClinicResults/printResultFilePreview", prinResultadoTrue);
                 switch (sesExpediente.StatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:
@@ -132,7 +135,7 @@ namespace LaboratorioRamos.PDF
             }
             if (prinResultadoFalse.Estudios.Count > 0)
             {
-                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>("services/records/api/ClinicResults/printResultFilePreview", prinResultadoFalse);
+                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionResultados>("services/gateway/api/ClinicResults/printResultFilePreview", prinResultadoFalse);
                 switch (sesExpediente.StatusCode)
                 {
                     case System.Net.HttpStatusCode.OK:

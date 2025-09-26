@@ -18,6 +18,7 @@
 @inject AuthenticationStateProvider _authStateProvider
 @inject Cryp Cryp;
 @inject ISnackbar Snackbar
+@inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 @inject IJSRuntime IJSRuntime
 @inject IConfiguration _config;
 
@@ -202,11 +203,13 @@ else
                                     {
                                         if (ValidateData)
                                         {
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Download" Color="Color.Default" Size="Size.Small" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
                                             <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Default" Size="Size.Small" Disabled="true" aria-label="Imprimir Estudios"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton>
                                         }
                                         else
                                         {
                                             // <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => ImprimirExp()"></MudIconButton>
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Download" Color="Color.Primary" Size="Size.Small" aria-label="Imprimir Estudios" OnClick="() => ImprimirExpGral(context)"></MudIconButton>
                                             <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Small" aria-label="Imprimir Estudios" OnClick="() => OpenDialog(context)"></MudIconButton>
                                         }
                                     }
@@ -1025,6 +1028,24 @@ else
 
         StateHasChanged();
 
+    }
+
+    async Task ImprimirExpGral(DtoResponseMedicoPaciente itemSolicitud)
+    {
+        try
+        {
+            var archivopdf = await _PdfGenerator.CreatePDF(_config, IJSRuntime, Http, itemSolicitud.Estudios);
+            _PdfGenerator.ViewPDFInNewTab(IJSRuntime, archivopdf);
+
+            Http.DefaultRequestHeaders.Remove("branchid");
+            Http.DefaultRequestHeaders.Add("branchid", Sucursal);
+            ValidateDataMod = false;
+        }
+        catch (Exception ex)
+        {
+            ShowSnack($"Error al Imprimir los resultados: {ex.Message}", 4);
+
+        }
     }
 
 

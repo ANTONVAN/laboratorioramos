@@ -11,13 +11,14 @@
 @inject NavigationManager NavigationManager
 @inject Cryp Cryp;
 @inject ISnackbar Snackbar
+@inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 
 <PageTitle>Login</PageTitle>
 
 
 <MudGrid Justify="Justify.Center">
     <MudItem xs="12" sm="7" md="12" Class="d-flex absolute justify-center" style="top:15%;">
-        <EditForm Model="@dtoLoginPaciente" OnValidSubmit="OnValidSubmit" style="width: 500px;">
+        <EditForm Model="@dtoLoginPaciente" OnValidSubmit="OnValidSubmitAsync" style="width: 500px;">
             <DataAnnotationsValidator />
             <MudGrid>
                 <MudItem xs="12" md="12" sm="12">
@@ -60,7 +61,7 @@
     private DtoRequestPaciente dtoEequestPaciente = new();
     private bool ValidateData = false;
     private string UrlAuth = "services/identity/api/profile/login";
-    private string UrlUsuario = "services/records/api/MedicalRecord/now";
+    private string UrlUsuario = "services/gateway/api/MedicalRecord/now";
     private DtoFiltroNavega filorig = new();
     #endregion
 
@@ -75,105 +76,139 @@
         Snackbar.Add($"Atención: {message}", Severity.Warning);
     }
 
+    private void ClearAuthHeaders()
+    {
+        Http.DefaultRequestHeaders.Remove("Authorization");
+        Http.DefaultRequestHeaders.Remove("branchid");
+    }
+
     #endregion
 
     #region Operaciones
-    async void OnValidSubmit(EditContext context)
+    private async Task OnValidSubmitAsync(EditContext context)
     {
+        if (context is null) return;
+        
         ValidateData = true;
         filorig.LstFiltro = new();
+        
+        var generalUser = _config.GetSection("UsrLoginGral:User").Value;
+        var generalPassword = _config.GetSection("UsrLoginGral:Pwd").Value;
+        
+        if (string.IsNullOrWhiteSpace(generalUser) || string.IsNullOrWhiteSpace(generalPassword))
+        {
+            ApiHandler.ShowErrorMessage("Configuración de usuario general no encontrada");
+            ValidateData = false;
+            return;
+        }
+        
         dtoLogin = new()
         {
-            Usuario = _config.GetSection("UsrLoginGral:User").Value,
-            Contraseña = _config.GetSection("UsrLoginGral:Pwd").Value,
+            Usuario = generalUser,
+            Contraseña = generalPassword,
         };
-        var ses = await Http.PostAsJsonAsync<DtoLogin>(UrlAuth, dtoLogin);
-        Http.DefaultRequestHeaders.Remove("Authorization");
-        Http.DefaultRequestHeaders.Remove("branchid");
-        switch (ses.StatusCode)
+        
+        try
         {
-            case System.Net.HttpStatusCode.OK:
-                var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
+            // Autenticación inicial
+            using var authResponse = await Http.PostAsJsonAsync<DtoLogin>(UrlAuth, dtoLogin);
+            
+            // Limpiar headers previos
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Remove("branchid");
+
+            // Manejar respuesta de autenticación
+            var authSuccess = await ApiHandler.HandleResponseAsync<DtoLogin>(authResponse, "autenticación",false);
+            
+            if (authSuccess && authResponse.IsSuccessStatusCode)
+            {
+                var result = await authResponse.Content.ReadFromJsonAsync<DtoUserSession>();
+                if (result?.Token is null)
+                {
+                    ApiHandler.ShowErrorMessage("Token de autenticación no recibido");
+                    ValidateData = false;
+                    return;
+                }
+                
                 dtoEequestPaciente = new()
                 {
-                        Expediente = dtoLoginPaciente.Usuario
+                    Expediente = dtoLoginPaciente.Usuario
                 };
-                Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
-                //Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {result.Token}");
+
+                // Consulta de datos del paciente
                 var sesPaciente = await Http.PostAsJsonAsync<DtoRequestPaciente>(UrlUsuario, dtoEequestPaciente);
-                switch (sesPaciente.StatusCode)
+                var pacienteSuccess = await ApiHandler.HandleResponseAsync<DtoRequestPaciente>(sesPaciente, "consulta de paciente",false);
+                
+                if (pacienteSuccess && sesPaciente.StatusCode == System.Net.HttpStatusCode.OK)
                 {
-                    case System.Net.HttpStatusCode.OK:
-                        try
+                    dtoPaciente = await sesPaciente.Content.ReadFromJsonAsync<List<DtoPaciente>>();
+                    
+                    if (dtoPaciente.Count > 0)
+                    {
+                        var exispas = dtoPaciente.FirstOrDefault(op => op.Expediente.Equals(dtoLoginPaciente.Usuario));
+                        if (exispas != null)
                         {
-                            dtoPaciente = await sesPaciente.Content.ReadFromJsonAsync<List<DtoPaciente>>();
-                            if (dtoPaciente.Count>0)
+                            Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
+                            
+                            // Consulta de solicitudes del paciente
+                            var solicitudesResponse = await Http.GetAsync($"services/gateway/api/MedicalRecord/requests/{exispas.Id}");
+                            var solicitudesSuccess = await ApiHandler.HandleResponseAsync<List<DtoDetalleExpedienteSolicitud>>(solicitudesResponse, "consulta de solicitudes",false);
+                            
+                            if (solicitudesSuccess)
                             {
-                                var exispas = dtoPaciente.FirstOrDefault(op => op.Expediente.Equals(dtoLoginPaciente.Usuario));
-                                if (exispas !=null)
+                                dtoDetalleExpedienteSol = await solicitudesResponse.Content.ReadFromJsonAsync<List<DtoDetalleExpedienteSolicitud>>();
+                                var regpas = dtoDetalleExpedienteSol.FirstOrDefault(op => op.Clave.Equals(dtoLoginPaciente.Contraseña));
+                                
+                                if (regpas != null)
                                 {
-                                    Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
-                                    dtoDetalleExpedienteSol = await Http.GetFromJsonAsync<List<DtoDetalleExpedienteSolicitud>>($"services/records/api/MedicalRecord/requests/{exispas.Id}");
+                                    // Login exitoso
+                                    dtoPaciente[0].Token = result.Token;
+                                    string json = JsonConvert.SerializeObject(dtoPaciente);
+                                    string filtro = JsonConvert.SerializeObject(filorig);
+                                    
+                                    var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+                                    await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+                                        {
+                                            filtros = Cryp.Encripta(filtro),
+                                            testsuncretr = Cryp.Encripta(json),
+                                            Type = 1
+                                        });
 
-                                    var regpas = dtoDetalleExpedienteSol.FirstOrDefault(op => op.Clave.Equals(dtoLoginPaciente.Contraseña));
-                                    if (regpas!=null)
-                                    {
-                                        dtoPaciente[0].Token = result.Token;
-                                        string json = JsonConvert.SerializeObject(dtoPaciente);
-                                        string filtro = JsonConvert.SerializeObject(filorig);
-                                        var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
-                                        await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
-                                            {
-                                                filtros = Cryp.Encripta(filtro),
-                                                testsuncretr = Cryp.Encripta(json),
-                                                Type = 1
-                                            });
-
-                                        NavigationManager.NavigateTo("/ConsultaResultadosPaciente/1/0", true);
-                                    }
-                                    else
-                                    {
-                                        Http.DefaultRequestHeaders.Remove("Authorization");
-                                        Http.DefaultRequestHeaders.Remove("branchid");
-                                        ShowSnack("¡El Código es incorrecto, favor de verificar!");
-                                    }
-
-                                    ValidateData = false;
+                                    ApiHandler.ShowSuccessMessage("¡Login exitoso! Bienvenido paciente.");
+                                    NavigationManager.NavigateTo("/ConsultaResultadosPaciente/1/0", true);
                                 }
                                 else
                                 {
                                     Http.DefaultRequestHeaders.Remove("Authorization");
                                     Http.DefaultRequestHeaders.Remove("branchid");
-                                    ShowSnack("¡El Expediente no existe, favor de verificar!");
-                                    ValidateData = false;
+                                    ApiHandler.ShowWarningMessage("¡El Código es incorrecto, favor de verificar!");
                                 }
-
                             }
-                            else
-                            {
-                                Http.DefaultRequestHeaders.Remove("Authorization");
-                                Http.DefaultRequestHeaders.Remove("branchid");
-                                ShowSnack("¡El Paciente no existe, favor de verificar!");
-                                ValidateData = false;
-                            }
-
-                        }
-                        catch (Exception ex)
-                        {
                             ValidateData = false;
                         }
-
-
-                        break;
+                        else
+                        {
+                            Http.DefaultRequestHeaders.Remove("Authorization");
+                            Http.DefaultRequestHeaders.Remove("branchid");
+                            ApiHandler.ShowWarningMessage("¡El Expediente no existe, favor de verificar!");
+                            ValidateData = false;
+                        }
+                    }
+                    else
+                    {
+                        Http.DefaultRequestHeaders.Remove("Authorization");
+                        Http.DefaultRequestHeaders.Remove("branchid");
+                        ApiHandler.ShowWarningMessage("¡El Paciente no existe, favor de verificar!");
+                        ValidateData = false;
+                    }
                 }
-
-
-                break;
-            case System.Net.HttpStatusCode.NoContent:
-                ValidateData = false;
-                break;
-            default:
-                break;
+            }
+        }
+        catch (Exception ex)
+        {
+            ApiHandler.ShowErrorMessage($"Error inesperado durante el login: {ex.Message}");
+            ValidateData = false;
         }
         StateHasChanged();
     }

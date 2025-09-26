@@ -34,6 +34,20 @@ function ViewPDFOrder(iframeID, byteBase64) {
     document.getElementById(iframeID).appendChild(ifra);
 }
 
+function ViewPDFInNewTab(filename, byteBase64) {
+    var contentType = 'application/pdf';
+    var blob = b64toBlob(byteBase64, contentType);
+    var blobUrl = URL.createObjectURL(blob);
+    
+    // Open PDF in new tab
+    var newWindow = window.open(blobUrl, '_blank');
+    
+    // Clean up the blob URL after a delay to allow the browser to load it
+    setTimeout(function() {
+        URL.revokeObjectURL(blobUrl);
+    }, 1000);
+}
+
 function b64toBlob(b64Data, contentType, sliceSize) {
     contentType = contentType || '';
     sliceSize = sliceSize || 512;

@@ -16,6 +16,7 @@
 @inject Cryp Cryp;
 @inject ISnackbar Snackbar
 @inject IJSRuntime IJSRuntime
+@inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 
 <PageTitle>Creación de Órden Médica.</PageTitle>
 
@@ -1012,9 +1013,21 @@ else
                     }
 
 
-                    //dtoEstudiosGralTmp = Http.GetFromJsonAsync<List<DtoEstudiosGral>>(UrlAllStudy);
-                    ListEstudio = Http.GetFromJsonAsync<List<DtoEstudiosGral>>(UrlAllStudy);
-                    ListPacks = Http.GetFromJsonAsync<List<DtoPackEstudioOrden>>(UrlAllPack);
+                    // Consulta de estudios generales
+                    var estudiosResponse = await Http.GetAsync(UrlAllStudy);
+                    var estudiosSuccess = await ApiHandler.HandleResponseAsync<List<DtoEstudiosGral>>(estudiosResponse, "consulta de estudios generales",false);
+                    if (estudiosSuccess)
+                    {
+                        ListEstudio = estudiosResponse.Content.ReadFromJsonAsync<List<DtoEstudiosGral>>();
+                    }
+                    
+                    // Consulta de paquetes de estudios
+                    var packsResponse = await Http.GetAsync(UrlAllPack);
+                    var packsSuccess = await ApiHandler.HandleResponseAsync<List<DtoPackEstudioOrden>>(packsResponse, "consulta de paquetes de estudios",false);
+                    if (packsSuccess)
+                    {
+                        ListPacks = packsResponse.Content.ReadFromJsonAsync<List<DtoPackEstudioOrden>>();
+                    }
 
                     parametrobusqueda = new()
                     {
