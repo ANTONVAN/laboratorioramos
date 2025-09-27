@@ -110,9 +110,17 @@ else
                 <MudText Align="Align.Justify" Typo="Typo.body1"><MudIcon Icon="@Icons.Material.Filled.PhoneAndroid" Color="Color.Primary" />&nbsp;<b>Celular:</b> &nbsp; @LstExpedientes[0].EnvioWhatsapp</MudText>
             </MudItem>
             <MudItem xs="12" sm="3" md="2" Style="padding-top: 0px;">
-                <MudIconButton Icon="@Icons.Material.Outlined.Download" Color="Color.Primary" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => ImprimirExpGral(LstExpedientes[0])"></MudIconButton>
-                <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => OpenDialog(LstExpedientes[0])"></MudIconButton>
-                <MudIconButton Icon="@Icons.Material.Filled.BarChart" Size="Size.Medium" Color="Color.Info" OnClick="OpenDialogGrafica"></MudIconButton>
+                @{
+                    if (dtoResultadosEstudios.Estudios.Count>0)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Outlined.Download" Color="Color.Primary" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => ImprimirExpGral(LstExpedientes[0])"></MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Outlined.Print" Color="Color.Error" Size="Size.Medium" aria-label="Imprimir Estudios" OnClick="() => OpenDialog(LstExpedientes[0])"></MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.BarChart" Size="Size.Medium" Color="Color.Info" OnClick="OpenDialogGrafica"></MudIconButton>
+                    }else{
+                        <MudIconButton Icon="@Icons.Material.Filled.BarChart" Size="Size.Medium" Color="Color.Info" OnClick="OpenDialogGrafica"></MudIconButton>
+                    }
+                }
+                
             </MudItem>
             <MudItem xs="12" sm="3" md="1" Style="padding-top: 0px;">
                 
@@ -189,90 +197,55 @@ else
                     }
                     @if (dtoResultadosEstudios.Estudios != null)
                     {
-                        foreach (var item in dtoResultadosEstudios.Estudios)
+                        if (dtoResultadosEstudios.Estudios.Count > 0)
                         {
-                            <MudExpansionPanel Class="mt-2" Dense="false" Gutters="false" Expanded="true" HideIcon="true">
-                                <TitleContent>
-                                    <div class="d-flex" style="color:#1d2223;">
-                                        @{
-                                            var nombreCaptura = String.IsNullOrEmpty(item.SucursalCaptura) ? "" : $"(Capturado en: {item.SucursalCaptura})";
-                                        }
-                                        <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.PlaylistAdd" class="mr-3"></MudIcon>&nbsp;@item.Clave-<strong>@item.Nombre</strong> @nombreCaptura</MudText>
-                                    </div>
-                                </TitleContent>
-                                <ChildContent>
-                                    <MudGrid Class="d-flex d-sm-none d-none d-sm-flex d-md-none mt-2">
-
-                                        @foreach (var itemParam in item.Parametros)
-                                        {
-                                            <MudItem xs="3" sm="3" md="3">
-                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Examen: </MudText>
-                                            </MudItem>
-                                            <MudItem xs="9" sm="9" md="3">
-                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Nombre</MudText>
-                                            </MudItem>
-                                            @if (itemParam.TipoValor == "1")
-                                            {
-                                                var valini = itemParam.ValorInicial == null ? "0" : itemParam.ValorInicial;
-                                                var valFinal = itemParam.ValorFinal == null ? "0" : itemParam.ValorFinal;
-                                                if (!String.IsNullOrEmpty(itemParam.Resultado))
-                                                {
-                                                    string ObtengoNum = Regex.Replace(itemParam.Resultado, @"[^0-9.]", "");
-                                                    if (double.Parse(ObtengoNum) < double.Parse(valini) || double.Parse(ObtengoNum) > double.Parse(valFinal))
-                                                    {
-                                                        <MudItem xs="3" sm="3" md="3">
-                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
-                                                        </MudItem>
-                                                        <MudItem xs="9" sm="9" md="3">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
-                                                        </MudItem>
-                                                    }
-                                                    else
-                                                    {
-                                                        <MudItem xs="3" sm="3" md="3">
-                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
-                                                        </MudItem>
-                                                        <MudItem xs="9" sm="9" md="3">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                        </MudItem>
-                                                    }
+                                foreach (var item in dtoResultadosEstudios.Estudios)
+                                {
+                                    <MudExpansionPanel Class="mt-2" Dense="false" Gutters="false" Expanded="true" HideIcon="true">
+                                        <TitleContent>
+                                            <div class="d-flex" style="color:#1d2223;">
+                                                @{
+                                                    var nombreCaptura = String.IsNullOrEmpty(item.SucursalCaptura) ? "" : $"(Capturado en: {item.SucursalCaptura})";
                                                 }
-                                                else
+                                                <MudText Align="Align.Justify" Typo="Typo.subtitle2"><MudIcon Icon="@Icons.Material.Filled.PlaylistAdd" class="mr-3"></MudIcon>&nbsp;@item.Clave-<strong>@item.Nombre</strong> @nombreCaptura</MudText>
+                                            </div>
+                                        </TitleContent>
+                                        <ChildContent>
+                                            <MudGrid Class="d-flex d-sm-none d-none d-sm-flex d-md-none mt-2">
+
+                                                @foreach (var itemParam in item.Parametros)
                                                 {
                                                     <MudItem xs="3" sm="3" md="3">
-                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Examen: </MudText>
                                                     </MudItem>
                                                     <MudItem xs="9" sm="9" md="3">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Nombre</MudText>
                                                     </MudItem>
-                                                }
-
-                                            }
-                                            else if (itemParam.TipoValor == "2")
-                                            {
-                                                //var regcoincide = itemParam.TipoValores.FirstOrDefault(e => e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
-                                                var regcoincide = itemParam.TipoValores[0];
-                                                var valini = SexoPaciente == "Femenino" ? regcoincide.MujerValorInicial != null ? regcoincide.MujerValorInicial : "" : regcoincide.HombreValorInicial != null ? regcoincide.HombreValorInicial : "";
-                                                var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal != null ? regcoincide.MujerValorFinal : "" : regcoincide.HombreValorFinal != null ? regcoincide.HombreValorFinal : "";
-                                                if (!String.IsNullOrEmpty(itemParam.Resultado))
-                                                {
-                                                    if (String.IsNullOrEmpty(valini) || String.IsNullOrEmpty(valFinal))
+                                                    @if (itemParam.TipoValor == "1")
                                                     {
-                                                        <MudItem xs="3" sm="3" md="3">
-                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
-                                                        </MudItem>
-                                                        <MudItem xs="9" sm="9" md="3">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                        </MudItem>
-                                                    }else{
-                                                        if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                        var valini = itemParam.ValorInicial == null ? "0" : itemParam.ValorInicial;
+                                                        var valFinal = itemParam.ValorFinal == null ? "0" : itemParam.ValorFinal;
+                                                        if (!String.IsNullOrEmpty(itemParam.Resultado))
                                                         {
-                                                            <MudItem xs="3" sm="3" md="3">
-                                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
-                                                            </MudItem>
-                                                            <MudItem xs="9" sm="9" md="3">
-                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
-                                                            </MudItem>
+                                                            string ObtengoNum = Regex.Replace(itemParam.Resultado, @"[^0-9.]", "");
+                                                            if (double.Parse(ObtengoNum) < double.Parse(valini) || double.Parse(ObtengoNum) > double.Parse(valFinal))
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3">
+                                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                                </MudItem>
+                                                                <MudItem xs="9" sm="9" md="3">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3">
+                                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                                </MudItem>
+                                                                <MudItem xs="9" sm="9" md="3">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
                                                         }
                                                         else
                                                         {
@@ -283,35 +256,133 @@ else
                                                                 <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                             </MudItem>
                                                         }
+
                                                     }
-
-                                                }
-                                                else
-                                                {
-                                                    <MudItem xs="3" sm="3" md="3">
-                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
-                                                    </MudItem>
-                                                    <MudItem xs="9" sm="9" md="3">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                    </MudItem>
-                                                }
-
-                                            }
-                                            else if (itemParam.TipoValor == "3")
-                                            {
-                                                var regcoincideEdad = itemParam.TipoValores.FirstOrDefault(e => EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal);
-                                                var valini = regcoincideEdad.ValorInicialNumerico == null ? "0" : regcoincideEdad.ValorInicialNumerico;
-                                                var valFinal = regcoincideEdad.ValorFinalNumerico == null ? "0" : regcoincideEdad.ValorFinalNumerico;
-                                                if (!String.IsNullOrEmpty(itemParam.Resultado))
-                                                {
-                                                    if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                    else if (itemParam.TipoValor == "2")
                                                     {
-                                                        <MudItem xs="3" sm="3" md="3">
-                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
-                                                        </MudItem>
-                                                        <MudItem xs="9" sm="9" md="3">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
-                                                        </MudItem>
+                                                        //var regcoincide = itemParam.TipoValores.FirstOrDefault(e => e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
+                                                        var regcoincide = itemParam.TipoValores[0];
+                                                        var valini = SexoPaciente == "Femenino" ? regcoincide.MujerValorInicial != null ? regcoincide.MujerValorInicial : "" : regcoincide.HombreValorInicial != null ? regcoincide.HombreValorInicial : "";
+                                                        var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal != null ? regcoincide.MujerValorFinal : "" : regcoincide.HombreValorFinal != null ? regcoincide.HombreValorFinal : "";
+                                                        if (!String.IsNullOrEmpty(itemParam.Resultado))
+                                                        {
+                                                            if (String.IsNullOrEmpty(valini) || String.IsNullOrEmpty(valFinal))
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3">
+                                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                                </MudItem>
+                                                                <MudItem xs="9" sm="9" md="3">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                            else
+                                                            {
+                                                                if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                                {
+                                                                    <MudItem xs="3" sm="3" md="3">
+                                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                                    </MudItem>
+                                                                    <MudItem xs="9" sm="9" md="3">
+                                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                                    </MudItem>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <MudItem xs="3" sm="3" md="3">
+                                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                                    </MudItem>
+                                                                    <MudItem xs="9" sm="9" md="3">
+                                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                                    </MudItem>
+                                                                }
+                                                            }
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3">
+                                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="9" sm="9" md="3">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                            </MudItem>
+                                                        }
+
+                                                    }
+                                                    else if (itemParam.TipoValor == "3")
+                                                    {
+                                                        var regcoincideEdad = itemParam.TipoValores.FirstOrDefault(e => EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal);
+                                                        var valini = regcoincideEdad.ValorInicialNumerico == null ? "0" : regcoincideEdad.ValorInicialNumerico;
+                                                        var valFinal = regcoincideEdad.ValorFinalNumerico == null ? "0" : regcoincideEdad.ValorFinalNumerico;
+                                                        if (!String.IsNullOrEmpty(itemParam.Resultado))
+                                                        {
+                                                            if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3">
+                                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                                </MudItem>
+                                                                <MudItem xs="9" sm="9" md="3">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3">
+                                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                                </MudItem>
+                                                                <MudItem xs="9" sm="9" md="3">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3">
+                                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="9" sm="9" md="3">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                            </MudItem>
+                                                        }
+
+                                                    }
+                                                    else if (itemParam.TipoValor == "4")
+                                                    {
+                                                        var regcoincideSexoEdad = itemParam.TipoValores.FirstOrDefault(e => (EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal) && e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
+                                                        var valini = regcoincideSexoEdad.ValorInicialNumerico == null ? "0" : regcoincideSexoEdad.ValorInicialNumerico;
+                                                        var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "0" : regcoincideSexoEdad.ValorFinalNumerico;
+                                                        if (!String.IsNullOrEmpty(itemParam.Resultado))
+                                                        {
+                                                            if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3">
+                                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                                </MudItem>
+                                                                <MudItem xs="9" sm="9" md="3">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3">
+                                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                                </MudItem>
+                                                                <MudItem xs="9" sm="9" md="3">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3">
+                                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="9" sm="9" md="3">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                            </MudItem>
+                                                        }
+
+
                                                     }
                                                     else
                                                     {
@@ -322,277 +393,188 @@ else
                                                             <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                         </MudItem>
                                                     }
-                                                }
-                                                else
-                                                {
+
                                                     <MudItem xs="3" sm="3" md="3">
-                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Unidades: </MudText>
                                                     </MudItem>
                                                     <MudItem xs="9" sm="9" md="3">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.UnidadNombre</MudText>
                                                     </MudItem>
-                                                }
-
-                                            }
-                                            else if (itemParam.TipoValor == "4")
-                                            {
-                                                var regcoincideSexoEdad = itemParam.TipoValores.FirstOrDefault(e => (EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal) && e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
-                                                var valini = regcoincideSexoEdad.ValorInicialNumerico == null ? "0" : regcoincideSexoEdad.ValorInicialNumerico;
-                                                var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "0" : regcoincideSexoEdad.ValorFinalNumerico;
-                                                if (!String.IsNullOrEmpty(itemParam.Resultado))
-                                                {
-                                                    if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                    @if (itemParam.TipoValor == "1")
                                                     {
+                                                        var valini = itemParam.ValorInicial == null ? "" : itemParam.ValorInicial;
+                                                        var valFinal = itemParam.ValorFinal == null ? "" : itemParam.ValorFinal;
                                                         <MudItem xs="3" sm="3" md="3">
-                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
                                                         </MudItem>
                                                         <MudItem xs="9" sm="9" md="3">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
                                                         </MudItem>
+
+                                                    }
+                                                    else if (itemParam.TipoValor == "2")
+                                                    {
+                                                        //var regcoincide = itemParam.TipoValores.FirstOrDefault(e => e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
+                                                        var regcoincide = itemParam.TipoValores[0];
+                                                        var valini = SexoPaciente == "Femenino" ? regcoincide.MujerValorInicial : regcoincide.HombreValorInicial;
+                                                        var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal : regcoincide.HombreValorFinal;
+                                                        <MudItem xs="3" sm="3" md="3">
+                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="9" sm="9" md="3">
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                                        </MudItem>
+                                                    }
+                                                    else if (itemParam.TipoValor == "3")
+                                                    {
+                                                        var regcoincideEdad = itemParam.TipoValores.FirstOrDefault(e => EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal);
+                                                        var valini = regcoincideEdad.ValorInicialNumerico == null ? "" : regcoincideEdad.ValorInicialNumerico;
+                                                        var valFinal = regcoincideEdad.ValorFinalNumerico == null ? "" : regcoincideEdad.ValorFinalNumerico;
+                                                        <MudItem xs="3" sm="3" md="3">
+                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="9" sm="9" md="3">
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                                        </MudItem>
+                                                    }
+                                                    else if (itemParam.TipoValor == "4")
+                                                    {
+                                                        var regcoincideSexoEdad = itemParam.TipoValores.FirstOrDefault(e => (EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal) && e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
+                                                        var valini = regcoincideSexoEdad.ValorInicialNumerico == null ? "" : regcoincideSexoEdad.ValorInicialNumerico;
+                                                        var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "" : regcoincideSexoEdad.ValorFinalNumerico;
+                                                        <MudItem xs="3" sm="3" md="3">
+                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="9" sm="9" md="3">
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                                        </MudItem>
+
+                                                    }
+                                                    else if (itemParam.TipoValor == "5" || itemParam.TipoValor == "7" || itemParam.TipoValor == "8" || itemParam.TipoValor == "10")
+                                                    {
+                                                        if (itemParam.TipoValores.Count > 0)
+                                                        {
+                                                            var regcoincidePrimero = itemParam.TipoValores[0];
+                                                            var ValOpcion = regcoincidePrimero.Opcion == null ? "" : regcoincidePrimero.Opcion;
+                                                            <MudItem xs="3" sm="3" md="3">
+                                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="9" sm="9" md="3">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@ValOpcion</MudText>
+                                                            </MudItem>
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3">
+                                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="9" sm="9" md="3">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
+                                                            </MudItem>
+                                                        }
+
+                                                    }
+                                                    else if (itemParam.TipoValor == "9")
+                                                    {
+                                                        <MudItem xs="3" sm="3" md="3">
+                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                        </MudItem>
+                                                        <MudItem xs="9" sm="9" md="3">
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
+                                                        </MudItem>
+                                                    }
+                                                    else if (itemParam.TipoValor == "6" || itemParam.TipoValor == "11" || itemParam.TipoValor == "12" || itemParam.TipoValor == "13" || itemParam.TipoValor == "14")
+                                                    {
+                                                        if (itemParam.TipoValores.Count > 0)
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3">
+                                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="9" sm="9" md="3">
+                                                                <MudTable Class="mt-4" Items="@itemParam.TipoValores" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="2" Style="width:100%;">
+                                                                    <ColGroup>
+                                                                        <col />
+                                                                        <col />
+                                                                        <col />
+                                                                        <col />
+                                                                        <col />
+                                                                    </ColGroup>
+                                                                    <RowTemplate>
+                                                                        <MudTd DataLabel="" Style="font-weight:bolder">@context.PrimeraColumna</MudTd>
+                                                                        <MudTd DataLabel="" Style="font-weight:bolder">@context.SegundaColumna</MudTd>
+                                                                        <MudTd DataLabel="" Style="font-weight:bolder">@context.TerceraColumna</MudTd>
+                                                                        <MudTd DataLabel="" Style="font-weight:bolder">@context.CuartaColumna</MudTd>
+                                                                        <MudTd DataLabel="" Style="font-weight:bolder">@context.QuintaColumna</MudTd>
+                                                                    </RowTemplate>
+                                                                    <NoRecordsContent>
+                                                                        <MudText></MudText>
+                                                                    </NoRecordsContent>
+                                                                </MudTable>
+                                                            </MudItem>
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3">
+                                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                            </MudItem>
+                                                            <MudItem xs="9" sm="9" md="3">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
+                                                            </MudItem>
+                                                        }
+
+
                                                     }
                                                     else
                                                     {
                                                         <MudItem xs="3" sm="3" md="3">
-                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                            <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
                                                         </MudItem>
                                                         <MudItem xs="9" sm="9" md="3">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
                                                         </MudItem>
                                                     }
+                                                    @* aqui tomar en cuenta las reglas de negocio que manda Antonio *@
+
                                                 }
-                                                else
-                                                {
-                                                    <MudItem xs="3" sm="3" md="3">
-                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
-                                                    </MudItem>
-                                                    <MudItem xs="9" sm="9" md="3">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                    </MudItem>
-                                                }
+                                            </MudGrid>
 
-
-                                            }
-                                            else
-                                            {
+                                            <MudGrid Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex">
                                                 <MudItem xs="3" sm="3" md="3">
-                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Resultado:</MudText>
+                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Examen</MudText>
                                                 </MudItem>
-                                                <MudItem xs="9" sm="9" md="3">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                </MudItem>
-                                            }
-
-                                            <MudItem xs="3" sm="3" md="3">
-                                                <MudText Align="Align.Start" Typo="Typo.subtitle1">Unidades: </MudText>
-                                            </MudItem>
-                                            <MudItem xs="9" sm="9" md="3">
-                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.UnidadNombre</MudText>
-                                            </MudItem>
-                                            @if (itemParam.TipoValor == "1")
-                                            {
-                                                var valini = itemParam.ValorInicial == null ? "" : itemParam.ValorInicial;
-                                                var valFinal = itemParam.ValorFinal == null ? "" : itemParam.ValorFinal;
                                                 <MudItem xs="3" sm="3" md="3">
-                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Resultado</MudText>
                                                 </MudItem>
-                                                <MudItem xs="9" sm="9" md="3">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
-                                                </MudItem>
-
-                                            }
-                                            else if (itemParam.TipoValor == "2")
-                                            {
-                                                //var regcoincide = itemParam.TipoValores.FirstOrDefault(e => e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
-                                                var regcoincide = itemParam.TipoValores[0];
-                                                var valini = SexoPaciente == "Femenino" ? regcoincide.MujerValorInicial : regcoincide.HombreValorInicial;
-                                                var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal : regcoincide.HombreValorFinal;
                                                 <MudItem xs="3" sm="3" md="3">
-                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Unidades</MudText>
                                                 </MudItem>
-                                                <MudItem xs="9" sm="9" md="3">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
-                                                </MudItem>
-                                            }
-                                            else if (itemParam.TipoValor == "3")
-                                            {
-                                                var regcoincideEdad = itemParam.TipoValores.FirstOrDefault(e => EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal);
-                                                var valini = regcoincideEdad.ValorInicialNumerico == null ? "" : regcoincideEdad.ValorInicialNumerico;
-                                                var valFinal = regcoincideEdad.ValorFinalNumerico == null ? "" : regcoincideEdad.ValorFinalNumerico;
                                                 <MudItem xs="3" sm="3" md="3">
-                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
+                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">Referencia</MudText>
                                                 </MudItem>
-                                                <MudItem xs="9" sm="9" md="3">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
-                                                </MudItem>
-                                            }
-                                            else if (itemParam.TipoValor == "4")
-                                            {
-                                                var regcoincideSexoEdad = itemParam.TipoValores.FirstOrDefault(e => (EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal) && e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
-                                                var valini = regcoincideSexoEdad.ValorInicialNumerico == null ? "" : regcoincideSexoEdad.ValorInicialNumerico;
-                                                var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "" : regcoincideSexoEdad.ValorFinalNumerico;
-                                                <MudItem xs="3" sm="3" md="3">
-                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
-                                                </MudItem>
-                                                <MudItem xs="9" sm="9" md="3">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
-                                                </MudItem>
-
-                                            }
-                                            else if (itemParam.TipoValor == "5" || itemParam.TipoValor == "7" || itemParam.TipoValor == "8" || itemParam.TipoValor == "10")
-                                            {
-                                                if (itemParam.TipoValores.Count > 0)
-                                                {
-                                                    var regcoincidePrimero = itemParam.TipoValores[0];
-                                                    var ValOpcion = regcoincidePrimero.Opcion == null ? "" : regcoincidePrimero.Opcion;
-                                                    <MudItem xs="3" sm="3" md="3">
-                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
-                                                    </MudItem>
-                                                    <MudItem xs="9" sm="9" md="3">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@ValOpcion</MudText>
-                                                    </MudItem>
-                                                }
-                                                else
-                                                {
-                                                    <MudItem xs="3" sm="3" md="3">
-                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
-                                                    </MudItem>
-                                                    <MudItem xs="9" sm="9" md="3">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
-                                                    </MudItem>
-                                                }
-
-                                            }
-                                            else if (itemParam.TipoValor == "9")
-                                            {
-                                                <MudItem xs="3" sm="3" md="3">
-                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
-                                                </MudItem>
-                                                <MudItem xs="9" sm="9" md="3">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
-                                                </MudItem>
-                                            }
-                                            else if (itemParam.TipoValor == "6" || itemParam.TipoValor == "11" || itemParam.TipoValor == "12" || itemParam.TipoValor == "13" || itemParam.TipoValor == "14")
-                                            {
-                                                if (itemParam.TipoValores.Count > 0)
-                                                {
-                                                    <MudItem xs="3" sm="3" md="3">
-                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
-                                                    </MudItem>
-                                                    <MudItem xs="9" sm="9" md="3">
-                                                        <MudTable Class="mt-4" Items="@itemParam.TipoValores" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="2" Style="width:100%;">
-                                                            <ColGroup>
-                                                                <col />
-                                                                <col />
-                                                                <col />
-                                                                <col />
-                                                                <col />
-                                                            </ColGroup>
-                                                            <RowTemplate>
-                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.PrimeraColumna</MudTd>
-                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.SegundaColumna</MudTd>
-                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.TerceraColumna</MudTd>
-                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.CuartaColumna</MudTd>
-                                                                <MudTd DataLabel="" Style="font-weight:bolder">@context.QuintaColumna</MudTd>
-                                                            </RowTemplate>
-                                                            <NoRecordsContent>
-                                                                <MudText></MudText>
-                                                            </NoRecordsContent>
-                                                        </MudTable>
-                                                    </MudItem>
-                                                }
-                                                else
-                                                {
-                                                    <MudItem xs="3" sm="3" md="3">
-                                                        <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
-                                                    </MudItem>
-                                                    <MudItem xs="9" sm="9" md="3">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
-                                                    </MudItem>
-                                                }
-
-
-                                            }
-                                            else
-                                            {
-                                                <MudItem xs="3" sm="3" md="3">
-                                                    <MudText Align="Align.Start" Typo="Typo.subtitle1">Referencia: </MudText>
-                                                </MudItem>
-                                                <MudItem xs="9" sm="9" md="3">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
-                                                </MudItem>
-                                            }
-                                            @* aqui tomar en cuenta las reglas de negocio que manda Antonio *@
-
-                                        }
-                                    </MudGrid>
-
-                                    <MudGrid Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex">
-                                        <MudItem xs="3" sm="3" md="3">
-                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">Examen</MudText>
-                                        </MudItem>
-                                        <MudItem xs="3" sm="3" md="3">
-                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">Resultado</MudText>
-                                        </MudItem>
-                                        <MudItem xs="3" sm="3" md="3">
-                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">Unidades</MudText>
-                                        </MudItem>
-                                        <MudItem xs="3" sm="3" md="3">
-                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">Referencia</MudText>
-                                        </MudItem>
-                                        @foreach (var itemParam in item.Parametros)
-                                        {
-                                            <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Nombre</MudText>
-                                            </MudItem>
-                                            @if (itemParam.TipoValor == "1")
-                                            {
-                                                var valini = itemParam.ValorInicial == null ? "0" : itemParam.ValorInicial;
-                                                var valFinal = itemParam.ValorFinal == null ? "0" : itemParam.ValorFinal;
-                                                if (!String.IsNullOrEmpty(itemParam.Resultado))
-                                                {
-                                                    string ObtengoNum = Regex.Replace(itemParam.Resultado, @"[^0-9.]", "");
-                                                    if (double.Parse(ObtengoNum) < double.Parse(valini) || double.Parse(ObtengoNum) > double.Parse(valFinal))
-                                                    {
-                                                        <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
-                                                        </MudItem>
-                                                    }
-                                                    else
-                                                    {
-                                                        <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                        </MudItem>
-                                                    }
-                                                }
-                                                else
+                                                @foreach (var itemParam in item.Parametros)
                                                 {
                                                     <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Nombre</MudText>
                                                     </MudItem>
-                                                }
-
-                                            }
-                                            else if (itemParam.TipoValor == "2")
-                                            {
-                                                //var regcoincide = itemParam.TipoValores.FirstOrDefault(e => e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
-                                                var regcoincide = itemParam.TipoValores[0];
-                                                var valini = SexoPaciente == "Femenino" ? regcoincide.MujerValorInicial != null? regcoincide.MujerValorInicial:"" : regcoincide.HombreValorInicial!=null ? regcoincide.HombreValorInicial:"";
-                                                var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal!=null? regcoincide.MujerValorFinal:"" : regcoincide.HombreValorFinal!=null?regcoincide.HombreValorFinal:"";
-                                                if (!String.IsNullOrEmpty(itemParam.Resultado))
-                                                {
-                                                    if (String.IsNullOrEmpty(valini) || String.IsNullOrEmpty(valFinal))
+                                                    @if (itemParam.TipoValor == "1")
                                                     {
-                                                        <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                        </MudItem>
-                                                    }
-                                                    else
-                                                    {
-                                                        if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                        var valini = itemParam.ValorInicial == null ? "0" : itemParam.ValorInicial;
+                                                        var valFinal = itemParam.ValorFinal == null ? "0" : itemParam.ValorFinal;
+                                                        if (!String.IsNullOrEmpty(itemParam.Resultado))
                                                         {
-                                                            <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
-                                                            </MudItem>
+                                                            string ObtengoNum = Regex.Replace(itemParam.Resultado, @"[^0-9.]", "");
+                                                            if (double.Parse(ObtengoNum) < double.Parse(valini) || double.Parse(ObtengoNum) > double.Parse(valFinal))
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
                                                         }
                                                         else
                                                         {
@@ -600,29 +582,104 @@ else
                                                                 <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                             </MudItem>
                                                         }
+
                                                     }
-
-                                                }
-                                                else
-                                                {
-                                                    <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                    </MudItem>
-                                                }
-
-                                            }
-                                            else if (itemParam.TipoValor == "3")
-                                            {
-                                                var regcoincideEdad = itemParam.TipoValores.FirstOrDefault(e => EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal);
-                                                var valini = regcoincideEdad.ValorInicialNumerico == null ? "0" : regcoincideEdad.ValorInicialNumerico;
-                                                var valFinal = regcoincideEdad.ValorFinalNumerico == null ? "0" : regcoincideEdad.ValorFinalNumerico;
-                                                if (!String.IsNullOrEmpty(itemParam.Resultado))
-                                                {
-                                                    if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                    else if (itemParam.TipoValor == "2")
                                                     {
-                                                        <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
-                                                        </MudItem>
+                                                        //var regcoincide = itemParam.TipoValores.FirstOrDefault(e => e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
+                                                        var regcoincide = itemParam.TipoValores[0];
+                                                        var valini = SexoPaciente == "Femenino" ? regcoincide.MujerValorInicial != null ? regcoincide.MujerValorInicial : "" : regcoincide.HombreValorInicial != null ? regcoincide.HombreValorInicial : "";
+                                                        var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal != null ? regcoincide.MujerValorFinal : "" : regcoincide.HombreValorFinal != null ? regcoincide.HombreValorFinal : "";
+                                                        if (!String.IsNullOrEmpty(itemParam.Resultado))
+                                                        {
+                                                            if (String.IsNullOrEmpty(valini) || String.IsNullOrEmpty(valFinal))
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                            else
+                                                            {
+                                                                if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                                {
+                                                                    <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                                    </MudItem>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                                    </MudItem>
+                                                                }
+                                                            }
+
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                            </MudItem>
+                                                        }
+
+                                                    }
+                                                    else if (itemParam.TipoValor == "3")
+                                                    {
+                                                        var regcoincideEdad = itemParam.TipoValores.FirstOrDefault(e => EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal);
+                                                        var valini = regcoincideEdad.ValorInicialNumerico == null ? "0" : regcoincideEdad.ValorInicialNumerico;
+                                                        var valFinal = regcoincideEdad.ValorFinalNumerico == null ? "0" : regcoincideEdad.ValorFinalNumerico;
+                                                        if (!String.IsNullOrEmpty(itemParam.Resultado))
+                                                        {
+                                                            if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                            </MudItem>
+                                                        }
+
+
+                                                    }
+                                                    else if (itemParam.TipoValor == "4")
+                                                    {
+                                                        var regcoincideSexoEdad = itemParam.TipoValores.FirstOrDefault(e => (EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal) && e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
+                                                        var valini = regcoincideSexoEdad.ValorInicialNumerico == null ? "0" : regcoincideSexoEdad.ValorInicialNumerico;
+                                                        var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "0" : regcoincideSexoEdad.ValorFinalNumerico;
+                                                        if (!String.IsNullOrEmpty(itemParam.Resultado))
+                                                        {
+                                                            if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                            else
+                                                            {
+                                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                                </MudItem>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                            </MudItem>
+                                                        }
+
+
                                                     }
                                                     else
                                                     {
@@ -630,170 +687,140 @@ else
                                                             <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
                                                         </MudItem>
                                                     }
-                                                }
-                                                else
-                                                {
+
                                                     <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.UnidadNombre</MudText>
                                                     </MudItem>
-                                                }
+                                                    @if (itemParam.TipoValor == "1")
+                                                    {
+                                                        var valini = itemParam.ValorInicial == null ? "" : itemParam.ValorInicial;
+                                                        var valFinal = itemParam.ValorFinal == null ? "" : itemParam.ValorFinal;
+                                                        <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                                        </MudItem>
 
+                                                    }
+                                                    else if (itemParam.TipoValor == "2")
+                                                    {
+                                                        //var regcoincide = itemParam.TipoValores.FirstOrDefault(e => e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
+                                                        var regcoincide = itemParam.TipoValores[0];
+                                                        var valini = SexoPaciente == "Femenino" ? regcoincide.MujerValorInicial : regcoincide.HombreValorInicial;
+                                                        var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal : regcoincide.HombreValorFinal;
+                                                        <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                                        </MudItem>
+                                                    }
+                                                    else if (itemParam.TipoValor == "3")
+                                                    {
+                                                        var regcoincideEdad = itemParam.TipoValores.FirstOrDefault(e => EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal);
+                                                        var valini = regcoincideEdad.ValorInicialNumerico == null ? "" : regcoincideEdad.ValorInicialNumerico;
+                                                        var valFinal = regcoincideEdad.ValorFinalNumerico == null ? "" : regcoincideEdad.ValorFinalNumerico;
+                                                        <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                                        </MudItem>
+                                                    }
+                                                    else if (itemParam.TipoValor == "4")
+                                                    {
+                                                        var regcoincideSexoEdad = itemParam.TipoValores.FirstOrDefault(e => (EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal) && e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
+                                                        var valini = regcoincideSexoEdad.ValorInicialNumerico == null ? "" : regcoincideSexoEdad.ValorInicialNumerico;
+                                                        var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "" : regcoincideSexoEdad.ValorFinalNumerico;
+                                                        <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
+                                                        </MudItem>
 
-                                            }
-                                            else if (itemParam.TipoValor == "4")
-                                            {
-                                                var regcoincideSexoEdad = itemParam.TipoValores.FirstOrDefault(e => (EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal) && e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
-                                                var valini = regcoincideSexoEdad.ValorInicialNumerico == null ? "0" : regcoincideSexoEdad.ValorInicialNumerico;
-                                                var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "0" : regcoincideSexoEdad.ValorFinalNumerico;
-                                                if (!String.IsNullOrEmpty(itemParam.Resultado))
-                                                {
-                                                    if (double.Parse(itemParam.Resultado) < double.Parse(valini) || double.Parse(itemParam.Resultado) > double.Parse(valFinal))
+                                                    }
+                                                    else if (itemParam.TipoValor == "5" || itemParam.TipoValor == "7" || itemParam.TipoValor == "8" || itemParam.TipoValor == "10")
+                                                    {
+                                                        if (itemParam.TipoValores.Count > 0)
+                                                        {
+                                                            var regcoincidePrimero = itemParam.TipoValores[0];
+                                                            var ValOpcion = regcoincidePrimero.Opcion == null ? "" : regcoincidePrimero.Opcion;
+                                                            <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@ValOpcion</MudText>
+                                                            </MudItem>
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
+                                                            </MudItem>
+                                                        }
+
+                                                    }
+                                                    else if (itemParam.TipoValor == "9")
                                                     {
                                                         <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1" style="color:red;">@itemParam.Resultado</MudText>
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
                                                         </MudItem>
+                                                    }
+                                                    else if (itemParam.TipoValor == "6" || itemParam.TipoValor == "11" || itemParam.TipoValor == "12" || itemParam.TipoValor == "13" || itemParam.TipoValor == "14")
+                                                    {
+                                                        if (itemParam.TipoValores.Count > 0)
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                <MudTable Class="mt-4" Items="@itemParam.TipoValores" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="2" Style="width:100%;" CustomHeader="true">
+                                                                    <RowTemplate>
+                                                                        @if (context.PrimeraColumna != null)
+                                                                        {
+                                                                            <MudTd DataLabel="" Style="font-weight:bolder">@context.PrimeraColumna</MudTd>
+                                                                        }
+                                                                        @if (context.SegundaColumna != null)
+                                                                        {
+                                                                            <MudTd DataLabel="" Style="font-weight:bolder">@context.SegundaColumna</MudTd>
+                                                                        }
+                                                                        @if (context.TerceraColumna != null)
+                                                                        {
+                                                                            <MudTd DataLabel="" Style="font-weight:bolder">@context.TerceraColumna</MudTd>
+                                                                        }
+                                                                        @if (context.CuartaColumna != null)
+                                                                        {
+                                                                            <MudTd DataLabel="" Style="font-weight:bolder">@context.CuartaColumna</MudTd>
+                                                                        }
+                                                                        @if (context.QuintaColumna != null)
+                                                                        {
+                                                                            <MudTd DataLabel="" Style="font-weight:bolder">@context.QuintaColumna</MudTd>
+                                                                        }
+
+                                                                    </RowTemplate>
+                                                                    <NoRecordsContent>
+                                                                        <MudText></MudText>
+                                                                    </NoRecordsContent>
+                                                                </MudTable>
+                                                            </MudItem>
+                                                        }
+                                                        else
+                                                        {
+                                                            <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
+                                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
+                                                            </MudItem>
+                                                        }
+
+
                                                     }
                                                     else
                                                     {
                                                         <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
+                                                            <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
                                                         </MudItem>
                                                     }
+                                                    @* aqui tomar en cuenta las reglas de negocio que manda Antonio *@
+
                                                 }
-                                                else
-                                                {
-                                                    <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                    </MudItem>
-                                                }
+                                            </MudGrid>
 
-
-                                            }
-                                            else
-                                            {
-                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.Resultado</MudText>
-                                                </MudItem>
-                                            }
-
-                                            <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                <MudText Align="Align.Center" Typo="Typo.subtitle1">@itemParam.UnidadNombre</MudText>
-                                            </MudItem>
-                                            @if (itemParam.TipoValor == "1")
-                                            {
-                                                var valini = itemParam.ValorInicial == null ? "" : itemParam.ValorInicial;
-                                                var valFinal = itemParam.ValorFinal == null ? "" : itemParam.ValorFinal;
-                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
-                                                </MudItem>
-
-                                            }
-                                            else if (itemParam.TipoValor == "2")
-                                            {
-                                                //var regcoincide = itemParam.TipoValores.FirstOrDefault(e => e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
-                                                var regcoincide = itemParam.TipoValores[0];
-                                                var valini = SexoPaciente == "Femenino" ? regcoincide.MujerValorInicial : regcoincide.HombreValorInicial;
-                                                var valFinal = SexoPaciente == "Femenino" ? regcoincide.MujerValorFinal : regcoincide.HombreValorFinal;
-                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
-                                                </MudItem>
-                                            }
-                                            else if (itemParam.TipoValor == "3")
-                                            {
-                                                var regcoincideEdad = itemParam.TipoValores.FirstOrDefault(e => EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal);
-                                                var valini = regcoincideEdad.ValorInicialNumerico == null ? "" : regcoincideEdad.ValorInicialNumerico;
-                                                var valFinal = regcoincideEdad.ValorFinalNumerico == null ? "" : regcoincideEdad.ValorFinalNumerico;
-                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
-                                                </MudItem>
-                                            }
-                                            else if (itemParam.TipoValor == "4")
-                                            {
-                                                var regcoincideSexoEdad = itemParam.TipoValores.FirstOrDefault(e => (EdadPaciente >= e.RangoEdadInicial && EdadPaciente <= e.RangoEdadFinal) && e.Nombre.Equals((SexoPaciente == "Femenino" ? "mujer" : "hombre")));
-                                                var valini = regcoincideSexoEdad.ValorInicialNumerico == null ? "" : regcoincideSexoEdad.ValorInicialNumerico;
-                                                var valFinal = regcoincideSexoEdad.ValorFinalNumerico == null ? "" : regcoincideSexoEdad.ValorFinalNumerico;
-                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">@valini - @valFinal</MudText>
-                                                </MudItem>
-
-                                            }
-                                            else if (itemParam.TipoValor == "5" || itemParam.TipoValor == "7" || itemParam.TipoValor == "8" || itemParam.TipoValor == "10")
-                                            {
-                                                if (itemParam.TipoValores.Count > 0)
-                                                {
-                                                    var regcoincidePrimero = itemParam.TipoValores[0];
-                                                    var ValOpcion = regcoincidePrimero.Opcion == null ? "" : regcoincidePrimero.Opcion;
-                                                    <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">@ValOpcion</MudText>
-                                                    </MudItem>
-                                                }
-                                                else
-                                                {
-                                                    <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
-                                                    </MudItem>
-                                                }
-
-                                            }
-                                            else if (itemParam.TipoValor == "9")
-                                            {
-                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
-                                                </MudItem>
-                                            }
-                                            else if (itemParam.TipoValor == "6" || itemParam.TipoValor == "11" || itemParam.TipoValor == "12" || itemParam.TipoValor == "13" || itemParam.TipoValor == "14")
-                                            {
-                                                if (itemParam.TipoValores.Count > 0)
-                                                {
-                                                    <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                        <MudTable Class="mt-4" Items="@itemParam.TipoValores" Breakpoint="Breakpoint.Sm" Dense="true" Hover="true" Striped="true" Elevation="2" Style="width:100%;" CustomHeader="true">
-                                                            <RowTemplate>
-                                                                @if(context.PrimeraColumna!=null){
-                                                                    <MudTd DataLabel="" Style="font-weight:bolder">@context.PrimeraColumna</MudTd>
-                                                                } 
-                                                                @if(context.SegundaColumna!=null){
-                                                                    <MudTd DataLabel="" Style="font-weight:bolder">@context.SegundaColumna</MudTd>
-                                                                } 
-                                                                @if(context.TerceraColumna!=null){
-                                                                    <MudTd DataLabel="" Style="font-weight:bolder">@context.TerceraColumna</MudTd>
-                                                                }
-                                                                @if(context.CuartaColumna!=null){
-                                                                    <MudTd DataLabel="" Style="font-weight:bolder">@context.CuartaColumna</MudTd>
-                                                                }
-                                                                @if(context.QuintaColumna!=null){
-                                                                    <MudTd DataLabel="" Style="font-weight:bolder">@context.QuintaColumna</MudTd>
-                                                                } 
-
-                                                            </RowTemplate>
-                                                            <NoRecordsContent>
-                                                                <MudText></MudText>
-                                                            </NoRecordsContent>
-                                                        </MudTable>
-                                                    </MudItem>
-                                                }
-                                                else
-                                                {
-                                                    <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                        <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
-                                                    </MudItem>
-                                                }
-
-
-                                            }
-                                            else
-                                            {
-                                                <MudItem xs="3" sm="3" md="3" Style="padding-left: 0px;padding-top: 0px;">
-                                                    <MudText Align="Align.Center" Typo="Typo.subtitle1">&nbsp;</MudText>
-                                                </MudItem>
-                                            }
-                                            @* aqui tomar en cuenta las reglas de negocio que manda Antonio *@
-
-                                        }
-                                    </MudGrid>
-
-                                </ChildContent>
-                            </MudExpansionPanel>
+                                        </ChildContent>
+                                    </MudExpansionPanel>
+                                }
                         }
+                        else
+                        {
+                            <MudGrid Class="d-flex d-sm-none d-none d-sm-flex d-md-none mt-2">
+                                <MudItem xs="12" sm="12" md="12">
+                                    <MudText Align="Align.Start" Typo="Typo.h1">Sin Resultados para mostrar.</MudText>
+                                </MudItem>
+                            </MudGrid>
+                        }
+                        
                     }
 
                     </MudExpansionPanels>

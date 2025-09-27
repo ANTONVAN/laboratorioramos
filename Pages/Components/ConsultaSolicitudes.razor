@@ -184,14 +184,15 @@ else
                                     countStudi++;
                                 }
                             }
-                            if (countStudi > 0)
-                            {
-                                <MudTd DataLabel=">Número de Órden"> <MudLink OnClick="@(() => NavigationResultado(context,null))" Underline="Underline.Always">@context.Solicitud</MudLink></MudTd>
-                            }
-                            else
-                            {
-                                <MudTd DataLabel=">Número de Órden">@context.Solicitud</MudTd>
-                            }
+                            // if (countStudi > 0)
+                            // {
+                            //     <MudTd DataLabel=">Número de Órden"> <MudLink OnClick="@(() => NavigationResultado(context,null))" Underline="Underline.Always">@context.Solicitud</MudLink></MudTd>
+                            // }
+                            // else
+                            // {
+                            //     <MudTd DataLabel=">Número de Órden">@context.Solicitud</MudTd>
+                            // }
+                            <MudTd DataLabel=">Número de Órden"> <MudLink OnClick="@(() => NavigationResultado(context, null))" Underline="Underline.Always">@context.Solicitud</MudLink></MudTd>
                             <MudTd DataLabel="Fecha de Ingreso">@context.Registro</MudTd>
                             <MudTd DataLabel="Nombre">@context.Nombre</MudTd>
                             <MudTd DataLabel="Sexo">@context.Sexo</MudTd>
