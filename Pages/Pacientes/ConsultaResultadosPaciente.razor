@@ -39,11 +39,7 @@ else
 <MudGrid>
     @if (ShowNombre)
     {
-        <MudItem xs="12" sm="7" md="12">
-            @*<MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Consulta de Resultados</MudText>*@
-            &nbsp;
-        </MudItem>
-        <MudPaper Class="pa-4" Elevation="4" Style="width:100%;margin-top: -25px;">
+        <MudPaper Class="pt-4" Elevation="4" Style="width:100%;margin-top: 23px;">
             <MudGrid>
                 <MudItem xs="12" sm="8" md="3" Class="pt-2">
                     @{
@@ -86,14 +82,14 @@ else
         <br />
     }
 
-    <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
+    <MudPaper Class="pa-4 mt-2" Elevation="4" Style="width:100%">
         <MudGrid>
             <MudItem xs="12" sm="12" md="12">
                 <EditForm Model="@dtoFiltro" OnValidSubmit="BuscaFecha" style="width: 100%;">
 
                     <MudGrid>
-                        <MudItem xs="12" sm="12" md="4" xl="4">
-                            <MudTextField @bind-Value="dtoFiltro.Solicitud" Disabled="(ValidateData?true:false)" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
+                        <MudItem xs="12" sm="12" md="4" xl="4" Class="pt-3">
+                            <MudTextField @bind-Value="dtoFiltro.Solicitud" Disabled="(ValidateData ? true : false)" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)" UserAttributes="@(new Dictionary<string, object> { { "autocomplete", "off" } })"></MudTextField>
                         </MudItem>
                         <MudItem xs="12" sm="12" md="3" xl="3">
                             @* <MudDatePicker Clearable="true" Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" /> *@

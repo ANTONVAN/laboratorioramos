@@ -111,7 +111,7 @@ else
                         </MudItem> *@
                         <MudItem xs="12" sm="12" md="4">
                             @* <MudTextField @bind-Value="dtoFiltro.Solicitud" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
-                            <MudTextField @bind-Value="dtoFiltro.Solicitud" Disabled="(ValidateData?true:false)" Label="Número de Solicitud o Nombre del Paciente" Clearable="true" Class="mt-0" HelperText="Teclee en Número de Solicitud o Nombre del paciente, y pulse Enter."></MudTextField>
+                            <MudTextField @bind-Value="dtoFiltro.Solicitud" Disabled="(ValidateData ? true : false)" Label="Número de Solicitud o Nombre del Paciente" Clearable="true" Class="mt-0" HelperText="Teclee en Número de Solicitud o Nombre del paciente, y pulse Enter." UserAttributes="@(new Dictionary<string, object> { { "autocomplete", "off" } })"></MudTextField>
                         </MudItem>
                         <MudItem xs="12" sm="12" md="3">
                             @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />

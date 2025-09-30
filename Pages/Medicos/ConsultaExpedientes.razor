@@ -72,21 +72,21 @@ else
                         @* <MudItem xs="12" sm="12" md="1">
                             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         </MudItem> *@
-                        <MudItem xs="12" sm="12" md="4">
-                            <MudTextField @bind-Value="dtoFiltro.ExpedienteNombre" Disabled="(ValidateData?true:false)" Label="Expediente o Nombre del paciente:" Clearable="true" Class="mt-0" HelperText="Teclee la Clave de Expediente o Nombre del paciente, y pulse Enter." For="@(() => dtoFiltro.ExpedienteNombre)"></MudTextField>
+                        <MudItem xs="12" sm="12" md="4" Class="pt-1">
+                            <MudTextField @bind-Value="dtoFiltro.ExpedienteNombre" Disabled="(ValidateData ? true : false)" Label="Expediente o Nombre del paciente:" Clearable="true" Class="mt-0" HelperText="Teclee la Clave de Expediente o Nombre del paciente, y pulse Enter." For="@(() => dtoFiltro.ExpedienteNombre)" UserAttributes="@(new Dictionary<string, object> { { "autocomplete", "off" } })"></MudTextField>
                             @* <MudNumericField HideSpinButtons="true" @bind-Value="searchString1" Label="Número de solicitud:" Variant="Variant.Outlined" Min="0" Max="999999999999" HelperText="Sólo Números (12 dígitos)" /> *@
                         </MudItem>
-                        <MudItem xs="12" sm="12" md="3">
+                        <MudItem xs="12" sm="12" md="3" Class="pt-1">
                             @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
                             <MudDatePicker Clearable="true" Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateInicial" PickerVariant="PickerVariant.Dialog" DisableToolbar="true" Color="Color.Primary" Margin="Margin.Dense" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
                         </MudItem>
-                        <MudItem xs="12" sm="12" md="3">
+                        <MudItem xs="12" sm="12" md="3" Class="pt-1">
                             @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
                             <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
                             <MudDatePicker Clearable="true" Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="dtoFiltro.DateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
                         </MudItem>
-                        <MudItem xs="12" sm="12" md="2">
+                        <MudItem xs="12" sm="12" md="2" Class="pt-3">
                             @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
                             @if (ValidateData)
                             {
