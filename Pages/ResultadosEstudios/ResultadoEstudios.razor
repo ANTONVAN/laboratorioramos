@@ -1428,12 +1428,12 @@ else
                                                         switch (restSERIE.StatusCode)
                                                         {
                                                             case System.Net.HttpStatusCode.OK:
-                                                                var imgurl = await restSERIE.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                                imgurl.TypeImage = "SERIE   ";
-                                                                _dtoEdenImagenologia.Add(imgurl);
+                                                                var imgurl1 = await restSERIE.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                                                imgurl1.TypeImage = "SERIE   ";
+                                                                _dtoEdenImagenologia.Add(imgurl1);
                                                                 break;
                                                             case System.Net.HttpStatusCode.InternalServerError:
-                                                                var intSerMsg = await restSERIE.Content.ReadAsStringAsync();
+                                                                var intSerMsg1 = await restSERIE.Content.ReadAsStringAsync();
                                                                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
                                                                 break;
                                                         }
