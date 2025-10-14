@@ -1303,13 +1303,13 @@ else
                     };
 
                     string json1 = JsonConvert.SerializeObject(parametrobusqueda);
-                    
+
                     try
                     {
                         // Consulta de expedientes para resultados
                         var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
                         var expedienteSuccess = await ApiHandler.HandleResponseAsync<DtoRequestMedicoPacientes>(sesExpediente, "consulta de expedientes para resultados",false);
-                        
+
                         if (expedienteSuccess && sesExpediente.StatusCode == System.Net.HttpStatusCode.OK)
                         {
                             try
@@ -1330,7 +1330,7 @@ else
 
 
                                 //var _dtoEdena1 = HttpEDEN.GetStringAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}");
-                                
+
                                 //var _dtoEdenImagenologia1 = await _dtoEdena1;
                                 ////var _dtoEdenImagenologia1 = await HttpEDEN.GetStringAsync($"https://middleware-staging.dev-land.space/api/v1/orders/?start_date=2025-09-01T00%3A00%3A00-06%3A00&end_date=2025-09-30T00%3A00%3A00-06%3A00");
                                 //var ConverResultEden = JsonConvert.DeserializeObject<DtoEdenImagenologiaCount>(_dtoEdenImagenologia1);
@@ -1344,7 +1344,7 @@ else
                                 if (estudiosInfoSuccess)
                                 {
                                     var sesEstudiosInfoGral = await estudiosInfoResponse.Content.ReadFromJsonAsync<DtoResponseEstudioInfoGral>();
-                                    
+
                                     // Consulta de información del médico
                                     var medicoInfoResponse = await Http.GetAsync($"{UrlMedicoInfoGral}{sesEstudiosInfoGral.MedicoId}");
                                     var medicoInfoSuccess = await ApiHandler.HandleResponseAsync<DtoMedicoPwd>(medicoInfoResponse, "consulta de información del médico",false);
@@ -1352,7 +1352,7 @@ else
                                     {
                                         dtoMedicoSolicitud = await medicoInfoResponse.Content.ReadFromJsonAsync<DtoMedicoPwd>();
                                     }
-                                    
+
                                     // Consulta de resultados de estudios
                                     var resultadosResponse = await Http.GetAsync($"{UrlClinicResultados}{LstExpedientes[0].ExpedienteId}/{LstExpedientes[0].SolicitudId}");
                                     var resultadosSuccess = await ApiHandler.HandleResponseAsync<DtoResultadosEstudios>(resultadosResponse, "consulta de resultados de estudios",false);
@@ -1406,16 +1406,41 @@ else
 
                                 foreach (var itStudy in dtoResultadosEstudios.Estudios)
                                 {
-                                    if (itStudy.DepartamentoId.Equals(2))
+                                    if (itStudy.DepartamentoId.Equals(2) || itStudy.DepartamentoId.Equals(7))
                                     {
-                                        HttpResponseMessage rest = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}");
-                                        _dtoEdenImagenologia = new();
-                                        switch (rest.StatusCode)
+                                        switch (itStudy.AreaId)
                                         {
-                                            case System.Net.HttpStatusCode.OK:
-                                                _dtoEdenImagenologia.Add(await rest.Content.ReadFromJsonAsync<DtoEdenImagenologia>());
+                                            case 36:
+                                                HttpResponseMessage restRX = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}RX");
+                                                switch (restRX.StatusCode)
+                                                {
+                                                    case System.Net.HttpStatusCode.OK:
+                                                        var imgurl = await restRX.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                                        imgurl.TypeImage = "RX   ";
+                                                        _dtoEdenImagenologia.Add(imgurl);
+                                                        break;
+                                                    case System.Net.HttpStatusCode.InternalServerError:
+                                                        var intSerMsg = await restRX.Content.ReadAsStringAsync();
+                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                                        break;
+                                                    case System.Net.HttpStatusCode.NotFound:
+                                                        HttpResponseMessage restSERIE = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}SERIE");
+                                                        switch (restSERIE.StatusCode)
+                                                        {
+                                                            case System.Net.HttpStatusCode.OK:
+                                                                var imgurl = await restSERIE.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                                                imgurl.TypeImage = "SERIE   ";
+                                                                _dtoEdenImagenologia.Add(imgurl);
+                                                                break;
+                                                            case System.Net.HttpStatusCode.InternalServerError:
+                                                                var intSerMsg = await restSERIE.Content.ReadAsStringAsync();
+                                                                //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                                                break;
+                                                        }
+                                                    break;
+                                                }
                                                 break;
-                                            case System.Net.HttpStatusCode.InternalServerError:
+                                            case 49:
                                                 HttpResponseMessage restUS = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}USG");
                                                 switch (restUS.StatusCode)
                                                 {
@@ -1429,6 +1454,8 @@ else
                                                         //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
                                                         break;
                                                 }
+                                                break;
+                                            case 50:
                                                 HttpResponseMessage restMC = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}MG");
                                                 switch (restMC.StatusCode)
                                                 {
@@ -1442,32 +1469,8 @@ else
                                                         //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
                                                         break;
                                                 }
-                                                HttpResponseMessage restRX = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}RX");
-                                                switch (restRX.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restRX.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "RX   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restRX.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                HttpResponseMessage restSERIE = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}SERIE");
-                                                switch (restSERIE.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restSERIE.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "SERIE   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restSERIE.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
+                                                break;
+                                            case 57:
                                                 HttpResponseMessage restECG = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ECG");
                                                 switch (restECG.StatusCode)
                                                 {
@@ -1481,19 +1484,23 @@ else
                                                         //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
                                                         break;
                                                 }
-                                                HttpResponseMessage restAUDIO = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}AUDIO");
-                                                switch (restAUDIO.StatusCode)
+                                                break;
+                                            case 59:
+                                                HttpResponseMessage restECG1 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ECG");
+                                                switch (restECG1.StatusCode)
                                                 {
                                                     case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restAUDIO.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "AUDIO   ";
+                                                        var imgurl = await restECG1.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                                        imgurl.TypeImage = "ECG   ";
                                                         _dtoEdenImagenologia.Add(imgurl);
                                                         break;
                                                     case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restAUDIO.Content.ReadAsStringAsync();
+                                                        var intSerMsg = await restECG1.Content.ReadAsStringAsync();
                                                         //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
                                                         break;
                                                 }
+                                                break;
+                                            case 61:
                                                 HttpResponseMessage restESPIRO = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ESPIRO");
                                                 switch (restESPIRO.StatusCode)
                                                 {
@@ -1507,104 +1514,235 @@ else
                                                         //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
                                                         break;
                                                 }
-
-
                                                 break;
-                                            case System.Net.HttpStatusCode.NotFound:
-                                                var notFoundMsg = await rest.Content.ReadAsStringAsync();
-                                                HttpResponseMessage restUS11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}USG");
-                                                switch (restUS11.StatusCode)
+                                            case 62:
+                                                HttpResponseMessage restAUDIO = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}AUDIO");
+                                                switch (restAUDIO.StatusCode)
                                                 {
                                                     case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restUS11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "USG   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restUS11.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                HttpResponseMessage restMC11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}MG");
-                                                switch (restMC11.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restMC11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "MG   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restMC11.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                HttpResponseMessage restRX11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}RX");
-                                                switch (restRX11.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restRX11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "RX   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restRX11.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                HttpResponseMessage restSERIE11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}SERIE");
-                                                switch (restSERIE11.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restSERIE11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "SERIE   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restSERIE11.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                HttpResponseMessage restECG11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ECG");
-                                                switch (restECG11.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restECG11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "ECG   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restECG11.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                HttpResponseMessage restAUDIO11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}AUDIO");
-                                                switch (restAUDIO11.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restAUDIO11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                                        var imgurl = await restAUDIO.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
                                                         imgurl.TypeImage = "AUDIO   ";
                                                         _dtoEdenImagenologia.Add(imgurl);
                                                         break;
                                                     case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restAUDIO11.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                HttpResponseMessage restESPIRO11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ESPIRO");
-                                                switch (restESPIRO11.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restESPIRO11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "ESPIRO   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restESPIRO11.Content.ReadAsStringAsync();
+                                                        var intSerMsg = await restAUDIO.Content.ReadAsStringAsync();
                                                         //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
                                                         break;
                                                 }
                                                 break;
+                                            default:
+                                                HttpResponseMessage rest = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}");
+                                                _dtoEdenImagenologia = new();
+                                                switch (rest.StatusCode)
+                                                {
+                                                    case System.Net.HttpStatusCode.OK:
+                                                        _dtoEdenImagenologia.Add(await rest.Content.ReadFromJsonAsync<DtoEdenImagenologia>());
+                                                        break;
+                                                }
+                                                break;
                                         }
+
+
+
+
+
+                                        // HttpResponseMessage rest = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}");
+                                        // _dtoEdenImagenologia = new();
+                                        // switch (rest.StatusCode)
+                                        // {
+                                        //     case System.Net.HttpStatusCode.OK:
+                                        //         _dtoEdenImagenologia.Add(await rest.Content.ReadFromJsonAsync<DtoEdenImagenologia>());
+                                        //         break;
+                                        //     case System.Net.HttpStatusCode.InternalServerError:
+                                        //         HttpResponseMessage restUS = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}USG");
+                                        //         switch (restUS.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restUS.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "USG   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restUS.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restMC = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}MG");
+                                        //         switch (restMC.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restMC.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "MG   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restMC.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restRX = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}RX");
+                                        //         switch (restRX.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restRX.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "RX   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restRX.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restSERIE = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}SERIE");
+                                        //         switch (restSERIE.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restSERIE.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "SERIE   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restSERIE.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restECG = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ECG");
+                                        //         switch (restECG.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restECG.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "ECG   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restECG.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restAUDIO = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}AUDIO");
+                                        //         switch (restAUDIO.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restAUDIO.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "AUDIO   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restAUDIO.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restESPIRO = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ESPIRO");
+                                        //         switch (restESPIRO.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restESPIRO.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "ESPIRO   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restESPIRO.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+
+
+                                        //         break;
+                                        //     case System.Net.HttpStatusCode.NotFound:
+                                        //         var notFoundMsg = await rest.Content.ReadAsStringAsync();
+                                        //         HttpResponseMessage restUS11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}USG");
+                                        //         switch (restUS11.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restUS11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "USG   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restUS11.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restMC11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}MG");
+                                        //         switch (restMC11.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restMC11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "MG   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restMC11.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restRX11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}RX");
+                                        //         switch (restRX11.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restRX11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "RX   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restRX11.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restSERIE11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}SERIE");
+                                        //         switch (restSERIE11.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restSERIE11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "SERIE   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restSERIE11.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restECG11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ECG");
+                                        //         switch (restECG11.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restECG11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "ECG   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restECG11.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restAUDIO11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}AUDIO");
+                                        //         switch (restAUDIO11.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restAUDIO11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "AUDIO   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restAUDIO11.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         HttpResponseMessage restESPIRO11 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ESPIRO");
+                                        //         switch (restESPIRO11.StatusCode)
+                                        //         {
+                                        //             case System.Net.HttpStatusCode.OK:
+                                        //                 var imgurl = await restESPIRO11.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
+                                        //                 imgurl.TypeImage = "ESPIRO   ";
+                                        //                 _dtoEdenImagenologia.Add(imgurl);
+                                        //                 break;
+                                        //             case System.Net.HttpStatusCode.InternalServerError:
+                                        //                 var intSerMsg = await restESPIRO11.Content.ReadAsStringAsync();
+                                        //                 //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
+                                        //                 break;
+                                        //         }
+                                        //         break;
+                                        // }
                                     }
                                 }
 
