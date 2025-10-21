@@ -65,6 +65,8 @@
         public int? Orden { get; set; }
         public string NombreEstudio { get; set; }
         public string ClaveEstudio { get; set; }
+        public string? PdfBase64 { get; set; }
+
     }
 
     public class Etiquetas

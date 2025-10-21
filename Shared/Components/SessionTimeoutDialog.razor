@@ -6,26 +6,71 @@
         <MudText Typo="Typo.body1">@ContentText</MudText>
     </DialogContent>
     <DialogActions>
-        <MudButton Color="@Color" Variant="Variant.Filled" OnClick="OnContinue" StartIcon="@Icons.Material.Filled.Timer">@ButtonText</MudButton>
-        <MudButton Color="Color.Secondary" Variant="Variant.Outlined" OnClick="OnCancel" StartIcon="@Icons.Material.Filled.ExitToApp">Cerrar sesión</MudButton>
+        <MudButton Color="@Color" 
+                   Variant="Variant.Filled" 
+                   OnClick="OnContinue" 
+                   StartIcon="@Icons.Material.Filled.Timer">
+            @ButtonText
+        </MudButton>
+        <MudButton Color="Color.Secondary" 
+                   Variant="Variant.Outlined" 
+                   OnClick="OnCancel" 
+                   StartIcon="@Icons.Material.Filled.ExitToApp">
+            Cerrar sesión
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
-    [CascadingParameter] IDialogReference MudDialog { get; set; } = null!;
-    
+    // Alternativa con eventos
+    [Parameter] public EventCallback<bool> OnDialogResult { get; set; }
+
     [Parameter] public string ContentText { get; set; } = string.Empty;
     [Parameter] public string ButtonText { get; set; } = "Continuar sesión";
     [Parameter] public Color Color { get; set; } = Color.Warning;
 
-    private void OnContinue()
+    private async Task OnContinue()
     {
-        MudDialog.Close(DialogResult.Ok(true));
+        await OnDialogResult.InvokeAsync(true);
     }
 
-    private void OnCancel()
+    private async Task OnCancel()
     {
-        MudDialog.Close(DialogResult.Cancel());
+        await OnDialogResult.InvokeAsync(false);
     }
+    
+    
+
+    // private async Task OnContinue()
+    // {
+    //     try
+    //     {
+    //         if (MudDialog != null)
+    //         {
+    //             MudDialog.Close(DialogResult.Ok(true));
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         // Log error if needed
+    //         Console.WriteLine($"Error closing dialog: {ex.Message}");
+    //     }
+    // }
+
+    // private async Task OnCancel()
+    // {
+    //     try
+    //     {
+    //         if (MudDialog != null)
+    //         {
+    //             MudDialog.Close(DialogResult.Cancel());
+    //         }
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         // Log error if needed
+    //         Console.WriteLine($"Error canceling dialog: {ex.Message}");
+    //     }
+    // }
 }
 

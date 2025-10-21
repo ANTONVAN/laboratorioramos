@@ -1,0 +1,80 @@
+@using MudBlazor
+@inject IJSRuntime IJSRuntime
+
+<MudDialog>
+    <TitleContent>
+        <div class="d-flex align-center">
+            <MudIcon Icon="@Icons.Material.Filled.PictureAsPdf" Color="Color.Error" Class="mr-3" />
+            <MudText Typo="Typo.h5">@Title</MudText>
+        </div>
+    </TitleContent>
+    <DialogContent>
+        <MudContainer Class="pa-0" Style="height: 80vh;">
+            <div id="pdf-loading-fullscreen" class="d-flex align-center justify-center" 
+                 style="height: 100%; background: #f5f5f5;">
+                <div class="text-center">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" Class="mb-3" />
+                    <MudText Typo="Typo.body1" Color="Color.Primary">
+                        Cargando documento...
+                    </MudText>
+                </div>
+            </div>
+            
+            <iframe id="pdf-iframe-fullscreen"
+                    style="width: 100%; height: 100%; border: none; border-radius: 8px; display: none;"
+                    title="@Title">
+            </iframe>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton StartIcon="@Icons.Material.Filled.Download" 
+                   Color="Color.Primary" 
+                   OnClick="DownloadPdf">
+            Descargar
+        </MudButton>
+        <MudButton Color="Color.Secondary" 
+                   Variant="Variant.Text"
+                   OnClick="Close">
+            Cerrar
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public IDialogReference? MudDialog { get; set; }
+    [Parameter] public string PdfBase64 { get; set; } = string.Empty;
+    [Parameter] public string Title { get; set; } = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(PdfBase64))
+        {
+            await IJSRuntime.InvokeVoidAsync("loadPdfInIframe", "fullscreen", PdfBase64);
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void Close()
+    {
+        MudDialog?.Close();
+    }
+
+    private async Task DownloadPdf()
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(PdfBase64))
+            {
+                return;
+            }
+
+            var fileName = $"{Title.Replace(" ", "_").Replace("-", "_")}.pdf";
+            await IJSRuntime.InvokeVoidAsync("downloadFileFromStream", fileName, PdfBase64);
+        }
+        catch (Exception ex)
+        {
+            // Manejar error de descarga
+            Console.WriteLine($"Error downloading PDF: {ex.Message}");
+        }
+    }
+}

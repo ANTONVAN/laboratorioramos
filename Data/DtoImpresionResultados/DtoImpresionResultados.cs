@@ -17,4 +17,8 @@
         public int EstudioId { get; set; }
         public int Tipo { get; set; }
     }
+    public class DtoImpresionById
+    {
+        public int requestStudyId { get; set; } = 0;
+    }
 }

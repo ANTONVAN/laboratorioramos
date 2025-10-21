@@ -21,6 +21,7 @@ using PdfSharp.Pdf;
 using PdfSharp.Quality;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http.Json;
 using System.Reflection.Metadata;
 using System.Xml.Linq;
 using static MudBlazor.CategoryTypes;
@@ -43,6 +44,13 @@ namespace LaboratorioRamos.PDF
         }
         public async Task ViewPDFOrder(IJSRuntime js, string idIFrame, MemoryStream archivo) {
             js.InvokeVoidAsync("ViewPDFOrder", idIFrame, Convert.ToBase64String(archivo.ToArray()));
+        }
+        public async Task ViewPDFResultados(IJSRuntime js, string idIFrame, string archivo) {
+            js.InvokeVoidAsync("ViewPDFResultado", idIFrame, archivo);
+        }
+        public async Task<string> ConvertBase64ToBLOB(IJSRuntime js, MemoryStream archivo) {
+            var blon= await js.InvokeAsync<string>("ConvertBase64ToBLOB", Convert.ToBase64String(archivo.ToArray()));
+            return blon;
         }
         public async Task<MemoryStream> CreatePDF(IConfiguration _config,IJSRuntime js,HttpClient Http, List<DtoResponseMedicoPacienteStudios> StudioSelect)
         {
@@ -164,6 +172,50 @@ namespace LaboratorioRamos.PDF
                 }
             }
 
+            return _ms;
+        }
+
+        public async Task<MemoryStream> CreatePDFByIdSolicitud(IConfiguration _config, IJSRuntime js, HttpClient Http, int IdSolicitud)
+        {
+            MemoryStream _ms = new();
+
+            if (IdSolicitud > 0)
+            {
+                DtoImpresionById RequestId= new()
+                {
+                    requestStudyId = IdSolicitud
+                };
+                var sesExpediente = await Http.PostAsJsonAsync<DtoImpresionById>("services/records/api/ClinicResults/printResultPathologicalFilePreview", RequestId);
+                switch (sesExpediente.StatusCode)
+                {
+                    case System.Net.HttpStatusCode.OK:
+                        byte[] buffer;
+
+                        using (Stream stream = sesExpediente.Content.ReadAsStream())
+                        {
+
+                            buffer = new byte[stream.Length];
+                            stream.Read(buffer, 0, buffer.Length);
+                            _ms = new MemoryStream(buffer);
+                            //System.IO.File.WriteAllBytes($"wwwroot/ArchivosPDF/Estudios{DateTime.Now.Ticks}.pdf", buffer);
+                        }
+                        //await js.InvokeVoidAsync("open", $"{_config.GetSection("UrlArchivos").Value.Trim()}Estudios{DateTime.Now.Ticks}.pdf", "_blank");
+                        return _ms;
+
+
+
+
+                        break;
+                    case System.Net.HttpStatusCode.FailedDependency:
+
+                        return _ms;
+                        break;
+                    case System.Net.HttpStatusCode.BadRequest:
+                        return _ms;
+                        break;
+
+                }
+            }
             return _ms;
         }
 
