@@ -1653,6 +1653,10 @@ else
                                                 }
 
                                             }
+                                            else if (studioselec.DepartamentoId == 4)
+                                            {
+                                                dtoResultadosEstudios.Estudios = new() { studioselec };
+                                            }
                                         }
                                     }
                                     else
@@ -1691,6 +1695,10 @@ else
                                                         dtoResultadosEstudios.Estudios.Add(_estudios);
                                                     }
 
+                                                }
+                                                else if (itemStudiosgr.DepartamentoId == 4)
+                                                {
+                                                    dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
                                                 }
                                             }
                                         }
@@ -1735,6 +1743,10 @@ else
                                                 }
 
                                             }
+                                            else if (itemStudiosgr.DepartamentoId == 4)
+                                            {
+                                                dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
+                                            }
                                         }
                                     }
                                     //dtoResultadosEstudios = dtoResultadosEstudiosGral;
@@ -1753,7 +1765,7 @@ else
                                                 {
                                                     case System.Net.HttpStatusCode.OK:
                                                         var imgurl = await restRX.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "RX   ";
+                                                        imgurl.TypeImage = $"{itStudy.Nombre} RX   ";
                                                         _dtoEdenImagenologia.Add(imgurl);
                                                         break;
                                                     case System.Net.HttpStatusCode.InternalServerError:
@@ -1766,7 +1778,7 @@ else
                                                         {
                                                             case System.Net.HttpStatusCode.OK:
                                                                 var imgurl1 = await restSERIE.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                                imgurl1.TypeImage = "SERIE   ";
+                                                                imgurl1.TypeImage = $"{itStudy.Nombre} SERIE   ";
                                                                 _dtoEdenImagenologia.Add(imgurl1);
                                                                 break;
                                                             case System.Net.HttpStatusCode.InternalServerError:
@@ -1783,7 +1795,7 @@ else
                                                 {
                                                     case System.Net.HttpStatusCode.OK:
                                                         var imgurl = await restUS.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "USG   ";
+                                                        imgurl.TypeImage = $"{itStudy.Nombre} USG   ";
                                                         _dtoEdenImagenologia.Add(imgurl);
                                                         break;
                                                     case System.Net.HttpStatusCode.InternalServerError:
@@ -1798,7 +1810,7 @@ else
                                                 {
                                                     case System.Net.HttpStatusCode.OK:
                                                         var imgurl = await restMC.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "MG   ";
+                                                        imgurl.TypeImage = $"{itStudy.Nombre} MG   ";
                                                         _dtoEdenImagenologia.Add(imgurl);
                                                         break;
                                                     case System.Net.HttpStatusCode.InternalServerError:
@@ -1813,7 +1825,7 @@ else
                                                 {
                                                     case System.Net.HttpStatusCode.OK:
                                                         var imgurl = await restECG.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "ECG   ";
+                                                        imgurl.TypeImage = $"{itStudy.Nombre} ECG   ";
                                                         _dtoEdenImagenologia.Add(imgurl);
                                                         break;
                                                     case System.Net.HttpStatusCode.InternalServerError:
@@ -1828,7 +1840,7 @@ else
                                                 {
                                                     case System.Net.HttpStatusCode.OK:
                                                         var imgurl = await restECG1.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "ECG   ";
+                                                        imgurl.TypeImage = $"{itStudy.Nombre} ECG   ";
                                                         _dtoEdenImagenologia.Add(imgurl);
                                                         break;
                                                     case System.Net.HttpStatusCode.InternalServerError:
@@ -1843,7 +1855,7 @@ else
                                                 {
                                                     case System.Net.HttpStatusCode.OK:
                                                         var imgurl = await restESPIRO.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "ESPIRO   ";
+                                                        imgurl.TypeImage = $"{itStudy.Nombre} ESPIRO   ";
                                                         _dtoEdenImagenologia.Add(imgurl);
                                                         break;
                                                     case System.Net.HttpStatusCode.InternalServerError:
@@ -1858,7 +1870,7 @@ else
                                                 {
                                                     case System.Net.HttpStatusCode.OK:
                                                         var imgurl = await restAUDIO.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = "AUDIO   ";
+                                                        imgurl.TypeImage = $"{itStudy.Nombre} AUDIO   ";
                                                         _dtoEdenImagenologia.Add(imgurl);
                                                         break;
                                                     case System.Net.HttpStatusCode.InternalServerError:
