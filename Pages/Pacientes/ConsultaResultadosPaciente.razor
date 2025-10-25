@@ -165,7 +165,7 @@ else
                             int countStudi = 0;
                             foreach (var itemStd in context.Estudios)
                             {
-                                if (itemStd.EstatusId == 7 || itemStd.EstatusId == 6)
+                                if (itemStd.EstatusId == 7 || itemStd.EstatusId == 6 || itemStd.EstatusId == 12)
                                 {
                                     countStudi++;
                                 }
@@ -243,7 +243,7 @@ else
                                             <MudTd DataLabel="Nombre">@EstContext.Estudio</MudTd>
                                             <MudTd DataLabel="Fecha de Entrega">@EstContext.FechaEntrega</MudTd>
                                             <MudTd DataLabel="Estatus">
-                                                @if (EstContext.EstatusId == 7 || EstContext.EstatusId == 6)
+                                                @if (EstContext.EstatusId == 7 || EstContext.EstatusId == 6 || EstContext.EstatusId == 12)
                                                 {
                                                     <MudText Align="Align.Justify" Typo="Typo.subtitle2">Liberado</MudText>
                                                 }
