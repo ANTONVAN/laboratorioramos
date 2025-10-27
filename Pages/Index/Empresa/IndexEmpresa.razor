@@ -5,161 +5,563 @@
 @using LaboratorioRamos.Data.DtoFiltro
 @using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
 @using LaboratorioRamos.Data.DtoStateProvider
-@inject HttpClient Http;
-@inject IConfiguration _config;
+@using Newtonsoft.Json
+@inject HttpClient Http
+@inject IConfiguration _config
 @inject AuthenticationStateProvider _authStateProvider
 @inject NavigationManager NavigationManager
-@inject Cryp Cryp;
+@inject Cryp Cryp
 @inject ISnackbar Snackbar
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
+@inject ILogger<IndexEmpresa> Logger
 
-<PageTitle>Login</PageTitle>
+<PageTitle>Acceso Empresa - Laboratorio Ramos</PageTitle>
 
+<!-- Fondo con gradiente profesional -->
+<div class="login-container">
+    <MudContainer MaxWidth="MaxWidth.Medium" Class="pa-2">
+        <MudGrid Justify="Justify.Center" Class="min-height-100vh">
+            <MudItem xs="12" sm="10" md="8" lg="6" xl="5">
+                <!-- Card principal con elevación y bordes redondeados -->
+                <MudPaper Class="pa-6" Elevation="8" Style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);">
 
-<MudGrid Justify="Justify.Center">
-    <MudItem xs="12" sm="7" md="12" Class="d-flex absolute justify-center" style="top:15%;">
-        <EditForm Model="@dtoLoginEmpresa" OnValidSubmit="OnValidSubmit" style="width: 500px;">
-            <DataAnnotationsValidator />
-            <MudGrid>
-                <MudItem xs="12" md="12" sm="12">
-                    <MudCard>
-                        <MudCardMedia Image="Images/LogotipoWeb.png" Height="175" />
-                        <MudCardContent>
-                            <MudTextField Label="Usuario" HelperText="Max. 16 dígitos"
-                                          @bind-Value="dtoLoginEmpresa.Usuario" For="@(() => dtoLoginEmpresa.Usuario)" MaxLength="16" />
-                            <MudTextField Label="Contraseña" HelperText="Máx. 8 dígitos" Class="mt-3"
-                                          @bind-Value="dtoLoginEmpresa.Contraseña" For="@(() => dtoLoginEmpresa.Contraseña)" InputType="InputType.Password" MaxLength="8" />
-                        </MudCardContent>
-                        <MudCardActions>
-                            @if (ValidateData)
-                            {
-                                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="rounded-0 ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
-                            }
-                            else
-                            {
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="rounded-0 ml-auto">Ingresar</MudButton>
-                            }
+                    <!-- Header con logo y título -->
+                    <div class="mb-6 text-center">
+                        <MudCardMedia Image="Images/LogotipoWeb.png" Height="120" Style="border-radius: 12px;" />
+                        <MudText Typo="Typo.h4" Class="mb-2 mt-4" Style="color: #1A457F; font-weight: 600;">
+                            Acceso Empresa
+                        </MudText>
+                        <MudText Typo="Typo.body2" Style="color: #6c757d;">
+                            Ingrese sus credenciales para acceder al sistema
+                        </MudText>
+                    </div>
 
-                        </MudCardActions>
-                    </MudCard>
-                </MudItem>
-                <MudItem xs="12" sm="7" md="12" style="text-align: center;">
-                    <MudLink Href="#" Typo="Typo.body2" Align="Align.Center">Manual de Usuario</MudLink>
-                </MudItem>
-            </MudGrid>
-        </EditForm>
-    </MudItem>
-</MudGrid>
+                    <!-- Formulario de login -->
+                    <EditForm Model="@dtoLoginEmpresa" OnValidSubmit="OnValidSubmitAsync">
+                        <DataAnnotationsValidator />
 
+                        <MudStack Spacing="4">
+                            <!-- Campo Usuario -->
+                            <MudTextField Label="Usuario Empresa"
+                                          HelperText="Ingrese su clave de empresa (máx. 16 caracteres)"
+                                          @bind-Value="dtoLoginEmpresa.Usuario"
+                                          For="@(() => dtoLoginEmpresa.Usuario)"
+                                          MaxLength="16"
+                                          Variant="Variant.Outlined"
+                                          Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Business"
+                                          Class="mt-2"
+                                          Style="font-size: 16px;" />
+
+                            <!-- Campo Contraseña -->
+                            <MudTextField Label="Contraseña"
+                                          HelperText="Ingrese su contraseña (máx. 32 caracteres)"
+                                          @bind-Value="dtoLoginEmpresa.Contraseña"
+                                          For="@(() => dtoLoginEmpresa.Contraseña)"
+                                          InputType="@(showPassword? InputType.Text: InputType.Password)"
+                                          MaxLength="32"
+                                          Variant="Variant.Outlined"
+                                          Adornment="Adornment.End"
+                                          AdornmentIcon="@(showPassword? Icons.Material.Filled.VisibilityOff : Icons.Material.Filled.Visibility)"
+                                          OnAdornmentClick="TogglePasswordVisibility"
+                                          Class="mt-2"
+                                          Style="font-size: 16px;" />
+
+                            <!-- Botón de envío -->
+                            <div class="text-center">
+                                @if (ValidateData)
+                                {
+                                    <MudButton ButtonType="ButtonType.Button"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Disabled="true"
+                                               Class="px-8 py-3"
+                                               Style="border-radius: 8px; min-width: 200px; height: 48px;">
+                                        <MudProgressCircular Color="Color.Inherit"
+                                                             Size="Size.Small"
+                                                             Indeterminate="true"
+                                                             Class="mr-2" />
+                                        <MudText Typo="Typo.button">@loginStatusMessage</MudText>
+                                    </MudButton>
+                                }
+                                else
+                                {
+                                    <MudButton ButtonType="ButtonType.Submit"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Class="px-8 py-3"
+                                               Style="border-radius: 8px; min-width: 200px; height: 48px; font-weight: 600;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Login" Class="mr-2" />
+                                        <MudText Typo="Typo.button">Ingresar</MudText>
+                                    </MudButton>
+                                }
+                            </div>
+                        </MudStack>
+                    </EditForm>
+
+                    <!-- Footer con enlaces -->
+                    <div class="mt-2 pt-4 text-center" style="border-top: 1px solid #e9ecef;">
+                        <MudLink Href="#"
+                                 Typo="Typo.body2"
+                                 Style="color: #1A457F; text-decoration: none;">
+                            <MudIcon Icon="@Icons.Material.Filled.Help" Size="Size.Small" Class="mr-1" />
+                            Manual de Usuario
+                        </MudLink>
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.caption" Style="color: #6c757d;">
+                            ¿Necesita ayuda? Contacte al administrador del sistema
+                        </MudText>
+                    </div>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+</div>
+
+<style>
+    .login-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #ceced1 0%, #646267 100%);
+        display: flex;
+        align-items: center;
+        /* padding: 20px 0; */
+    }
+
+    .min-height-100vh {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Animaciones suaves */
+    .mud-paper {
+        transition: all 0.3s ease-in-out;
+    }
+
+        .mud-paper:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
+        }
+
+    /* Mejoras en los campos de entrada */
+    .mud-input-control .mud-input {
+        font-size: 16px;
+    }
+
+    .mud-input-label {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    /* Botón con efecto hover mejorado */
+    .mud-button-root:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(26, 69, 127, 0.3);
+    }
+
+    /* Responsive mejorado */
+    @@media (max-width: 600px) {
+        .login-container {
+            padding: 10px;
+        }
+
+        .mud-paper {
+            margin: 10px;
+            padding: 24px !important;
+        }
+    }
+</style>
 
 @code {
-    #region Declaracion de Variables y Objetos
-    private DtoLoginEmpresa dtoLogin = new();
-    private DtoLoginEmpresa dtoLoginEmpresa = new();
-    private List<DtoEmpresa> LstEmpresa = new();
-    private DtoEmpresa ObjEmpresa = new();
-    private DtoFiltroNavega filorig = new();
+    #region Constants and Configuration
+    private const string AUTH_URL = "services/identity/api/profile/login";
+    private const string EMPRESA_URL = "services/catalogo/api/Company/all/";
+    private const string CONFIG_USER_KEY = "UsrLoginGral:User";
+    private const string CONFIG_PASSWORD_KEY = "UsrLoginGral:Pwd";
+    private const int MIN_USERNAME_LENGTH = 3;
+    private const int MIN_PASSWORD_LENGTH = 3;
+    private const int MAX_USERNAME_LENGTH = 16;
+    private const int MAX_PASSWORD_LENGTH = 32;
+    #endregion
+
+    #region Private Fields
+    private readonly DtoLoginEmpresa dtoLoginEmpresa = new();
+    private readonly DtoFiltroNavega filorig = new();
 
     private bool ValidateData = false;
-    private string UrlAuth = "services/identity/api/profile/login";
-    private string UrlEmpresa = "services/catalogo/api/Company/all/";
+    private bool showPassword = false;
+    private string loginStatusMessage = string.Empty;
     #endregion
 
-    #region Funcionalidad Página
+    #region Lifecycle Methods
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-    }
-
-    void ShowSnack(string message)
-    {
-        Snackbar.Add($"Atención:  {message}", Severity.Warning);
-    }
-
-    #endregion
-
-    #region Operaciones
-    async void OnValidSubmit(EditContext context)
-    {
-        ValidateData = true;
-        filorig.LstFiltro = new();
-        dtoLogin = new()
-            {
-                Usuario = _config.GetSection("UsrLoginGral:User").Value.Trim(),
-                Contraseña = _config.GetSection("UsrLoginGral:Pwd").Value.Trim(),
-            };
         try
         {
-            // Autenticación inicial
-            var ses = await Http.PostAsJsonAsync<DtoLoginEmpresa>(UrlAuth, dtoLogin);
-            Http.DefaultRequestHeaders.Remove("Authorization");
-            Http.DefaultRequestHeaders.Remove("branchid");
+            Logger.LogInformation("Initializing IndexEmpresa page");
+            await base.OnInitializedAsync();
 
-            // Manejar respuesta de autenticación
-            var authSuccess = await ApiHandler.HandleResponseAsync<DtoLoginEmpresa>(ses, "autenticación",false);
-            
-            if (authSuccess && ses.StatusCode == System.Net.HttpStatusCode.OK)
-            {
-                var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
-                Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
-                
-                // Consulta de datos de la empresa
-                var empresaResponse = await Http.GetAsync(UrlEmpresa + "/" + dtoLoginEmpresa.Usuario.Trim());
-                var empresaSuccess = await ApiHandler.HandleResponseAsync<List<DtoEmpresa>>(empresaResponse, "consulta de empresa",false);
-                
-                if (empresaSuccess)
-                {
-                    LstEmpresa = await empresaResponse.Content.ReadFromJsonAsync<List<DtoEmpresa>>();
-                    
-                    if (LstEmpresa.Count() == 0)
-                    {
-                        Http.DefaultRequestHeaders.Remove("Authorization");
-                        Http.DefaultRequestHeaders.Remove("branchid");
-                        ApiHandler.ShowWarningMessage("¡La Empresa no existe, favor de verificar!");
-                        ValidateData = false;
-                    }
-                    else
-                    {
-                        ObjEmpresa = LstEmpresa.FirstOrDefault(op => op.Clave.Trim().ToUpper().Equals(dtoLoginEmpresa.Usuario.Trim().ToUpper()));
-                        
-                        if (ObjEmpresa.Contrasena.Trim().Equals(dtoLoginEmpresa.Contraseña.Trim()))
-                        {
-                            // Login exitoso
-                            ObjEmpresa.Token = result.Token;
-                            string json = JsonConvert.SerializeObject(ObjEmpresa);
-                            string filtro = JsonConvert.SerializeObject(filorig);
-                            
-                            var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
-                            await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
-                                {
-                                    filtros = Cryp.Encripta(filtro),
-                                    testsuncretr = Cryp.Encripta(json),
-                                    Type = 3,
-                                });
-                            
-                            Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
-                            ApiHandler.ShowSuccessMessage("¡Login exitoso! Bienvenida empresa.");
-                            NavigationManager.NavigateTo("/ConsultaExpedientesEmpresa/", true);
-                            ValidateData = false;
-                        }
-                        else
-                        {
-                            Http.DefaultRequestHeaders.Remove("Authorization");
-                            Http.DefaultRequestHeaders.Remove("branchid");
-                            ApiHandler.ShowWarningMessage("¡La Contraseña es incorrecta, favor de verificar!");
-                            ValidateData = false;
-                        }
-                    }
-                }
-            }
+            // Limpiar cualquier estado previo
+            await ResetLoginStateAsync();
         }
         catch (Exception ex)
         {
-            ApiHandler.ShowErrorMessage($"Error inesperado durante el login: {ex.Message}");
-            ValidateData = false;
+            Logger.LogError(ex, "Error initializing IndexEmpresa page");
+            ApiHandler.ShowErrorMessage("Error al inicializar la página. Intente recargar.");
         }
+    }
+    #endregion
+
+    #region Public Methods
+    /// <summary>
+    /// Alterna la visibilidad de la contraseña
+    /// </summary>
+    public void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
         StateHasChanged();
     }
     #endregion
 
+    #region Private Methods
+    /// <summary>
+    /// Resetea el estado del login
+    /// </summary>
+    private async Task ResetLoginStateAsync()
+    {
+        ValidateData = false;
+        loginStatusMessage = string.Empty;
+        ClearAuthHeaders();
+
+        Logger.LogDebug("Login state reset completed");
+        await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Valida si el formulario tiene datos válidos
+    /// </summary>
+    /// <returns>True si el formulario es válido</returns>
+    private bool IsFormValid()
+    {
+        return !string.IsNullOrWhiteSpace(dtoLoginEmpresa.Usuario) &&
+               !string.IsNullOrWhiteSpace(dtoLoginEmpresa.Contraseña) &&
+               dtoLoginEmpresa.Usuario.Length >= MIN_USERNAME_LENGTH &&
+               dtoLoginEmpresa.Contraseña.Length >= MIN_PASSWORD_LENGTH;
+    }
+
+    /// <summary>
+    /// Obtiene las credenciales de configuración del usuario general
+    /// </summary>
+    /// <returns>Tupla con usuario y contraseña, o null si hay error</returns>
+    private (string User, string Password)? GetGeneralCredentials()
+    {
+        try
+        {
+            var generalUser = _config.GetSection(CONFIG_USER_KEY).Value;
+            var generalPassword = _config.GetSection(CONFIG_PASSWORD_KEY).Value;
+
+            if (string.IsNullOrWhiteSpace(generalUser) || string.IsNullOrWhiteSpace(generalPassword))
+            {
+                Logger.LogError("General user credentials not found in configuration");
+                ApiHandler.ShowErrorMessage("Configuración de usuario general no encontrada");
+                return null;
+            }
+
+            return (generalUser, generalPassword);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error retrieving general credentials from configuration");
+            ApiHandler.ShowErrorMessage("Error al obtener la configuración del sistema");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Limpia los headers de autenticación
+    /// </summary>
+    private void ClearAuthHeaders()
+    {
+        try
+        {
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Remove("branchid");
+            Logger.LogDebug("Authentication headers cleared");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Error clearing authentication headers");
+        }
+    }
+
+    /// <summary>
+    /// Realiza la autenticación inicial con el usuario general
+    /// </summary>
+    /// <param name="credentials">Credenciales del usuario general</param>
+    /// <returns>Token de autenticación o null si falla</returns>
+    private async Task<DtoUserSession?> AuthenticateGeneralUserAsync((string User, string Password) credentials)
+    {
+        try
+        {
+            loginStatusMessage = "Conectando con el servidor...";
+            StateHasChanged();
+
+            var loginRequest = new DtoLoginEmpresa
+            {
+                Usuario = credentials.User,
+                Contraseña = credentials.Password
+            };
+
+            using var authResponse = await Http.PostAsJsonAsync<DtoLoginEmpresa>(AUTH_URL, loginRequest);
+
+            var authSuccess = await ApiHandler.HandleResponseAsync<DtoLoginEmpresa>(authResponse, "autenticación", false);
+
+            if (!authSuccess || !authResponse.IsSuccessStatusCode)
+            {
+                Logger.LogWarning("Authentication failed with status: {StatusCode}", authResponse.StatusCode);
+                return null;
+            }
+
+            var result = await authResponse.Content.ReadFromJsonAsync<DtoUserSession>();
+            if (result?.Token is null)
+            {
+                Logger.LogWarning("Authentication token not received");
+                ApiHandler.ShowErrorMessage("Token de autenticación no recibido");
+                return null;
+            }
+
+            Logger.LogInformation("General user authentication successful");
+            return result;
+        }
+        catch (HttpRequestException ex)
+        {
+            Logger.LogError(ex, "HTTP error during general user authentication");
+            ApiHandler.ShowErrorMessage($"Error de conexión: {ex.Message}");
+            return null;
+        }
+        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+        {
+            Logger.LogWarning(ex, "Timeout during general user authentication");
+            ApiHandler.ShowErrorMessage("Tiempo de espera agotado. Intente nuevamente.");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected error during general user authentication");
+            ApiHandler.ShowErrorMessage($"Error inesperado durante la autenticación: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Obtiene los datos de la empresa por su clave
+    /// </summary>
+    /// <param name="empresaClave">Clave de la empresa</param>
+    /// <returns>Lista de empresas o null si falla</returns>
+    private async Task<List<DtoEmpresa>?> GetEmpresaDataAsync(string empresaClave)
+    {
+        try
+        {
+            loginStatusMessage = "Obteniendo datos de la empresa...";
+            StateHasChanged();
+
+            using var empresaResponse = await Http.GetAsync($"{EMPRESA_URL}{empresaClave}");
+            var empresaSuccess = await ApiHandler.HandleResponseAsync<List<DtoEmpresa>>(empresaResponse, "consulta de empresa", false);
+
+            if (!empresaSuccess || !empresaResponse.IsSuccessStatusCode)
+            {
+                Logger.LogWarning("Failed to retrieve empresa data for clave: {Clave}", empresaClave);
+                return null;
+            }
+
+            var empresas = await empresaResponse.Content.ReadFromJsonAsync<List<DtoEmpresa>>() ?? new List<DtoEmpresa>();
+
+            if (!empresas.Any())
+            {
+                Logger.LogWarning("No empresas found for clave: {Clave}", empresaClave);
+                ApiHandler.ShowWarningMessage("¡La Empresa no existe, favor de verificar!");
+                return null;
+            }
+
+            Logger.LogInformation("Empresa data retrieved successfully for clave: {Clave}", empresaClave);
+            return empresas;
+        }
+        catch (HttpRequestException ex)
+        {
+            Logger.LogError(ex, "HTTP error retrieving empresa data for clave: {Clave}", empresaClave);
+            ApiHandler.ShowErrorMessage($"Error de conexión al consultar empresa: {ex.Message}");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected error retrieving empresa data for clave: {Clave}", empresaClave);
+            ApiHandler.ShowErrorMessage($"Error inesperado al consultar empresa: {ex.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Busca la empresa específica por su clave
+    /// </summary>
+    /// <param name="empresas">Lista de empresas</param>
+    /// <param name="clave">Clave a buscar</param>
+    /// <returns>Empresa encontrada o null</returns>
+    private static DtoEmpresa? FindEmpresaByClave(List<DtoEmpresa> empresas, string clave)
+    {
+        ArgumentNullException.ThrowIfNull(empresas);
+        ArgumentException.ThrowIfNullOrEmpty(clave);
+
+        return empresas.FirstOrDefault(op =>
+            string.Equals(op.Clave?.Trim(), clave.Trim(), StringComparison.OrdinalIgnoreCase));
+    }
+
+    /// <summary>
+    /// Verifica la contraseña de la empresa
+    /// </summary>
+    /// <param name="empresa">Datos de la empresa</param>
+    /// <param name="password">Contraseña a verificar</param>
+    /// <returns>True si la contraseña es correcta</returns>
+    private bool VerifyEmpresaPassword(DtoEmpresa empresa, string password)
+    {
+        ArgumentNullException.ThrowIfNull(empresa);
+
+        var storedPassword = empresa.Contrasena ?? string.Empty;
+        var isValid = string.Equals(storedPassword.Trim(), password.Trim(), StringComparison.Ordinal);
+
+        if (!isValid)
+        {
+            Logger.LogWarning("Invalid password for empresa ID: {EmpresaId}", empresa.Id);
+            ApiHandler.ShowWarningMessage("¡La Contraseña es incorrecta, favor de verificar!");
+        }
+        else
+        {
+            Logger.LogInformation("Password verification successful for empresa ID: {EmpresaId}", empresa.Id);
+        }
+
+        return isValid;
+    }
+
+    /// <summary>
+    /// Completa el proceso de login exitoso
+    /// </summary>
+    /// <param name="token">Token de autenticación</param>
+    /// <param name="empresa">Datos de la empresa</param>
+    private async Task CompleteSuccessfulLoginAsync(DtoUserSession token, DtoEmpresa empresa)
+    {
+        try
+        {
+            loginStatusMessage = "Iniciando sesión...";
+            StateHasChanged();
+
+            // Configurar headers de autenticación
+            Http.DefaultRequestHeaders.Add("branchid", token.Sucursal.ToString());
+
+            // Preparar datos de sesión
+            empresa.Token = token.Token;
+
+            string json = JsonConvert.SerializeObject(empresa);
+            string filtro = JsonConvert.SerializeObject(filorig);
+
+            // Actualizar estado de autenticación
+            var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+            await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
+            {
+                filtros = Cryp.Encripta(filtro),
+                testsuncretr = Cryp.Encripta(json),
+                Type = 3,
+            });
+
+            Logger.LogInformation("Login completed successfully for empresa: {EmpresaClave}", empresa.Clave);
+            ApiHandler.ShowSuccessMessage("¡Login exitoso! Bienvenida empresa.");
+
+            // Pequeña pausa para mostrar el mensaje de éxito
+            await Task.Delay(1000);
+
+            NavigationManager.NavigateTo("/ConsultaExpedientesEmpresa/", true);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error completing successful login for empresa: {EmpresaClave}", empresa.Clave);
+            ApiHandler.ShowErrorMessage($"Error al completar el login: {ex.Message}");
+            ClearAuthHeaders();
+        }
+    }
+    #endregion
+
+    #region Event Handlers
+    /// <summary>
+    /// Maneja el envío del formulario de login
+    /// </summary>
+    /// <param name="context">Contexto del formulario</param>
+    private async Task OnValidSubmitAsync(EditContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        if (!IsFormValid())
+        {
+            ApiHandler.ShowWarningMessage("Por favor, complete todos los campos correctamente");
+            return;
+        }
+
+        try
+        {
+            ValidateData = true;
+            filorig.LstFiltro = new();
+
+            Logger.LogInformation("Starting login process for empresa: {Usuario}", dtoLoginEmpresa.Usuario);
+
+            // 1. Obtener credenciales de configuración
+            var credentials = GetGeneralCredentials();
+            if (credentials is null) return;
+
+            // 2. Autenticación inicial
+            var token = await AuthenticateGeneralUserAsync(credentials.Value);
+            Http.DefaultRequestHeaders.Remove("Authorization");
+            if (token?.Token is null)
+            {
+                return;
+            }
+            else
+            {
+                Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.Token}");
+            }
+
+            // 3. Obtener datos de la empresa
+            var empresas = await GetEmpresaDataAsync(dtoLoginEmpresa.Usuario);
+            if (empresas is null) return;
+
+            // 4. Buscar empresa específica
+            var empresa = FindEmpresaByClave(empresas, dtoLoginEmpresa.Usuario);
+            if (empresa is null)
+            {
+                ClearAuthHeaders();
+                ApiHandler.ShowWarningMessage("¡Clave de empresa no encontrada!");
+                return;
+            }
+
+            // 5. Verificar contraseña
+            if (!VerifyEmpresaPassword(empresa, dtoLoginEmpresa.Contraseña))
+            {
+                ClearAuthHeaders();
+                return;
+            }
+
+            // 6. Completar login exitoso
+            await CompleteSuccessfulLoginAsync(token, empresa);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected error during login process for empresa: {Usuario}", dtoLoginEmpresa.Usuario);
+            ApiHandler.ShowErrorMessage($"Error inesperado durante el login: {ex.Message}");
+        }
+        finally
+        {
+            ValidateData = false;
+            loginStatusMessage = string.Empty;
+            StateHasChanged();
+        }
+    }
+    #endregion
 }
