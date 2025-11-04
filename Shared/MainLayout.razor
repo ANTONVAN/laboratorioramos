@@ -9,64 +9,216 @@
 @inject AuthenticationStateProvider _authStateProvider;
 @inject IHttpContextAccessor httpContextAccessor;
 @inject Cryp Cryp;
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <MudThemeProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
 
-
 <MudLayout>
     <SessionTimeoutWatcher />
     <MudAppBar Elevation="3">
-        @* <MudGrid>
-            <MudItem xs="6" sm="3" md="3">
-                <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-            </MudItem>
-            <MudItem xs="12" sm="12" md="12">
-                <MudText Typo="Typo.body1">Encuestas de Satisfacción:</MudText>
-            </MudItem>
-            <MudItem xs="12" sm="12" md="12">
-                <MudLink Href="https://docs.google.com/forms/d/e/1FAIpQLSdCYId5cr0g85C_f9zDxxErNJwjO4yDGOU6FQ5xE8O6EEUaxg/viewform" Underline="Underline.Always" Typo="Typo.body1" Target="_blank">Monterrey</MudLink>
-            </MudItem>
-            <MudItem xs="12" sm="12" md="12">
-                <MudLink Href="https://docs.google.com/forms/d/e/1FAIpQLSeZoFyRuQOhxzcdOjzZnbxhvaV0cJxqKgGVWRmrnbkv911rpg/viewform" Underline="Underline.Always" Typo="Typo.body1" Target="_blank">Sonora</MudLink>
-            </MudItem>
-            <MudItem xs="12" sm="12" md="12">
-                <h5>Hola, @NombreUsuario</h5>
-            </MudItem>
-        </MudGrid> *@
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" 
+                       Color="Color.Inherit" 
+                       Edge="Edge.Start" 
+                       OnClick="@((e) => ToggleDrawer())"
+                       Style="color: rgba(255,255,255,0.9);" />
+        
+        <div style="margin-left: 15px; cursor: pointer;" 
+             @onclick="@(() => NavigationManager.NavigateTo("/"))"
+             class="d-none d-sm-block">
+            <MudImage Src="images/labramos.png" 
+                      Alt="Laboratorio Ramos" 
+                      Width="180" 
+                      Height="60" />
+        </div>
+        
+        <div style="margin-left: 8px; cursor: pointer;" 
+             @onclick="@(() => NavigationManager.NavigateTo("/"))"
+             class="d-block d-sm-none">
+            <MudImage Src="images/labramos.png" 
+                      Alt="Laboratorio Ramos" 
+                      Width="120" 
+                      Height="40" />
+        </div>
+        
         <MudSpacer />
-        <MudText Class="d-none d-sm-flex d-sm-none d-md-flex" Typo="Typo.body1">Encuestas de Satisfacción: &nbsp;&nbsp;&nbsp;</MudText>
-        <MudLink Href="https://docs.google.com/forms/d/e/1FAIpQLSdCYId5cr0g85C_f9zDxxErNJwjO4yDGOU6FQ5xE8O6EEUaxg/viewform" Underline="Underline.Always"  Typo="Typo.body1" Target="_blank">Monterrey</MudLink>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <MudLink Href="https://docs.google.com/forms/d/e/1FAIpQLSeZoFyRuQOhxzcdOjzZnbxhvaV0cJxqKgGVWRmrnbkv911rpg/viewform" Underline="Underline.Always" Typo="Typo.body1" Target="_blank"  >Sonora</MudLink>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <h5>Hola, @NombreUsuario</h5>
-        @* <MudIconButton Icon="@Icons.Custom.Brands.MudBlazor" Color="Color.Inherit" Link="https://mudblazor.com/" Target="_blank" />
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Link="https://github.com/MudBlazor/MudBlazor/" Target="_blank" /> *@
+        
+        <!-- Encuestas de Satisfacción - Desktop -->
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="d-none d-md-flex" Style="margin-right: 16px;">
+            <MudIcon Icon="@Icons.Material.Filled.RateReview" 
+                     Size="Size.Medium" 
+                     Style="color: rgba(255,255,255,0.95);" />
+            <MudStack Spacing="0" Style="min-width: 200px;">
+                <MudText Typo="Typo.caption" 
+                         Style="color: rgb(13 55 168); font-size: 0.7rem; line-height: 1.2; margin-bottom: 2px; white-space: nowrap;">
+                    Encuestas de Satisfacción
+                </MudText>
+                <MudSelect @bind-Value="selectedSurvey" 
+                           @bind-Value:after="HandleSurveyChangeAfter"
+                           Variant="Variant.Outlined" 
+                           Dense="true" 
+                           Style="min-width: 180px; max-width: 200px; background-color: rgba(255,255,255,0.98);"
+                           Margin="Margin.Dense"
+                           AnchorOrigin="Origin.BottomCenter"
+                           TransformOrigin="Origin.TopCenter">
+                    <MudSelectItem Value="@SurveyOption.None">
+                        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" Size="Size.Small" />
+                            <MudText Typo="Typo.body2">Seleccionar...</MudText>
+                        </MudStack>
+                    </MudSelectItem>
+                    <MudSelectItem Value="@SurveyOption.Monterrey">
+                        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.LocationCity" Size="Size.Small" Color="Color.Primary" />
+                            <MudText Typo="Typo.body2" Style="font-weight: 500;">Monterrey</MudText>
+                        </MudStack>
+                    </MudSelectItem>
+                    <MudSelectItem Value="@SurveyOption.Sonora">
+                        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                            <MudIcon Icon="@Icons.Material.Filled.LocationCity" Size="Size.Small" Color="Color.Secondary" />
+                            <MudText Typo="Typo.body2" Style="font-weight: 500;">Sonora</MudText>
+                        </MudStack>
+                    </MudSelectItem>
+                </MudSelect>
+            </MudStack>
+        </MudStack>
+        
+        <!-- Encuestas de Satisfacción - Mobile/Tablet -->
+        <MudMenu @bind-Open="@surveyMenuOpen" 
+                 AnchorOrigin="Origin.BottomRight" 
+                 TransformOrigin="Origin.TopRight" 
+                 Class="d-flex d-md-none"
+                 Style="margin-right: 8px;">
+            <ActivatorContent>
+                <MudIconButton Icon="@Icons.Material.Filled.RateReview" 
+                               Color="Color.Inherit" 
+                               Size="Size.Medium"
+                               Variant="Variant.Text"
+                               Edge="Edge.End"
+                               Style="color: rgba(255,255,255,0.9);" />
+            </ActivatorContent>
+            <ChildContent>
+                <MudMenuItem OnClick="@(() => HandleSurveyMenuItem(SurveyOption.Monterrey))">
+                    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.LocationCity" Size="Size.Small" Color="Color.Primary" />
+                        <MudText Typo="Typo.body2" Style="font-weight: 500;">Monterrey</MudText>
+                    </MudStack>
+                </MudMenuItem>
+                <MudMenuItem OnClick="@(() => HandleSurveyMenuItem(SurveyOption.Sonora))">
+                    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+                        <MudIcon Icon="@Icons.Material.Filled.LocationCity" Size="Size.Small" Color="Color.Secondary" />
+                        <MudText Typo="Typo.body2" Style="font-weight: 500;">Sonora</MudText>
+                    </MudStack>
+                </MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+        
+        <MudSpacer />
+        
+        <!-- Nombre de Usuario -->
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1" Class="d-none d-sm-flex" Style="margin-right: 16px;">
+            <MudIcon Icon="@Icons.Material.Filled.Person" 
+                     Size="Size.Small" 
+                     Style="color: rgba(255,255,255,0.9);" />
+            <MudText Typo="Typo.body1" 
+                     Style="white-space: nowrap; font-weight: 500; color: rgb(13 55 168);">
+                Hola, @NombreUsuario
+            </MudText>
+        </MudStack>
+        
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1" Class="d-flex d-sm-none" Style="margin-right: 8px;">
+            <MudIcon Icon="@Icons.Material.Filled.Person" 
+                     Size="Size.Small" 
+                     Style="color: rgba(255,255,255,0.9);" />
+            <MudText Typo="Typo.body2" 
+                     Style="white-space: nowrap; font-weight: 500; color: rgb(13 55 168); max-width: 100px; overflow: hidden; text-overflow: ellipsis;">
+                @NombreUsuario
+            </MudText>
+        </MudStack>
     </MudAppBar>
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="1" Style="background: #707070;color: white;">
-		<MudDrawerHeader >
-            @* <MudText Typo="Typo.h6">LabRamosB</MudText> *@
-            <MudImage Src="images/LOGO_labramos VECTOR_blanco.png" Alt="Laboratorio Ramos" Width="160" Height="70" />
+
+    <MudDrawerContainer Class="mud-height-full" Style="padding-top: 68px;">
+        <MudDrawer @bind-Open="@_open" Fixed="false" Elevation="3" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true" Breakpoint="Breakpoint.None" Style="background: #707070;color: white;">
+            <MudNavMenu>
+                @switch (TypeUser)
+                {
+                    case 1:
+                        <MudNavLink Href="ConsultaResultadosPaciente/1/0" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Badge" IconColor="Color.Inherit">Consulta de Resultados</MudNavLink>
+                        <MudNavLink Href="ConsultaGraficaPaciente/1/0" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.StackedBarChart" IconColor="Color.Inherit">
+                            Gráficas
+                        </MudNavLink>
+                        break;
+                    case 2:
+                        <MudNavLink Href="ConsultaExpedientesMedico/" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch" IconColor="Color.Inherit">
+                            Expedientes
+                        </MudNavLink>
+                        <MudNavLink Href="ConsultaSolicitudes/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch" IconColor="Color.Inherit">
+                            Solicitudes
+                        </MudNavLink>
+                        <MudNavLink Href="CreaOrden/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd" IconColor="Color.Inherit">
+                            Crear Orden
+                        </MudNavLink>
+                        break;
+                    case 3:
+                        <MudNavLink Href="ConsultaExpedientesEmpresa" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch" IconColor="Color.Inherit">
+                            Pacientes
+                        </MudNavLink>
+                        <MudNavLink Href="ConsultaSolicitudes/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch" IconColor="Color.Inherit">
+                            Solicitudes
+                        </MudNavLink>
+                        <MudNavLink Href="CreaOrden/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd" IconColor="Color.Inherit">
+                            Crear Orden
+                        </MudNavLink>
+                        break;
+                }
+
+                <MudNavLink OnClick="@(() => NavigateToExit())" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Inherit">
+                    Salir
+                </MudNavLink>
+            </MudNavMenu>
+        </MudDrawer>
+        <MudMainContent Style="padding-top:1px;">
+            <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+                @Body
+            </MudContainer>
+        </MudMainContent>
+    </MudDrawerContainer>
+    
+    @* <MudDrawer Open="_drawerOpen" 
+               MiniVariant="_drawerMiniMode" 
+               ClipMode="DrawerClipMode.Always" 
+               Elevation="2" 
+               Style="background: #707070;color: white;" 
+               Overlay="false" 
+               Variant="@DrawerVariant.Persistent">
+        <MudDrawerHeader>
+            <div style="padding: 10px; text-align: center;">
+                <!-- Header vacío en modo expandido -->
+            </div>
         </MudDrawerHeader>
-        <NavMenu />
-    </MudDrawer>
-    <MudMainContent>
-        @* <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="my-3 pt-1"> *@
+        <NavMenu MiniMode="_drawerMiniMode" />
+    </MudDrawer> *@
+    
+    @* <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.ExtraLarge">
             @Body
         </MudContainer>
-    </MudMainContent>
+    </MudMainContent> *@
 </MudLayout>
 
 @code {
+    #region Declaración de variables   
 
-    #region Declaración de variables
+    private bool _open = true;
 
-    bool _drawerOpen = true;
+    private void ToggleDrawer()
+    {
+        _open = !_open;
+    }
+    
     private int TypeUser = 0;
     private string NombreUsuario = "";
 
@@ -75,6 +227,49 @@
         new BreadcrumbItem("Home", href: "/", icon: Icons.Material.Filled.Home),
     };
 
+    // Encuestas de Satisfacción
+    private SurveyOption selectedSurvey = SurveyOption.None;
+    private bool surveyMenuOpen = false;
+
+    private enum SurveyOption
+    {
+        None,
+        Monterrey,
+        Sonora
+    }
+
+    private readonly Dictionary<SurveyOption, string> surveyUrls = new()
+    {
+        { SurveyOption.Monterrey, "https://docs.google.com/forms/d/e/1FAIpQLSdCYId5cr0g85C_f9zDxxErNJwjO4yDGOU6FQ5xE8O6EEUaxg/viewform" },
+        { SurveyOption.Sonora, "https://docs.google.com/SeZoFyRuQOhxzcdOjzZnbxhvaV0cJxqKgGVWRmrnbkv911rpg/viewform" }
+    };
+    #endregion
+
+    private async Task HandleSurveyChangeAfter()
+    {
+        if (selectedSurvey != SurveyOption.None && surveyUrls.ContainsKey(selectedSurvey))
+        {
+            var url = surveyUrls[selectedSurvey];
+            // Abrir en nueva pestaña usando JavaScript
+            await JSRuntime.InvokeVoidAsync("open", url, "_blank");
+            // Resetear el select después de abrir el link
+            await Task.Delay(100);
+            selectedSurvey = SurveyOption.None;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleSurveyMenuItem(SurveyOption option)
+    {
+        surveyMenuOpen = false;
+        selectedSurvey = option;
+        if (surveyUrls.ContainsKey(option))
+        {
+            var url = surveyUrls[option];
+            await JSRuntime.InvokeVoidAsync("open", url, "_blank");
+        }
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -99,19 +294,12 @@
             NombreUsuario = dtoMedicoPaciente.Nombre;
         }
         StateHasChanged();
-
     }
 
-    #endregion
-
-    #region Fusiones Página
-    void DrawerToggle()
+    private async void NavigateToExit()
     {
-        _drawerOpen = !_drawerOpen;
+        var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
+        await cusAuthStateProvider.UpdAuthenticationState(null);
+        NavigationManager.NavigateTo("/");
     }
-
-    #endregion
-    
-
-    
 }

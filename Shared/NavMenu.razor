@@ -6,35 +6,56 @@
     @switch (TypeUser)
     {
         case 1:
-            <MudNavLink Href="ConsultaResultadosPaciente/1/0" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">Consulta de Resultados</MudNavLink>
-            <MudNavLink Href="ConsultaGraficaPaciente/1/0" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.StackedBarChart">Gráficas</MudNavLink>
+            <MudNavLink Href="ConsultaResultadosPaciente/1/0" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">
+                @if (!MiniMode) { <text>Consulta de Resultados</text> }
+            </MudNavLink>
+            <MudNavLink Href="ConsultaGraficaPaciente/1/0" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.StackedBarChart">
+                @if (!MiniMode) { <text>Gráficas</text> }
+            </MudNavLink>
             break;
         case 2:
-            <MudNavLink Href="ConsultaExpedientesMedico/" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Expedientes</MudNavLink>
-            <MudNavLink Href="ConsultaSolicitudes/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Solicitudes</MudNavLink>
-            <MudNavLink Href="CreaOrden/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd">Crear Orden</MudNavLink>
-            
+            <MudNavLink Href="ConsultaExpedientesMedico/" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">
+                @if (!MiniMode) { <text>Expedientes</text> }
+            </MudNavLink>
+            <MudNavLink Href="ConsultaSolicitudes/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">
+                @if (!MiniMode) { <text>Solicitudes</text> }
+            </MudNavLink>
+            <MudNavLink Href="CreaOrden/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd">
+                @if (!MiniMode) { <text>Crear Orden</text> }
+            </MudNavLink>
             break;
         case 3:
-            <MudNavLink Href="ConsultaExpedientesEmpresa" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Pacientes</MudNavLink>
-            <MudNavLink Href="ConsultaSolicitudes/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">Solicitudes</MudNavLink>
-            <MudNavLink Href="CreaOrden/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd">Crear Orden</MudNavLink>
-            @* <MudNavLink Href="ConsultaResultadosPacientesEmpresa" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">Consulta de Resultados</MudNavLink> *@
+            <MudNavLink Href="ConsultaExpedientesEmpresa" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">
+                @if (!MiniMode) { <text>Pacientes</text> }
+            </MudNavLink>
+            <MudNavLink Href="ConsultaSolicitudes/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch">
+                @if (!MiniMode) { <text>Solicitudes</text> }
+            </MudNavLink>
+            <MudNavLink Href="CreaOrden/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd">
+                @if (!MiniMode) { <text>Crear Orden</text> }
+            </MudNavLink>
             break;
     }
     
-    <MudNavLink OnClick="@(()=> NavigateToExit())" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout" >Salir</MudNavLink>
-    
+    <MudNavLink OnClick="@(()=> NavigateToExit())" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout">
+        @if (!MiniMode) { <text>Salir</text> }
+    </MudNavLink>
 </MudNavMenu>
 
 <style>
     .mud-nav-link:not(.mud-nav-link-disabled) .mud-nav-link-icon.mud-nav-link-icon-default {
         color: var(--mud-palette-success-text);
     }
+
+    /* Adjust spacing when drawer is in mini mode */
+    .mud-navmenu.mud-navmenu-default {
+        padding: 8px;
+    }
 </style>
 @code {
 
     #region Declaración de variables
+    [Parameter] public bool MiniMode { get; set; } = false;
     private int TypeUser = 0;
 
     #endregion
@@ -47,7 +68,13 @@
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
         var idenUser = authState.User.Claims.ToList();
         TypeUser = int.Parse(idenUser[2].Value);
+    }
 
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        // Forzar re-renderizado cuando cambia MiniMode
+        StateHasChanged();
     }
 
     private async void NavigateToExit()

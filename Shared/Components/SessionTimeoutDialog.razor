@@ -22,55 +22,36 @@
 </MudDialog>
 
 @code {
-    // Alternativa con eventos
-    [Parameter] public EventCallback<bool> OnDialogResult { get; set; }
+    [CascadingParameter] public IDialogReference? MudDialog { get; set; }
 
     [Parameter] public string ContentText { get; set; } = string.Empty;
     [Parameter] public string ButtonText { get; set; } = "Continuar sesión";
     [Parameter] public Color Color { get; set; } = Color.Warning;
 
-    private async Task OnContinue()
+    private void OnContinue()
     {
-        await OnDialogResult.InvokeAsync(true);
+        try
+        {
+            MudDialog?.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            // Log error if needed
+            Console.WriteLine($"Error closing dialog: {ex.Message}");
+        }
     }
 
-    private async Task OnCancel()
+    private void OnCancel()
     {
-        await OnDialogResult.InvokeAsync(false);
+        try
+        {
+            MudDialog?.Close(DialogResult.Cancel());
+        }
+        catch (Exception ex)
+        {
+            // Log error if needed
+            Console.WriteLine($"Error canceling dialog: {ex.Message}");
+        }
     }
-    
-    
-
-    // private async Task OnContinue()
-    // {
-    //     try
-    //     {
-    //         if (MudDialog != null)
-    //         {
-    //             MudDialog.Close(DialogResult.Ok(true));
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         // Log error if needed
-    //         Console.WriteLine($"Error closing dialog: {ex.Message}");
-    //     }
-    // }
-
-    // private async Task OnCancel()
-    // {
-    //     try
-    //     {
-    //         if (MudDialog != null)
-    //         {
-    //             MudDialog.Close(DialogResult.Cancel());
-    //         }
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         // Log error if needed
-    //         Console.WriteLine($"Error canceling dialog: {ex.Message}");
-    //     }
-    // }
 }
 

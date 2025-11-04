@@ -489,7 +489,7 @@
             StateHasChanged();
 
             // Configurar headers de autenticación
-            Http.DefaultRequestHeaders.Add("branchid", token.Sucursal.ToString());
+            //Http.DefaultRequestHeaders.Add("branchid", token.Sucursal.ToString());
 
             // Preparar datos de sesión
             paciente.Token = token.Token;
@@ -552,6 +552,7 @@
             // 2. Autenticación inicial
             var token = await AuthenticateGeneralUserAsync(credentials.Value);
             Http.DefaultRequestHeaders.Remove("Authorization");
+            Http.DefaultRequestHeaders.Remove("branchid");
             if (token?.Token is null)
             {
                 return;
@@ -559,6 +560,8 @@
             else
             {
                 Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.Token}");
+                // Configurar headers de autenticación
+                Http.DefaultRequestHeaders.Add("branchid", token.Sucursal.ToString());
             }
 
             // 3. Obtener datos del paciente

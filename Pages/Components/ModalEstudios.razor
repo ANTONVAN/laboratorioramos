@@ -1,0 +1,173 @@
+@using LaboratorioRamos.Data.DtoEstudio
+@using MudBlazor
+@using Microsoft.AspNetCore.Components.Web
+
+<MudDialog @bind-Visible="Visible" Options="DiaOptions">
+    <TitleContent>
+        <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center">
+            <MudIcon Icon="@Icons.Material.Filled.MedicalInformation" Color="Color.Success" Class="mr-3" Size="Size.Large" />Agregar Estudios
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <div tabindex="0" @onkeydown="HandleKeyDown">
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="6">
+                <MudTextField @ref="searchRef" T="string" Value="@EstudioSearch" ValueChanged="EstudioSearchChanged" Label="Estudio" Placeholder="Nombre, clave o clave externa" HelperText="Escribe y presiona Enter, o da clic en la lupa" Adornment="Adornment.End" AdornmentIcon="@(Loading==false ? Icons.Material.Filled.Search:Icons.Material.Filled.LocationSearching)" Disabled="@(Loading)" AdornmentColor="@(Loading==false ? Color.Success:Color.Dark)" OnKeyUp="OnKeyUp" OnAdornmentClick="OnSearch" aria-label="Buscar estudio" />
+            </MudItem>
+
+            <MudItem xs="12" sm="12" md="12">
+                <MudTable T="DtoEstudioResponsePrice" Items="@Items" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm" @bind-SelectedItems="Selected" Class="rounded-0"
+                          RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Loading="@Loading" Height="Auto">
+                    <ColGroup>
+                        <col />
+                        <col style="width:20px;" />
+                        <col />
+                        <col />
+                        <col />
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh></MudTh>
+                        <MudTh>Clave</MudTh>
+                        <MudTh>Nombre</MudTh>
+                        <MudTh>Días</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd>
+                            @if (GridEstudio.Estudios != null)
+                            {
+                                <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ToggleDetails(GridEstudio.Clave))"><MudText Typo="Typo.body1" Align="Align.Center"><strong> @((GridEstudio.ShowDetails == true) ? "-" : "+")</strong></MudText></MudButton>
+                            }
+                        </MudTd>
+                        <MudTd DataLabel="Clave">@GridEstudio.Clave</MudTd>
+                        <MudTd DataLabel="Nombre">@GridEstudio.Nombre</MudTd>
+                        <MudTd DataLabel="Días">@GridEstudio.Dias</MudTd>
+                    </RowTemplate>
+
+                    <ChildRowContent>
+                        @if (GridEstudio.ShowDetails)
+                        {
+                            <MudTr>
+                                <td colspan="1">
+                                    &nbsp;
+                                </td>
+                                <td colspan="3">
+                                    <MudCard Elevation="0">
+                                        <MudCardContent Class="pa-0">
+                                            <MudTable Items="@GridEstudio.Estudios" Context="StudiContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                                                <HeaderContent>
+                                                    <MudTh>Clave</MudTh>
+                                                    <MudTh>Nombre</MudTh>
+                                                    <MudTh>Días</MudTh>
+                                                </HeaderContent>
+                                                <RowTemplate>
+                                                    <MudTd DataLabel="Clave">@StudiContext.Clave</MudTd>
+                                                    <MudTd DataLabel="Nombre">@StudiContext.Nombre</MudTd>
+                                                    <MudTd DataLabel="Días">@StudiContext.Dias</MudTd>
+                                                </RowTemplate>
+                                            </MudTable>
+                                        </MudCardContent>
+                                    </MudCard>
+                                </td>
+                            </MudTr>
+                        }
+                    </ChildRowContent>
+                    <LoadingContent>
+                        <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
+                            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" aria-label="Cargando estudios" />
+                        </MudItem>
+                    </LoadingContent>
+                    <NoRecordsContent>
+                        <MudItem xs="12" sm="12" md="12" Class="d-flex flex-column align-center pa-2">
+                            <MudText>Sin Registros para mostrar</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Default">Usa el buscador para encontrar estudios por nombre o clave.</MudText>
+                        </MudItem>
+                    </NoRecordsContent>
+                    <PagerContent>
+                        <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
+                    </PagerContent>
+                </MudTable>
+            </MudItem>
+
+            <MudItem xs="12" sm="12" md="12" Class="pt-2">
+                <MudText Typo="Typo.caption" Color="Color.Default">Selecciona uno o más estudios y presiona Aceptar.</MudText>
+            </MudItem>
+
+        </MudGrid>
+        </div>
+
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="CancelInternal" StartIcon="@Icons.Material.Filled.Close" Color="@Color.Default" Variant="Variant.Outlined" Class="add-item-btn rounded-0" aria-label="Cancelar">Cancelar</MudButton>
+        <MudButton Disabled="@(Selected == null || Selected.Count==0)" OnClick="OnAccept" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn rounded-0" aria-label="Agregar estudios seleccionados">Aceptar</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private readonly DialogOptions DiaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true, CloseButton = true };
+    private MudTextField<string> searchRef;
+    [Inject] IDialogService DialogService { get; set; }
+
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+    [Parameter] public string EstudioSearch { get; set; }
+    [Parameter] public EventCallback<string> EstudioSearchChanged { get; set; }
+    [Parameter] public bool Loading { get; set; }
+    [Parameter] public List<DtoEstudioResponsePrice> Items { get; set; }
+    [Parameter] public HashSet<DtoEstudioResponsePrice> Selected { get; set; }
+    [Parameter] public EventCallback<HashSet<DtoEstudioResponsePrice>> SelectedChanged { get; set; }
+    [Parameter] public EventCallback OnSearch { get; set; }
+    [Parameter] public EventCallback<KeyboardEventArgs> OnKeyUp { get; set; }
+    [Parameter] public EventCallback OnAccept { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public EventCallback<TableRowClickEventArgs<DtoEstudioResponsePrice>> OnRowClickEstudio { get; set; }
+
+    private void ToggleDetails(string clave)
+    {
+        var item = Items?.FirstOrDefault(f => f.Clave.Equals(clave));
+        if (item != null) item.ShowDetails = !item.ShowDetails;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Visible && searchRef != null)
+        {
+            try { await searchRef.FocusAsync(); } catch {}
+        }
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            if (Selected != null && Selected.Count > 0)
+            {
+                if (OnAccept.HasDelegate) await OnAccept.InvokeAsync();
+            }
+            else
+            {
+                if (OnSearch.HasDelegate) await OnSearch.InvokeAsync();
+            }
+        }
+        else if (args.Key == "Escape")
+        {
+            await CancelInternal();
+        }
+    }
+
+    private async Task CancelInternal()
+    {
+        if (Selected != null && Selected.Count > 0 && DialogService != null)
+        {
+            bool? confirm = await DialogService.ShowMessageBox(
+                "Atención",
+                "Tiene estudios seleccionados. ¿Desea cancelar y descartar la selección?",
+                yesText: "Sí",
+                cancelText: "No");
+            if (confirm != true) return;
+        }
+        if (OnCancel.HasDelegate) await OnCancel.InvokeAsync();
+    }
+}
+
+

@@ -1,0 +1,64 @@
+@using LaboratorioRamos.Data.DtoCotizacion
+@using MudBlazor
+
+<MudDataGrid Class="rounded-0 pt-1" Items="@Items" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@Loading" FixedHeader="true" FixedFooter="false">
+    <ToolBarContent>
+        <MudSpacer />
+        <MudText Typo="Typo.h6" style="color: #0d37a8;">Historial de Órdenes</MudText>
+        <MudSpacer />
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Clave" Title="Clave" />
+        <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Expediente" />
+        <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Paciente" />
+        <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Correo" />
+        <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Fecha" Title="Fecha de Creación" />
+        <TemplateColumn HeaderStyle="color:#921313" Title="Activo">
+            <CellTemplate>
+                @{
+                    var actilbl = context.Item.Activo == true ? "SI" : "NO";
+                }
+                @actilbl
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn HeaderStyle="color:#921313" Title="Estudios">
+            <CellTemplate>
+                @{
+                    if (context.Item.Estudios.Count>0)
+                    {
+                        <MudTooltip Text="Ver estudios">
+                            <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" aria-label="Ver estudios de la orden" OnClick="@(()=>OnVerEstudios.InvokeAsync(context.Item))" />
+                        </MudTooltip>
+                    } else {
+                        <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Disabled />
+                    }
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <TemplateColumn HeaderStyle="color:#921313" Title="Acciones">
+            <CellTemplate>
+                <MudTooltip Text="Editar orden">
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" Color="Color.Info" aria-label="Editar orden" OnClick="@(()=>OnEditar.InvokeAsync(context.Item))" />
+                </MudTooltip>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <LoadingContent>
+        <MudText>Cargando....</MudText>
+    </LoadingContent>
+    <NoRecordsContent>
+        <MudText>Sin Registros para mostrar</MudText>
+    </NoRecordsContent>
+    <PagerContent>
+        <MudDataGridPager T="DtoCotizacionResponse" PageSizeOptions="new int[] { 25, 50, 100 }" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    [Parameter] public List<DtoCotizacionResponse> Items { get; set; }
+    [Parameter] public bool Loading { get; set; }
+    [Parameter] public EventCallback<DtoCotizacionResponse> OnVerEstudios { get; set; }
+    [Parameter] public EventCallback<DtoCotizacionResponse> OnEditar { get; set; }
+}
+
+

@@ -13,69 +13,162 @@
 
 @if (ShowBreadcrumbs)
 {
-    <MudBreadcrumbs Items="_items" Style="padding-bottom: 2px; padding-top:0px;"></MudBreadcrumbs>
+    <MudBreadcrumbs Items="_items" Class="mb-2"></MudBreadcrumbs>
 }
 
-<MudGrid>
-    <MudPaper Class="mt-4" Elevation="4" Style="width:100%;">
-        <MudGrid>
-            <MudItem xs="12" sm="12" md="12" Class="ml-4">
-                <MudGrid>
-                    @* <MudItem xs="12" sm="7" md="12" Class="mt-2">
-                        <MudText Align="MudBlazor.Align.Center" Typo="Typo.h5" style="color: #0d37a8;">Consulta Gráfica del Paciente</MudText>
-                    </MudItem> *@
-                    <MudItem xs="12" sm="7" md="6" Class="pt-5">
-                        <MudText Align="MudBlazor.Align.Left" Typo="Typo.body1" style="color: #0d37a8;">Expediente: @PacienteInfo.Expediente</MudText>
-                    </MudItem>
-                    <MudItem xs="12" sm="7" md="6" Class="pt-5">
-                        <MudText Align="MudBlazor.Align.Left" Typo="Typo.body1" style="color: #0d37a8;">Paciente: @PacienteInfo.Nombre</MudText>
-                    </MudItem>
-                </MudGrid>
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-0">
+    <MudPaper Class="mt-4" Elevation="4">
+        <MudGrid Spacing="2" Class="pa-3 pa-md-4">
+            <MudItem xs="12" sm="12" md="6" Class="d-flex align-center">
+                <MudIcon Icon="@Icons.Material.Filled.Badge" Class="mr-2" Style="color: #0d37a8;" />
+                <MudText Typo="Typo.body1" Style="color: #0d37a8; font-weight: 500;">
+                    Expediente: <span Style="font-weight: 400;">@PacienteInfo?.Expediente</span>
+                </MudText>
             </MudItem>
-            <MudItem xs="12" sm="12" md="12" Class="ml-4 pt-4">
-                <MudGrid>
-                    <MudItem xs="12" sm="7" md="3" Class="pt-2">
-                        <MudAutocomplete T="string" @bind-Value="ValEstudio"
-                                         SearchFunc="SearchEstudio"
-                                         Label="Estudio"
-                                         Clearable="true" />
-                    </MudItem>
-                    <MudItem xs="12" sm="5" md="3" Class="pt-2">
-                        <MudDatePicker Clearable="true" Label="Fecha Inicio(dd/MM/yyyy)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateInicial" PickerVariant="PickerVariant.Dialog" Color="MudBlazor.Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
-                    </MudItem>
-                    <MudItem xs="12" sm="5" md="3" Class="pt-2">
-                        <MudDatePicker Clearable="true" Label="Fecha Final(dd/MM/yyyy)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="dateFinal" PickerVariant="PickerVariant.Dialog" Color="MudBlazor.Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
-                    </MudItem>
-                    <MudItem xs="12" sm="7" md="2" Class="pt-2">
-                        <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="MudBlazor.Color.Default" aria-label="Buscar" Class="rounded-0 ml-auto" Style="width:100%;" OnClick="() => BuscaFecha()">Buscar</MudButton>
-                    </MudItem>
-                </MudGrid>
+            
+            <MudItem xs="12" sm="12" md="6" Class="d-flex align-center">
+                <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-2" Style="color: #0d37a8;" />
+                <MudText Typo="Typo.body1" Style="color: #0d37a8; font-weight: 500;">
+                    Paciente: <span Style="font-weight: 400;">@PacienteInfo?.Nombre</span>
+                </MudText>
+            </MudItem>
+            
+            <MudItem xs="12">
+                <MudDivider Class="my-3" />
+            </MudItem>
+            
+            <MudItem xs="12" sm="12" md="12" lg="3">
+                <MudAutocomplete T="string" 
+                                 @bind-Value="ValEstudio"
+                                 SearchFunc="SearchEstudio"
+                                 Label="Estudio"
+                                 Variant="Variant.Outlined"
+                                 Clearable="true"
+                                 Disabled="ValidateData"
+                                 Adornment="Adornment.Start"
+                                 AdornmentIcon="@Icons.Material.Filled.Science"
+                                 Class="full-width" />
+            </MudItem>
+            
+            <MudItem xs="12" sm="6" md="12" lg="3">
+                <MudDatePicker Clearable="true" 
+                               Label="Fecha Inicio" 
+                               Disabled="ValidateData" 
+                               Mask="@(new DateMask("dd/MM/yyyy"))" 
+                               Elevation="12" 
+                               DateFormat="dd/MM/yyyy" 
+                               @bind-Date="dateInicial" 
+                               PickerVariant="PickerVariant.Dialog" 
+                               Color="MudBlazor.Color.Primary" 
+                               Margin="Margin.Dense" 
+                               DisableToolbar="true" 
+                               AutoClose="true" 
+                               Culture="@CultureInfo.GetCultureInfo("es-MEX")"
+                               Variant="Variant.Outlined"
+                               Adornment="Adornment.Start"
+                               AdornmentIcon="@Icons.Material.Filled.Event"
+                               Class="full-width" />
+            </MudItem>
+            
+            <MudItem xs="12" sm="6" md="12" lg="3">
+                <MudDatePicker Clearable="true" 
+                               Label="Fecha Final" 
+                               Disabled="ValidateData" 
+                               Mask="@(new DateMask("dd/MM/yyyy"))" 
+                               Elevation="12" 
+                               DateFormat="dd/MM/yyyy" 
+                               @bind-Date="dateFinal" 
+                               PickerVariant="PickerVariant.Dialog" 
+                               Color="MudBlazor.Color.Primary" 
+                               Margin="Margin.Dense" 
+                               DisableToolbar="true" 
+                               AutoClose="true" 
+                               Culture="@CultureInfo.GetCultureInfo("es-MEX")"
+                               Variant="Variant.Outlined"
+                               Adornment="Adornment.Start"
+                               AdornmentIcon="@Icons.Material.Filled.Event"
+                               Class="full-width" />
+            </MudItem>
+            
+            <MudItem xs="12" sm="12" md="12" lg="3" Class="d-flex align-center" Style="padding-bottom:24px;">
+                @if (ValidateData)
+                {
+                    <MudButton Disabled 
+                               ButtonType="ButtonType.Button" 
+                               Variant="Variant.Filled" 
+                               Color="MudBlazor.Color.Primary" 
+                               Class="full-width"
+                               Size="MudBlazor.Size.Large">
+                        <MudProgressCircular Color="MudBlazor.Color.Default" 
+                                            Size="MudBlazor.Size.Small" 
+                                            Indeterminate="true" 
+                                            Class="mr-2" />
+                        Buscando...
+                    </MudButton>
+                }
+                else
+                {
+                    <MudButton ButtonType="ButtonType.Submit" 
+                               StartIcon="@Icons.Material.Outlined.Search" 
+                               Variant="Variant.Filled" 
+                               Color="MudBlazor.Color.Primary" 
+                               aria-label="Buscar" 
+                               Class="full-width"
+                               Size="MudBlazor.Size.Large"
+                               OnClick="() => BuscaFecha()">
+                        Buscar
+                    </MudButton>
+                }
             </MudItem>
         </MudGrid>
     </MudPaper>
+    
     @if (oResulEstudios.Count > 0)
     {
-        <MudPaper Class="pa-4 mt-4" Elevation="4" Style="width:100%">
+        <MudPaper Class="pa-3 pa-md-4 mt-4" Elevation="4">
             <MudGrid>
-                <MudItem xs="12" sm="12" md="12">
-                    @{ var titleGrafica = $"Gráfica de Resultados ({ValEstudio})"; }
-                    <MudItem xs="12" sm="12" md="12">
-                        <ApexChart TItem="DtoEstudioGrafica" Title="@titleGrafica" Width="@("100%")" Height="400" Options="@options">
-                            <ApexPointSeries TItem="DtoEstudioGrafica"
-                                             Items="oResulEstudios"
-                                             Name="@ValEstudio"
-                                             SeriesType="SeriesType.Line"
-                                             XValue="@(e => e.Fecha)"
-                                             YAggregate="@(e => e.Sum(e => decimal.Parse(e.Valor)))"
-                                             OrderBy="e=>e.X"
-                                             ShowDataLabels />
-                        </ApexChart>
-                    </MudItem>
+                <MudItem xs="12">
+                    @{
+                        var titleGrafica = $"Gráfica de Resultados ({ValEstudio})";
+                    }
+                    <MudText Typo="Typo.h6" Class="mb-3" Style="color: #0d37a8; font-weight: 600;">
+                        @titleGrafica
+                    </MudText>
+                    <ApexChart TItem="DtoEstudioGrafica" 
+                               Title="@titleGrafica" 
+                               Width="@("100%")" 
+                               Height="400" 
+                               Options="@options">
+                        <ApexPointSeries TItem="DtoEstudioGrafica"
+                                         Items="oResulEstudios"
+                                         Name="@ValEstudio"
+                                         SeriesType="SeriesType.Line"
+                                         XValue="@(e => e.Fecha)"
+                                         YAggregate="@(e => e.Sum(e => decimal.Parse(e.Valor)))"
+                                         OrderBy="e=>e.X"
+                                         ShowDataLabels />
+                    </ApexChart>
                 </MudItem>
             </MudGrid>
         </MudPaper>
     }
-</MudGrid>
+    else if (!ValidateData && !string.IsNullOrEmpty(ValEstudio))
+    {
+        <MudPaper Class="pa-4 mt-4" Elevation="2">
+            <MudGrid Justify="Justify.Center" AlignItems="MudBlazor.AlignItems.Center" Style="min-height: 200px;">
+                <MudItem xs="12" Class="text-center">
+                    <MudIcon Icon="@Icons.Material.Filled.Assessment" Size="MudBlazor.Size.Large" Style="color: #757575; font-size: 64px;" />
+                    <MudText Typo="Typo.h6" Class="mt-3" Style="color: #757575;">
+                        No se encontraron resultados para el estudio seleccionado
+                    </MudText>
+                    <MudText Typo="Typo.body2" Class="mt-2" Style="color: #9e9e9e;">
+                        Intente ajustar el rango de fechas o seleccione otro estudio
+                    </MudText>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    }
+</MudContainer>
 
 @code {
     [Parameter] public string? PostRequiere { get; set; }
@@ -92,6 +185,7 @@
     private List<DtoPaciente> dtoPaciente = new();
     private List<DtoEstudioGrafica> oResulEstudios = new();
     private DtoResponseMedicoPaciente dtoMedicoPaciente = new();
+    private bool ValidateData = false;
     private ApexChartOptions<DtoEstudioGrafica> options { get; set; } = new();
     DateTime? dateInicial = DateTime.Today;
     DateTime? dateFinal = DateTime.Today;
@@ -142,66 +236,168 @@
 
     async Task BuscaFecha()
     {
-        if (String.IsNullOrEmpty(ValEstudio)) { ShowSnack("¡Por favor Seleccione un Estudio!"); return; }
-        if (dateFinal < dateInicial) { ShowSnack("¡La Fecha Final no puede ser menor a la fecha incial!"); return; }
-
-        oResulEstudios = new();
-        DtoRequestEstudio parametrobusqueda = new()
+        if (String.IsNullOrEmpty(ValEstudio))
         {
-            Fecha = new() { DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") },
-            Buscar = dtoMedicoPaciente != null ? dtoMedicoPaciente.Nombre : string.Empty,
-        };
-
-        var ValorEstudioBusqueda = "";
-        switch (ValEstudio)
+            ShowSnack("¡Por favor Seleccione un Estudio!");
+            return;
+        }
+        
+        if (dateFinal < dateInicial)
         {
-            case "ACIDO URICO": parametrobusqueda.Estudio = new() { 897, 173 }; ValorEstudioBusqueda = "_ACUR_SU"; break;
-            case "COLESTEROL HDL": parametrobusqueda.Estudio = new() { 458 }; ValorEstudioBusqueda = "_HDL_SU"; break;
-            case "COLESTEROL LDL": parametrobusqueda.Estudio = new() { 458 }; ValorEstudioBusqueda = "_LDL_SU"; break;
-            case "COLESTEROL TOTAL": parametrobusqueda.Estudio = new() { 458, 677, 173 }; ValorEstudioBusqueda = "_COL_SU"; break;
-            case "CREATININA": parametrobusqueda.Estudio = new() { 644, 173 }; ValorEstudioBusqueda = "_CREA_SU"; break;
-            case "GLUCOSA": parametrobusqueda.Estudio = new() { 479, 480, 483, 516, 631, 932, 1133, 1183, 1830, 173 }; ValorEstudioBusqueda = "_GLU_SU"; break;
-            case "HEMOGLOBINA GLICOSILADA": parametrobusqueda.Estudio = new() { 486 }; ValorEstudioBusqueda = "_HGA1C_ST"; break;
-            case "TRIGLICERIDOS": parametrobusqueda.Estudio = new() { 49, 173, 458 }; ValorEstudioBusqueda = "_TAG_SU"; break;
-            case "UREA": parametrobusqueda.Estudio = new() { 36, 173 }; ValorEstudioBusqueda = "_UREA_SU"; break;
-            case "HEMOGLOBINA": parametrobusqueda.Estudio = new() { 928 }; ValorEstudioBusqueda = "_HB_ST"; break;
-            case "PLAQUETAS": parametrobusqueda.Estudio = new() { 928 }; ValorEstudioBusqueda = "_PLAQ_ST"; break;
-            case "ANTÍGENO PROSTÁTICO ESPECÍFICO": parametrobusqueda.Estudio = new() { 876 }; ValorEstudioBusqueda = "_ANTI_SU"; break;
-            case "CA125": parametrobusqueda.Estudio = new() { 773 }; ValorEstudioBusqueda = "_CA125_SU"; break;
-            case "ALFA FETO PROTEÍNA": parametrobusqueda.Estudio = new() { 509 }; ValorEstudioBusqueda = "_AFP_SU2"; break;
-            case "ANTÍGENO CARCINOEMBRIONARIO": parametrobusqueda.Estudio = new() { 739 }; ValorEstudioBusqueda = "_CEA_SU"; break;
-            case "CA 19-9": parametrobusqueda.Estudio = new() { 774 }; ValorEstudioBusqueda = "_CA199_SU"; break;
-            case "CA 15.3": parametrobusqueda.Estudio = new() { 389 }; ValorEstudioBusqueda = "_CA153_SU"; break;
-            case "ACIDO VALPROICO SERICO": parametrobusqueda.Estudio = new() { 22 }; ValorEstudioBusqueda = "_ACVA_SU"; break;
-            case "TOPIRAMATO": parametrobusqueda.Estudio = new() { 62 }; ValorEstudioBusqueda = "_TOP_SU"; break;
-            case "KEPPRA (LEVETIRACETAM)": parametrobusqueda.Estudio = new() { 337 }; ValorEstudioBusqueda = "_KEPR"; break;
-            case "CARBAMAZEPINA": parametrobusqueda.Estudio = new() { 761 }; ValorEstudioBusqueda = "_CARBA_SU"; break;
-            case "DIFENILHIDANTOINA (EPAMIN)": parametrobusqueda.Estudio = new() { 614 }; ValorEstudioBusqueda = "_DIFE_SU"; break;
+            ShowSnack("¡La Fecha Final no puede ser menor a la fecha inicial!");
+            return;
         }
 
-        var sesPacientes = await Http.PostAsJsonAsync<DtoRequestEstudio>(UrlGraficas, parametrobusqueda);
-        dtoEstudio = await sesPacientes.Content.ReadFromJsonAsync<DtoEstudio>();
+        ValidateData = true;
+        oResulEstudios = new();
+        StateHasChanged();
 
-        foreach (var item in dtoEstudio.Results)
+        try
         {
-            var rowExiste = oResulEstudios.FirstOrDefault(op => op.Fecha.Equals($"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}"));
-            if (rowExiste == null)
+            DtoRequestEstudio parametrobusqueda = new()
             {
-                var EstudioTemp = item.Parameters.Where(op => op.Clave.Equals(ValorEstudioBusqueda)).ToList();
-                if (EstudioTemp.Count > 0 && !String.IsNullOrEmpty(EstudioTemp[0].Valor))
+                Fecha = new() 
+                { 
+                    DateTime.Parse(dateInicial.ToString()).ToString("yyyy-MM-dd"), 
+                    DateTime.Parse(dateFinal.ToString()).ToString("yyyy-MM-dd") 
+                },
+                Buscar = dtoMedicoPaciente != null ? dtoMedicoPaciente.Nombre : string.Empty,
+            };
+
+            var ValorEstudioBusqueda = "";
+            switch (ValEstudio)
+            {
+                case "ACIDO URICO":
+                    parametrobusqueda.Estudio = new() { 897, 173 };
+                    ValorEstudioBusqueda = "_ACUR_SU";
+                    break;
+                case "COLESTEROL HDL":
+                    parametrobusqueda.Estudio = new() { 458 };
+                    ValorEstudioBusqueda = "_HDL_SU";
+                    break;
+                case "COLESTEROL LDL":
+                    parametrobusqueda.Estudio = new() { 458 };
+                    ValorEstudioBusqueda = "_LDL_SU";
+                    break;
+                case "COLESTEROL TOTAL":
+                    parametrobusqueda.Estudio = new() { 458, 677, 173 };
+                    ValorEstudioBusqueda = "_COL_SU";
+                    break;
+                case "CREATININA":
+                    parametrobusqueda.Estudio = new() { 644, 173 };
+                    ValorEstudioBusqueda = "_CREA_SU";
+                    break;
+                case "GLUCOSA":
+                    parametrobusqueda.Estudio = new() { 479, 480, 483, 516, 631, 932, 1133, 1183, 1830, 173 };
+                    ValorEstudioBusqueda = "_GLU_SU";
+                    break;
+                case "HEMOGLOBINA GLICOSILADA":
+                    parametrobusqueda.Estudio = new() { 486 };
+                    ValorEstudioBusqueda = "_HGA1C_ST";
+                    break;
+                case "TRIGLICERIDOS":
+                    parametrobusqueda.Estudio = new() { 49, 173, 458 };
+                    ValorEstudioBusqueda = "_TAG_SU";
+                    break;
+                case "UREA":
+                    parametrobusqueda.Estudio = new() { 36, 173 };
+                    ValorEstudioBusqueda = "_UREA_SU";
+                    break;
+                case "HEMOGLOBINA":
+                    parametrobusqueda.Estudio = new() { 928 };
+                    ValorEstudioBusqueda = "_HB_ST";
+                    break;
+                case "PLAQUETAS":
+                    parametrobusqueda.Estudio = new() { 928 };
+                    ValorEstudioBusqueda = "_PLAQ_ST";
+                    break;
+                case "ANTÍGENO PROSTÁTICO ESPECÍFICO":
+                    parametrobusqueda.Estudio = new() { 876 };
+                    ValorEstudioBusqueda = "_ANTI_SU";
+                    break;
+                case "CA125":
+                    parametrobusqueda.Estudio = new() { 773 };
+                    ValorEstudioBusqueda = "_CA125_SU";
+                    break;
+                case "ALFA FETO PROTEÍNA":
+                    parametrobusqueda.Estudio = new() { 509 };
+                    ValorEstudioBusqueda = "_AFP_SU2";
+                    break;
+                case "ANTÍGENO CARCINOEMBRIONARIO":
+                    parametrobusqueda.Estudio = new() { 739 };
+                    ValorEstudioBusqueda = "_CEA_SU";
+                    break;
+                case "CA 19-9":
+                    parametrobusqueda.Estudio = new() { 774 };
+                    ValorEstudioBusqueda = "_CA199_SU";
+                    break;
+                case "CA 15.3":
+                    parametrobusqueda.Estudio = new() { 389 };
+                    ValorEstudioBusqueda = "_CA153_SU";
+                    break;
+                case "ACIDO VALPROICO SERICO":
+                    parametrobusqueda.Estudio = new() { 22 };
+                    ValorEstudioBusqueda = "_ACVA_SU";
+                    break;
+                case "TOPIRAMATO":
+                    parametrobusqueda.Estudio = new() { 62 };
+                    ValorEstudioBusqueda = "_TOP_SU";
+                    break;
+                case "KEPPRA (LEVETIRACETAM)":
+                    parametrobusqueda.Estudio = new() { 337 };
+                    ValorEstudioBusqueda = "_KEPR";
+                    break;
+                case "CARBAMAZEPINA":
+                    parametrobusqueda.Estudio = new() { 761 };
+                    ValorEstudioBusqueda = "_CARBA_SU";
+                    break;
+                case "DIFENILHIDANTOINA (EPAMIN)":
+                    parametrobusqueda.Estudio = new() { 614 };
+                    ValorEstudioBusqueda = "_DIFE_SU";
+                    break;
+            }
+
+            var sesPacientes = await Http.PostAsJsonAsync<DtoRequestEstudio>(UrlGraficas, parametrobusqueda);
+            
+            if (sesPacientes.IsSuccessStatusCode)
+            {
+                dtoEstudio = await sesPacientes.Content.ReadFromJsonAsync<DtoEstudio>();
+
+                foreach (var item in dtoEstudio.Results)
                 {
-                    string ObtengoNum = Regex.Replace(EstudioTemp[0].Valor, @"[^0-9.]", "");
-                    oResulEstudios.Add(new DtoEstudioGrafica
+                    var rowExiste = oResulEstudios.FirstOrDefault(op => op.Fecha.Equals($"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}"));
+                    if (rowExiste == null)
                     {
-                        Fecha = $"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}",
-                        Estudio = ValEstudio,
-                        Valor = ObtengoNum
-                    });
+                        var EstudioTemp = item.Parameters.Where(op => op.Clave.Equals(ValorEstudioBusqueda)).ToList();
+                        if (EstudioTemp.Count > 0 && !String.IsNullOrEmpty(EstudioTemp[0].Valor))
+                        {
+                            string ObtengoNum = Regex.Replace(EstudioTemp[0].Valor, @"[^0-9.]", "");
+                            oResulEstudios.Add(new DtoEstudioGrafica
+                            {
+                                Fecha = $"20{item.Clave.Substring(0, 2)}-{item.Clave.Substring(2, 2)}-{item.Clave.Substring(4, 2)}",
+                                Estudio = ValEstudio,
+                                Valor = ObtengoNum
+                            });
+                        }
+                    }
                 }
+                
+                oResulEstudios = oResulEstudios.OrderByDescending(op => op.Fecha).ToList();
+            }
+            else
+            {
+                ShowSnack("Error al obtener los datos. Por favor intente nuevamente.");
             }
         }
-        oResulEstudios = oResulEstudios.OrderByDescending(op => op.Fecha).ToList();
-        StateHasChanged();
+        catch (Exception ex)
+        {
+            ShowSnack($"Error: {ex.Message}");
+        }
+        finally
+        {
+            ValidateData = false;
+            StateHasChanged();
+        }
     }
 
     private async Task<IEnumerable<string>> SearchEstudio(string value, CancellationToken token)
