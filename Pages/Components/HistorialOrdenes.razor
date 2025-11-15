@@ -1,58 +1,361 @@
 @using LaboratorioRamos.Data.DtoCotizacion
 @using MudBlazor
 
-<MudDataGrid Class="rounded-0 pt-1" Items="@Items" Dense="true" Hover="true" Striped="true" Elevation="4" Style="width:100%;" Loading="@Loading" FixedHeader="true" FixedFooter="false">
+<MudDataGrid 
+    Items="@Items" 
+    Dense="false" 
+    Hover="true" 
+    Striped="true" 
+    Elevation="0" 
+    Style="width:100%;" 
+    Loading="@Loading" 
+    FixedHeader="true" 
+    FixedFooter="false"
+    Class="historial-ordenes-table">
     <ToolBarContent>
+        <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 600;">
+            <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-2" Style="vertical-align: middle;" />
+            Historial de Órdenes
+        </MudText>
         <MudSpacer />
-        <MudText Typo="Typo.h6" style="color: #0d37a8;">Historial de Órdenes</MudText>
-        <MudSpacer />
+        @if (!Loading && Items != null && Items.Any())
+        {
+            <MudChip T="string"
+                Color="Color.Info" 
+                Variant="Variant.Text"
+                Size="Size.Small">
+                @Items.Count @(Items.Count == 1 ? "orden encontrada" : "órdenes encontradas")
+            </MudChip>
+        }
     </ToolBarContent>
     <Columns>
-        <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Clave" Title="Clave" />
-        <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Expediente" />
-        <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Paciente" />
-        <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Correo" />
-        <PropertyColumn HeaderStyle="color:#921313" Property="x => x.Fecha" Title="Fecha de Creación" />
-        <TemplateColumn HeaderStyle="color:#921313" Title="Activo">
+        <PropertyColumn 
+            HeaderStyle="color: #0d37a8; font-weight: 600;" 
+            Property="x => x.Clave">
+            <HeaderTemplate>
+                <MudIcon Icon="@Icons.Material.Filled.Tag" Class="mr-1 table-header-icon" Size="Size.Small" />
+                Clave
+            </HeaderTemplate>
+            <CellTemplate>
+                <MudChip T="string"
+                    Color="Color.Primary" 
+                    Variant="Variant.Text"
+                    Size="Size.Small"
+                    Style="font-weight: 600;">
+                    @context.Item.Clave
+                </MudChip>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn 
+            HeaderStyle="color: #0d37a8; font-weight: 600;" 
+            Property="x => x.Expediente">
+            <HeaderTemplate>
+                <MudIcon Icon="@Icons.Material.Filled.Badge" Class="mr-1 table-header-icon" Size="Size.Small" />
+                Expediente
+            </HeaderTemplate>
+            <CellTemplate>
+                @if (!String.IsNullOrEmpty(context.Item.Expediente))
+                {
+                    <MudChip T="string"
+                        Color="Color.Primary" 
+                        Variant="Variant.Text"
+                        Size="Size.Small"
+                        Style="font-weight: 600;">
+                        @context.Item.Expediente
+                    </MudChip>
+                }
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn 
+            HeaderStyle="color: #0d37a8; font-weight: 600;" 
+            Property="x => x.Paciente">
+            <HeaderTemplate>
+                <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-1 table-header-icon" Size="Size.Small" />
+                Paciente
+            </HeaderTemplate>
+            <CellTemplate>
+                <MudText Typo="Typo.body2" Style="font-weight: 500;">
+                    @context.Item.Paciente
+                </MudText>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn 
+            HeaderStyle="color: #0d37a8; font-weight: 600;" 
+            Property="x => x.Correo">
+            <HeaderTemplate>
+                <MudIcon Icon="@Icons.Material.Filled.Email" Class="mr-1 table-header-icon" Size="Size.Small" />
+                Correo
+            </HeaderTemplate>
+            <CellTemplate>
+                <MudText Typo="Typo.body2">
+                    @context.Item.Correo
+                </MudText>
+            </CellTemplate>
+        </PropertyColumn>
+        <PropertyColumn 
+            HeaderStyle="color: #0d37a8; font-weight: 600;" 
+            Property="x => x.Fecha">
+            <HeaderTemplate>
+                <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Class="mr-1 table-header-icon" Size="Size.Small" />
+                Fecha de Creación
+            </HeaderTemplate>
+            <CellTemplate>
+                <MudText Typo="Typo.body2">
+                    @context.Item.Fecha
+                </MudText>
+            </CellTemplate>
+        </PropertyColumn>
+        <TemplateColumn HeaderStyle="color: #0d37a8; font-weight: 600;">
+            <HeaderTemplate>
+                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Class="mr-1 table-header-icon" Size="Size.Small" />
+                Activo
+            </HeaderTemplate>
             <CellTemplate>
                 @{
                     var actilbl = context.Item.Activo == true ? "SI" : "NO";
+                    var activoColor = context.Item.Activo == true ? Color.Success : Color.Default;
                 }
-                @actilbl
+                <MudChip T="string"
+                    Color="@activoColor" 
+                    Variant="Variant.Text"
+                    Size="Size.Small">
+                    @actilbl
+                </MudChip>
             </CellTemplate>
         </TemplateColumn>
-        <TemplateColumn HeaderStyle="color:#921313" Title="Estudios">
+        <TemplateColumn HeaderStyle="color: #0d37a8; font-weight: 600; text-align: center;">
+            <HeaderTemplate>
+                <MudIcon Icon="@Icons.Material.Filled.Science" Class="mr-1 table-header-icon" Size="Size.Small" />
+                Estudios
+            </HeaderTemplate>
             <CellTemplate>
                 @{
-                    if (context.Item.Estudios.Count>0)
+                    if (context.Item.Estudios != null && context.Item.Estudios.Count > 0)
                     {
-                        <MudTooltip Text="Ver estudios">
-                            <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Color="Color.Info" aria-label="Ver estudios de la orden" OnClick="@(()=>OnVerEstudios.InvokeAsync(context.Item))" />
+                        <MudTooltip Text="Ver estudios de la orden">
+                            <MudIconButton 
+                                Icon="@Icons.Material.Filled.Visibility" 
+                                Size="Size.Medium" 
+                                Color="Color.Primary" 
+                                Variant="Variant.Text"
+                                aria-label="Ver estudios de la orden" 
+                                OnClick="@(()=>OnVerEstudios.InvokeAsync(context.Item))"
+                                Class="action-button" />
                         </MudTooltip>
-                    } else {
-                        <MudIconButton Icon="@Icons.Material.Outlined.Visibility" Size="Size.Small" Disabled />
+                    } 
+                    else 
+                    {
+                        <MudIconButton 
+                            Icon="@Icons.Material.Filled.Visibility" 
+                            Size="Size.Medium" 
+                            Disabled 
+                            Variant="Variant.Text" />
                     }
                 }
             </CellTemplate>
         </TemplateColumn>
-        <TemplateColumn HeaderStyle="color:#921313" Title="Acciones">
+        <TemplateColumn HeaderStyle="color: #0d37a8; font-weight: 600; text-align: center;">
+            <HeaderTemplate>
+                <MudIcon Icon="@Icons.Material.Filled.Handyman" Class="mr-1 table-header-icon" Size="Size.Small" />
+                Acciones
+            </HeaderTemplate>
             <CellTemplate>
                 <MudTooltip Text="Editar orden">
-                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" Color="Color.Info" aria-label="Editar orden" OnClick="@(()=>OnEditar.InvokeAsync(context.Item))" />
+                    <MudIconButton 
+                        Icon="@Icons.Material.Filled.Edit" 
+                        Size="Size.Medium" 
+                        Color="Color.Info" 
+                        Variant="Variant.Text"
+                        aria-label="Editar orden" 
+                        OnClick="@(()=>OnEditar.InvokeAsync(context.Item))"
+                        Class="action-button" />
                 </MudTooltip>
             </CellTemplate>
         </TemplateColumn>
     </Columns>
     <LoadingContent>
-        <MudText>Cargando....</MudText>
+        <MudContainer Class="d-flex flex-column align-center justify-center" Style="min-height: 300px; padding: 3rem;">
+            <MudProgressCircular 
+                Indeterminate="true" 
+                Size="Size.Large" 
+                Color="Color.Primary"
+                Class="mb-4" />
+            <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 500;" Class="mb-2">
+                Cargando órdenes...
+            </MudText>
+            <MudText Typo="Typo.body2" Style="color: #64748b;">
+                Por favor espere mientras se obtienen los resultados
+            </MudText>
+        </MudContainer>
     </LoadingContent>
     <NoRecordsContent>
-        <MudText>Sin Registros para mostrar</MudText>
+        <MudContainer Class="d-flex flex-column align-center justify-center" Style="min-height: 300px; padding: 3rem;">
+            <MudIcon 
+                Icon="@Icons.Material.Filled.Assignment" 
+                Size="Size.Large" 
+                Class="mb-4" 
+                Style="font-size: 5rem; color: #94a3b8; opacity: 0.7;" />
+            <MudText Typo="Typo.h6" Style="color: #64748b; font-weight: 500;" Class="mb-2">
+                No se encontraron órdenes
+            </MudText>
+            <MudText Typo="Typo.body2" Style="color: #94a3b8;" Class="mb-4" Align="Align.Center">
+                Utilice el formulario de búsqueda para encontrar órdenes. Puede buscar por número de orden, nombre del paciente o rango de fechas.
+            </MudText>
+        </MudContainer>
     </NoRecordsContent>
     <PagerContent>
         <MudDataGridPager T="DtoCotizacionResponse" PageSizeOptions="new int[] { 25, 50, 100 }" />
     </PagerContent>
 </MudDataGrid>
+
+<style>
+    /* Tabla de historial de órdenes - Estilo homologado con ConsultaExpedientes */
+    .historial-ordenes-table {
+        border-radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .historial-ordenes-table .mud-data-grid-header {
+        background-color: #f5f7fa;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .historial-ordenes-table .mud-data-grid-header .mud-table-cell {
+        padding: 16px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        letter-spacing: 0.01em;
+        color: #0d37a8;
+    }
+
+    /* Efecto hover en headers */
+    .historial-ordenes-table .mud-data-grid-header .mud-table-cell:hover {
+        background-color: #e8ecf5;
+        transition: background-color 0.2s ease;
+    }
+
+    .historial-ordenes-table .mud-table-body .mud-table-row {
+        transition: all 0.2s ease;
+    }
+
+    .historial-ordenes-table .mud-table-body .mud-table-row:hover {
+        background-color: #f0f4ff !important;
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.1);
+    }
+
+    .historial-ordenes-table .mud-table-body .mud-table-cell {
+        padding: 16px;
+        vertical-align: middle;
+        font-size: 0.875rem;
+        color: #1a1a1a;
+    }
+
+    /* Badges de clave/expediente con estilo de imagen */
+    .historial-ordenes-table .mud-chip {
+        font-weight: 600;
+        font-size: 0.8125rem;
+        padding: 4px 12px;
+        border-radius: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .historial-ordenes-table .mud-chip:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.2);
+    }
+
+    /* Botones de acción */
+    .action-button {
+        transition: all 0.2s ease;
+    }
+
+    .action-button:hover:not(:disabled) {
+        transform: scale(1.15);
+        background-color: rgba(13, 55, 168, 0.1) !important;
+    }
+
+    /* Toolbar de la tabla */
+    .historial-ordenes-table .mud-toolbar {
+        padding: 16px;
+        background-color: #ffffff;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    /* Iconos en toolbar con animación */
+    .historial-ordenes-table .mud-toolbar .mud-icon {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #0d37a8;
+    }
+
+    .historial-ordenes-table .mud-toolbar:hover .mud-icon {
+        transform: scale(1.1);
+        transition: transform 0.2s ease;
+    }
+
+    /* Chip de contador con estilo de imagen */
+    .historial-ordenes-table .mud-chip {
+        font-weight: 500;
+        font-size: 0.8125rem;
+        transition: all 0.2s ease;
+    }
+
+    .historial-ordenes-table .mud-chip:hover {
+        transform: scale(1.05);
+    }
+
+    /* Responsive mejoras */
+    @@media (max-width: 960px) {
+        .historial-ordenes-table .mud-table-body .mud-table-cell {
+            padding: 12px 8px;
+        }
+    }
+
+    /* Animaciones suaves */
+    .mud-paper {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .mud-paper:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Mejoras de accesibilidad */
+    .action-button:focus {
+        outline: 2px solid #0d37a8;
+        outline-offset: 2px;
+    }
+
+    /* Estado de carga mejorado */
+    .historial-ordenes-table.mud-table-loading {
+        opacity: 0.6;
+    }
+
+    /* Iconos en headers de tablas con animación - Estilo exacto de ConsultaExpedientes */
+    .table-header-icon {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #0d37a8;
+        vertical-align: middle;
+        display: inline-block;
+    }
+
+    /* Animación en hover sobre headers */
+    .historial-ordenes-table .mud-data-grid-header .mud-table-cell:hover .table-header-icon {
+        transform: scale(1.2) translateY(-2px);
+        color: #1565c0;
+        transition: all 0.3s ease;
+        animation: iconPulse 0.5s ease-in-out;
+    }
+
+    @@keyframes iconPulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+</style>
 
 @code {
     [Parameter] public List<DtoCotizacionResponse> Items { get; set; }

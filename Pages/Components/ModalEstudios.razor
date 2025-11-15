@@ -1,109 +1,864 @@
-@using LaboratorioRamos.Data.DtoEstudio
+﻿@using LaboratorioRamos.Data.DtoEstudio
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Web
 
-<MudDialog @bind-Visible="Visible" Options="DiaOptions">
+<MudDialog @bind-Visible="Visible" Options="DiaOptions" Class="modal-estudios-dialog">
     <TitleContent>
-        <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center">
-            <MudIcon Icon="@Icons.Material.Filled.MedicalInformation" Color="Color.Success" Class="mr-3" Size="Size.Large" />Agregar Estudios
+        <MudText Typo="Typo.h5" Color="Color.Primary" Class="d-flex align-center dialog-title">
+            <MudIcon Icon="@Icons.Material.Filled.MedicalInformation" Color="Color.Success" Class="mr-2" Size="Size.Medium" />
+            Agregar Estudios
         </MudText>
     </TitleContent>
     <DialogContent>
-        <div tabindex="0" @onkeydown="HandleKeyDown">
-        <MudGrid>
-            <MudItem xs="12" sm="6" md="6">
-                <MudTextField @ref="searchRef" T="string" Value="@EstudioSearch" ValueChanged="EstudioSearchChanged" Label="Estudio" Placeholder="Nombre, clave o clave externa" HelperText="Escribe y presiona Enter, o da clic en la lupa" Adornment="Adornment.End" AdornmentIcon="@(Loading==false ? Icons.Material.Filled.Search:Icons.Material.Filled.LocationSearching)" Disabled="@(Loading)" AdornmentColor="@(Loading==false ? Color.Success:Color.Dark)" OnKeyUp="OnKeyUp" OnAdornmentClick="OnSearch" aria-label="Buscar estudio" />
-            </MudItem>
+        <div tabindex="0" @onkeydown="HandleKeyDown" class="dialog-content-wrapper">
+            <MudGrid Spacing="3">
+                <MudItem xs="12" sm="12" md="12">
+                    <MudTextField 
+                        @ref="searchRef" 
+                        T="string" 
+                        Value="@EstudioSearch" 
+                        ValueChanged="EstudioSearchChanged" 
+                        Label="Estudio" 
+                        Placeholder="Nombre, clave o clave externa" 
+                        HelperText="Escribe y presiona Enter, o da clic en la lupa" 
+                        Adornment="Adornment.End" 
+                        AdornmentIcon="@(Loading==false ? Icons.Material.Filled.Search:Icons.Material.Filled.LocationSearching)" 
+                        Disabled="@(Loading)" 
+                        AdornmentColor="@(Loading==false ? Color.Success:Color.Dark)" 
+                        OnKeyUp="OnKeyUp" 
+                        OnAdornmentClick="OnSearch" 
+                        aria-label="Buscar estudio"
+                        Variant="Variant.Outlined"
+                        Class="search-field-modal" />
+                </MudItem>
 
-            <MudItem xs="12" sm="12" md="12">
-                <MudTable T="DtoEstudioResponsePrice" Items="@Items" MultiSelection="true" Hover="true" Breakpoint="Breakpoint.Sm" @bind-SelectedItems="Selected" Class="rounded-0"
-                          RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudio" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Loading="@Loading" Height="Auto">
-                    <ColGroup>
-                        <col />
-                        <col style="width:20px;" />
-                        <col />
-                        <col />
-                        <col />
-                    </ColGroup>
-                    <HeaderContent>
-                        <MudTh></MudTh>
-                        <MudTh>Clave</MudTh>
-                        <MudTh>Nombre</MudTh>
-                        <MudTh>Días</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd>
-                            @if (GridEstudio.Estudios != null)
+                <MudItem xs="12" sm="12" md="12">
+                    <div class="dialog-table-container">
+                        <MudTable 
+                            T="DtoEstudioResponsePrice" 
+                            Items="@Items" 
+                            MultiSelection="true" 
+                            Hover="true" 
+                            Breakpoint="Breakpoint.Sm" 
+                            @bind-SelectedItems="Selected" 
+                            RowClass="cursor-pointer" 
+                            OnRowClick="@OnRowClickEstudio" 
+                            SelectOnRowClick="true" 
+                            Context="GridEstudio" 
+                            Dense="false" 
+                            Striped="true" 
+                            Bordered="true" 
+                            FixedHeader="true" 
+                            Loading="@Loading" 
+                            Class="modal-estudios-table"
+                            HeaderClass="modal-table-header">
+                            <ColGroup>
+                                <col style="width: 5%;" />
+                                <col style="width: 8%;" />
+                                <col style="width: 15%;" />
+                                <col style="width: 60%;" />
+                                <col style="width: 12%;" />
+                            </ColGroup>
+                            <HeaderContent>
+                                <MudTh Style="color: #0d37a8; font-weight: 700;"></MudTh>
+                                <MudTh Style="color: #0d37a8; font-weight: 700;">
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                        <MudIcon Icon="@Icons.Material.Filled.Tag" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                                        <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Clave</MudText>
+                                    </MudStack>
+                                </MudTh>
+                                <MudTh Style="color: #0d37a8; font-weight: 700;">
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                        <MudIcon Icon="@Icons.Material.Filled.Science" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                                        <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Nombre</MudText>
+                                    </MudStack>
+                                </MudTh>
+                                <MudTh Style="color: #0d37a8; font-weight: 700;">
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                        <MudIcon Icon="@Icons.Material.Filled.Schedule" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                                        <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Días</MudText>
+                                    </MudStack>
+                                </MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>
+                                    @if (GridEstudio.Estudios != null)
+                                    {
+                                        <MudTooltip Text="@(GridEstudio.ShowDetails ? "Ocultar detalles" : "Ver detalles")">
+                                            <MudIconButton 
+                                                Variant="Variant.Outlined" 
+                                                Size="Size.Small" 
+                                                OnClick="@(() => ToggleDetails(GridEstudio.Clave))"
+                                                Color="Color.Info"
+                                                Icon="@((GridEstudio.ShowDetails == true) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)"
+                                                Class="expand-button-modal"
+                                                aria-label="@(GridEstudio.ShowDetails ? "Ocultar detalles" : "Ver detalles")" />
+                                        </MudTooltip>
+                                    }
+                                </MudTd>
+                                <MudTd DataLabel="Clave">
+                                    <MudChip T="string"
+                                        Color="Color.Default"
+                                        Variant="Variant.Filled"
+                                        Size="Size.Small"
+                                        Style="background-color: #e1bee7; color: #4a148c; font-weight: 600; border-radius: 16px; padding: 4px 12px;">
+                                        @GridEstudio.Clave
+                                    </MudChip>
+                                </MudTd>
+                                <MudTd DataLabel="Nombre" Style="font-weight: 500; color: #424242;">
+                                    @GridEstudio.Nombre
+                                </MudTd>
+                                <MudTd DataLabel="Días">
+                                    <MudText Typo="Typo.body2" Style="font-weight: 500; color: #424242;">@GridEstudio.Dias</MudText>
+                                </MudTd>
+                            </RowTemplate>
+
+                            <ChildRowContent>
+                                @if (GridEstudio.ShowDetails)
+                                {
+                                    <MudTr>
+                                        <td colspan="1">
+                                            &nbsp;
+                                        </td>
+                                        <td colspan="4">
+                                            <MudCard Elevation="0" Class="nested-card">
+                                                <MudCardContent Class="pa-0">
+                                                    <MudTable 
+                                                        Items="@GridEstudio.Estudios" 
+                                                        Context="StudiContext" 
+                                                        Hover="true" 
+                                                        Breakpoint="Breakpoint.Sm" 
+                                                        Elevation="0"
+                                                        Dense="true"
+                                                        Striped="true"
+                                                        Class="nested-studies-table">
+                                                        <HeaderContent>
+                                                            <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                                                    <MudIcon Icon="@Icons.Material.Filled.Tag" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                                                                    <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 600;">Clave</MudText>
+                                                                </MudStack>
+                                                            </MudTh>
+                                                            <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                                                    <MudIcon Icon="@Icons.Material.Filled.Science" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                                                                    <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 600;">Nombre</MudText>
+                                                                </MudStack>
+                                                            </MudTh>
+                                                            <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                                                    <MudIcon Icon="@Icons.Material.Filled.Schedule" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                                                                    <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 600;">Días</MudText>
+                                                                </MudStack>
+                                                            </MudTh>
+                                                        </HeaderContent>
+                                                        <RowTemplate>
+                                                            <MudTd DataLabel="Clave">
+                                                                <MudChip T="string"
+                                                                    Color="Color.Default"
+                                                                    Variant="Variant.Filled"
+                                                                    Size="Size.Small"
+                                                                    Style="background-color: #e1bee7; color: #4a148c; font-weight: 600; border-radius: 16px; padding: 4px 12px;">
+                                                                    @StudiContext.Clave
+                                                                </MudChip>
+                                                            </MudTd>
+                                                            <MudTd DataLabel="Nombre" Style="font-weight: 500; color: #424242;">@StudiContext.Nombre</MudTd>
+                                                            <MudTd DataLabel="Días" Style="font-weight: 500; color: #424242;">@StudiContext.Dias</MudTd>
+                                                        </RowTemplate>
+                                                    </MudTable>
+                                                </MudCardContent>
+                                            </MudCard>
+                                        </td>
+                                    </MudTr>
+                                }
+                            </ChildRowContent>
+                            <LoadingContent>
+                                <MudContainer Class="d-flex flex-column align-center justify-center">
+                                    <MudProgressCircular 
+                                        Indeterminate="true" 
+                                        Size="Size.Large" 
+                                        Color="Color.Primary"
+                                        />
+                                    <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 500;" Class="mb-2">
+                                        Cargando estudios...
+                                    </MudText>
+                                    <MudText Typo="Typo.body2" Style="color: #64748b;">
+                                        Por favor espere mientras se obtienen los resultados
+                                    </MudText>
+                                </MudContainer>
+                            </LoadingContent>
+                            <NoRecordsContent>
+                                <MudContainer Class="d-flex flex-column align-center justify-center">
+                                    <MudIcon 
+                                        Icon="@Icons.Material.Filled.Science" 
+                                        Size="Size.Large" 
+                                        
+                                        Style="font-size: 5rem; color: #94a3b8; opacity: 0.7;" />
+                                    <MudText Typo="Typo.h6" Style="color: #64748b; font-weight: 500;" Class="mb-2">
+                                        Sin Registros para mostrar
+                                    </MudText>
+                                    <MudText Typo="Typo.body2" Style="color: #94a3b8;"  Align="Align.Center">
+                                        Usa el buscador para encontrar estudios por nombre o clave.
+                                    </MudText>
+                                </MudContainer>
+                            </NoRecordsContent>
+                            <PagerContent>
+                                <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
+                            </PagerContent>
+                        </MudTable>
+                    </div>
+                </MudItem>
+
+                <MudItem xs="12" sm="12" md="12" Class="pt-2">
+                    <MudAlert Severity="Severity.Info" Variant="Variant.Outlined" Class="mb-0">
+                        <MudText Typo="Typo.body2">
+                            <MudIcon Icon="@Icons.Material.Filled.Info" Size="Size.Small" Class="mr-1" />
+                            Selecciona uno o más estudios y presiona Aceptar.
+                            @if (Selected != null && Selected.Count > 0)
                             {
-                                <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ToggleDetails(GridEstudio.Clave))"><MudText Typo="Typo.body1" Align="Align.Center"><strong> @((GridEstudio.ShowDetails == true) ? "-" : "+")</strong></MudText></MudButton>
+                                <strong> (@Selected.Count @(Selected.Count == 1 ? "estudio seleccionado" : "estudios seleccionados"))</strong>
                             }
-                        </MudTd>
-                        <MudTd DataLabel="Clave">@GridEstudio.Clave</MudTd>
-                        <MudTd DataLabel="Nombre">@GridEstudio.Nombre</MudTd>
-                        <MudTd DataLabel="Días">@GridEstudio.Dias</MudTd>
-                    </RowTemplate>
-
-                    <ChildRowContent>
-                        @if (GridEstudio.ShowDetails)
-                        {
-                            <MudTr>
-                                <td colspan="1">
-                                    &nbsp;
-                                </td>
-                                <td colspan="3">
-                                    <MudCard Elevation="0">
-                                        <MudCardContent Class="pa-0">
-                                            <MudTable Items="@GridEstudio.Estudios" Context="StudiContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0">
-                                                <HeaderContent>
-                                                    <MudTh>Clave</MudTh>
-                                                    <MudTh>Nombre</MudTh>
-                                                    <MudTh>Días</MudTh>
-                                                </HeaderContent>
-                                                <RowTemplate>
-                                                    <MudTd DataLabel="Clave">@StudiContext.Clave</MudTd>
-                                                    <MudTd DataLabel="Nombre">@StudiContext.Nombre</MudTd>
-                                                    <MudTd DataLabel="Días">@StudiContext.Dias</MudTd>
-                                                </RowTemplate>
-                                            </MudTable>
-                                        </MudCardContent>
-                                    </MudCard>
-                                </td>
-                            </MudTr>
-                        }
-                    </ChildRowContent>
-                    <LoadingContent>
-                        <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
-                            <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" aria-label="Cargando estudios" />
-                        </MudItem>
-                    </LoadingContent>
-                    <NoRecordsContent>
-                        <MudItem xs="12" sm="12" md="12" Class="d-flex flex-column align-center pa-2">
-                            <MudText>Sin Registros para mostrar</MudText>
-                            <MudText Typo="Typo.caption" Color="Color.Default">Usa el buscador para encontrar estudios por nombre o clave.</MudText>
-                        </MudItem>
-                    </NoRecordsContent>
-                    <PagerContent>
-                        <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
-                    </PagerContent>
-                </MudTable>
-            </MudItem>
-
-            <MudItem xs="12" sm="12" md="12" Class="pt-2">
-                <MudText Typo="Typo.caption" Color="Color.Default">Selecciona uno o más estudios y presiona Aceptar.</MudText>
-            </MudItem>
-
-        </MudGrid>
+                        </MudText>
+                    </MudAlert>
+                </MudItem>
+            </MudGrid>
         </div>
-
     </DialogContent>
     <DialogActions>
-        <MudButton OnClick="CancelInternal" StartIcon="@Icons.Material.Filled.Close" Color="@Color.Default" Variant="Variant.Outlined" Class="add-item-btn rounded-0" aria-label="Cancelar">Cancelar</MudButton>
-        <MudButton Disabled="@(Selected == null || Selected.Count==0)" OnClick="OnAccept" StartIcon="@Icons.Material.Filled.Add" Color="@Color.Info" Class="add-item-btn rounded-0" aria-label="Agregar estudios seleccionados">Aceptar</MudButton>
+        <MudButton 
+            OnClick="CancelInternal" 
+            StartIcon="@Icons.Material.Filled.Close" 
+            Color="Color.Error" 
+            Variant="Variant.Filled"
+            Class="dialog-action-button dialog-button-cancel" 
+            aria-label="Cancelar">
+            CANCELAR
+        </MudButton>
+        <MudButton 
+            Disabled="@(Selected == null || Selected.Count==0)" 
+            OnClick="OnAccept" 
+            StartIcon="@Icons.Material.Filled.Add" 
+            Color="Color.Primary" 
+            Variant="Variant.Filled"
+            Class="dialog-action-button dialog-button-accept" 
+            aria-label="Agregar estudios seleccionados">
+            ACEPTAR @(Selected != null && Selected.Count > 0 ? $"({Selected.Count})" : "")
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
+<style>
+    /* Modal Dialog Styles - Homologado con ConsultaSolicitudes */
+    .modal-estudios-dialog .mud-dialog-content {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 24px;
+        animation: fadeIn 0.4s ease, slideIn 0.4s ease;
+    }
+
+    /* Asegurar que el dialog tenga overflow visible para el botón de cerrar */
+    .modal-estudios-dialog .mud-dialog {
+        overflow: visible !important;
+    }
+
+    .modal-estudios-dialog .mud-dialog-container {
+        overflow: visible !important;
+    }
+
+    .modal-estudios-dialog-backdrop {
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        animation: fadeIn 0.3s ease;
+    }
+
+    /* Estilos para el botón de cerrar en el modal de estudios */
+    .modal-estudios-dialog .mud-dialog-title-close-button,
+    .modal-estudios-dialog button[aria-label*="close" i],
+    .modal-estudios-dialog .mud-icon-button[aria-label*="close" i] {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        z-index: 1000 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        color: rgba(0, 0, 0, 0.54) !important;
+        background-color: transparent !important;
+        border-radius: 50% !important;
+        transition: all 0.2s ease !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .modal-estudios-dialog .mud-dialog-title-close-button:hover,
+    .modal-estudios-dialog button[aria-label*="close" i]:hover,
+    .modal-estudios-dialog .mud-icon-button[aria-label*="close" i]:hover {
+        background-color: rgba(0, 0, 0, 0.04) !important;
+        color: rgba(0, 0, 0, 0.87) !important;
+        transform: scale(1.1) !important;
+    }
+
+    .modal-estudios-dialog .mud-dialog-title {
+        position: relative !important;
+        padding-right: 48px !important;
+    }
+
+    /* Asegurar que el contenedor del título tenga posición relativa */
+    .modal-estudios-dialog .mud-dialog-title-container {
+        position: relative !important;
+    }
+
+    /* Estilos adicionales para asegurar visibilidad del botón de cerrar */
+    .modal-estudios-dialog .mud-dialog-actions {
+        position: relative !important;
+    }
+
+    /* Asegurar que el header del dialog tenga posición relativa */
+    .modal-estudios-dialog .mud-dialog-header {
+        position: relative !important;
+    }
+
+    /* Estilos generales para el botón de cerrar - Compatible con todas las versiones de MudBlazor */
+    .modal-estudios-dialog .mud-dialog .mud-button-root {
+        position: relative;
+    }
+
+    /* Asegurar que el botón de cerrar esté visible en el header */
+    .modal-estudios-dialog .mud-dialog-header .mud-icon-button,
+    .modal-estudios-dialog .mud-dialog-title .mud-icon-button {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        z-index: 1000 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* Estilos para el botón de cerrar cuando está en el título directamente */
+    .modal-estudios-dialog .mud-dialog-title > .mud-icon-button {
+        position: absolute !important;
+        top: 0 !important;
+        right: 0 !important;
+        z-index: 1000 !important;
+    }
+
+    /* Estilos globales para asegurar que el botón de cerrar sea visible */
+    .modal-estudios-dialog .mud-dialog button[type="button"]:last-child {
+        position: relative;
+    }
+
+    /* Asegurar que ningún estilo esté ocultando el botón de cerrar */
+    .modal-estudios-dialog .mud-dialog *[class*="close"] {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* Estilos específicos para el botón de cerrar de MudBlazor - Solo el botón de cerrar */
+    .modal-estudios-dialog .mud-dialog .mud-dialog-title-container > button:last-child,
+    .modal-estudios-dialog .mud-dialog .mud-dialog-title > button:last-child,
+    .modal-estudios-dialog .mud-dialog .mud-dialog-title-container .mud-icon-button:last-child {
+        position: absolute !important;
+        top: 4px !important;
+        right: 4px !important;
+        z-index: 1001 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: flex !important;
+    }
+
+    /* Dialog Table Container */
+    .dialog-table-container {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid #e0e7ed;
+    }
+
+    /* Modal Estudios Table */
+    .modal-estudios-table {
+        width: 100%;
+        max-width: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    /* Modal Table Header - Estilo gris claro con iconos y texto azul oscuro como en imagen */
+    .modal-table-header {
+        background-color: #f5f7fa !important;
+        color: #0d37a8 !important;
+    }
+
+    .modal-table-header th {
+        color: #0d37a8 !important;
+        font-weight: 700;
+        padding: 16px;
+        background-color: #f5f7fa !important;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .modal-estudios-table .mud-table-head {
+        background-color: #f5f7fa !important;
+    }
+
+    .modal-estudios-table .mud-table-head .mud-table-cell {
+        color: #0d37a8 !important;
+        font-weight: 700;
+        padding: 16px;
+        background-color: #f5f7fa !important;
+        border-bottom: 2px solid #e0e0e0;
+        font-size: 0.875rem;
+        letter-spacing: 0.01em;
+    }
+
+    .modal-estudios-table .mud-table-body .mud-table-row {
+        transition: all 0.2s ease;
+    }
+
+    .modal-estudios-table .mud-table-body .mud-table-row:hover {
+        background-color: #f0f4ff !important;
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.1);
+    }
+
+    .modal-estudios-table .mud-table-body .mud-table-cell {
+        padding: 16px;
+        vertical-align: middle;
+        font-size: 0.875rem;
+        color: #1a1a1a;
+    }
+
+    /* Badges de clave con estilo morado claro como en la imagen */
+    .modal-estudios-table .mud-chip {
+        font-weight: 600;
+        font-size: 0.8125rem;
+        padding: 4px 12px;
+        border-radius: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .modal-estudios-table .mud-chip[style*="background-color: #e1bee7"] {
+        background-color: #e1bee7 !important;
+        color: #4a148c !important;
+        font-weight: 600;
+        border-radius: 16px;
+        padding: 4px 12px;
+        box-shadow: 0 1px 3px rgba(74, 20, 140, 0.2);
+    }
+
+    .modal-estudios-table .mud-chip:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.2);
+    }
+
+    .nested-studies-table .mud-chip[style*="background-color: #e1bee7"] {
+        background-color: #e1bee7 !important;
+        color: #4a148c !important;
+        font-weight: 600;
+        border-radius: 16px;
+        padding: 4px 12px;
+        box-shadow: 0 1px 3px rgba(74, 20, 140, 0.2);
+    }
+
+    /* Expand Button Modal */
+    .expand-button-modal {
+        transition: all 0.3s ease;
+    }
+
+    .expand-button-modal:hover:not(:disabled) {
+        transform: scale(1.1);
+        background-color: rgba(13, 55, 168, 0.1) !important;
+    }
+
+    /* Nested Card */
+    .nested-card {
+        margin: 8px 0;
+        border-radius: 4px;
+    }
+
+    /* Nested Studies Table */
+    .nested-studies-table {
+        margin: 8px 0;
+        border-radius: 4px;
+    }
+
+    .nested-studies-table .mud-table-head {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .nested-studies-table .mud-table-head .mud-table-cell {
+        padding: 12px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #0d37a8;
+    }
+
+
+    .nested-studies-table .mud-table-body .mud-table-cell {
+        padding: 12px;
+        font-size: 0.875rem;
+    }
+
+    /* Dialog Action Buttons - Homologado con imagen */
+    .dialog-action-button {
+        min-width: 140px;
+        margin: 0 4px;
+        border-radius: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 20px;
+        transition: all 0.3s ease;
+    }
+
+    .dialog-action-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Estilos específicos para botones de cancelar - Rojo/Pink como en imagen */
+    .dialog-button-cancel {
+        background-color: #d32f2f !important;
+        color: white !important;
+        border: none !important;
+    }
+
+    .dialog-button-cancel:hover:not(:disabled) {
+        background-color: #b71c1c !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    }
+
+    /* Estilos específicos para botones de aceptar/imprimir - Gris como en imagen */
+    .dialog-button-accept {
+        background-color: #757575 !important;
+        color: white !important;
+        border: none !important;
+    }
+
+    .dialog-button-accept:hover:not(:disabled) {
+        background-color: #616161 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(117, 117, 117, 0.3);
+    }
+
+    /* Iconos en headers con animación */
+    .table-header-icon {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        vertical-align: middle;
+        display: inline-block;
+    }
+
+    .modal-estudios-table .mud-table-head .mud-table-cell .table-header-icon {
+        color: #0d37a8;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .nested-studies-table .mud-table-head .mud-table-cell .table-header-icon {
+        color: #0d37a8;
+    }
+
+    .modal-table-header:hover .table-header-icon,
+    .modal-estudios-table .mud-table-head .mud-table-cell:hover .table-header-icon {
+        transform: scale(1.2) translateY(-2px);
+        color: #1565c0;
+        transition: all 0.3s ease;
+        animation: iconPulse 0.5s ease-in-out;
+    }
+
+    /* Efecto hover en headers */
+    .modal-estudios-table .mud-table-head .mud-table-cell:hover {
+        background-color: #e8ecf5;
+        transition: background-color 0.2s ease;
+    }
+
+    .nested-studies-table .mud-table-head .mud-table-cell:hover .table-header-icon {
+        transform: scale(1.2) translateY(-2px);
+        color: #1565c0;
+        transition: all 0.3s ease;
+        animation: iconPulse 0.5s ease-in-out;
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@keyframes iconPulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    /* Custom scrollbar for dialog */
+    .modal-estudios-dialog .mud-dialog-content::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .modal-estudios-dialog .mud-dialog-content::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+
+    .modal-estudios-dialog .mud-dialog-content::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #0d37a8 0%, #1976d2 100%);
+        border-radius: 4px;
+    }
+
+    .modal-estudios-dialog .mud-dialog-content::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #1551b8 0%, #1a82e8 100%);
+    }
+
+    /* Dialog responsive */
+    @@media (max-width: 960px) {
+        .modal-estudios-dialog .mud-dialog-content {
+            padding: 16px;
+            max-height: 60vh;
+        }
+
+        .dialog-action-button {
+            min-width: 120px;
+            font-size: 0.875rem;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .modal-estudios-dialog .mud-dialog-content {
+            padding: 12px;
+            max-height: 50vh;
+        }
+
+        .dialog-action-button {
+            min-width: 100px;
+            font-size: 0.75rem;
+            padding: 8px 12px;
+        }
+    }
+
+    /* Mejoras de accesibilidad */
+    .dialog-action-button:focus,
+    .expand-button-modal:focus {
+        outline: 2px solid #0d37a8;
+        outline-offset: 2px;
+    }
+
+    /* MudDialog backdrop animation */
+    .mud-dialog-backdrop {
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-estudios-dialog .mud-dialog {
+        animation: fadeIn 0.4s ease, slideIn 0.4s ease;
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Animaciones adicionales para iconos */
+    @@keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    @@keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+
+    @@keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Animación en hover sobre filas con iconos */
+    .modal-estudios-table .mud-table-body .mud-table-row:hover .table-header-icon,
+    .nested-studies-table .mud-table-body .mud-table-row:hover .table-header-icon {
+        animation: iconPulse 0.4s ease-in-out;
+    }
+
+    /* Animated Icons - Estilo profesional */
+    .animated-icon {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .animated-icon:hover {
+        transform: scale(1.2);
+        transition: transform 0.2s ease;
+    }
+
+    /* Animated Buttons con efecto ripple */
+    .animated-button {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .animated-button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .animated-button:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .animated-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .animated-button:active {
+        transform: translateY(0);
+    }
+
+    /* Mejoras en transiciones de botones de acción */
+    .dialog-action-button {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dialog-action-button::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        transform: translate(-50%, -50%);
+        transition: width 0.4s, height 0.4s;
+    }
+
+    .dialog-action-button:hover::after {
+        width: 200px;
+        height: 200px;
+    }
+
+    /* Animación para el contenido del dialog */
+    .dialog-content-wrapper {
+        animation: slideIn 0.4s ease;
+        padding: 1rem;
+    }
+
+    /* Animación para el título del dialog */
+    .dialog-title {
+        animation: fadeIn 0.5s ease;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    /* Animación para las tarjetas anidadas */
+    .nested-card {
+        animation: slideIn 0.3s ease;
+        transition: all 0.3s ease;
+    }
+
+    .nested-card:hover {
+        box-shadow: 0 4px 12px rgba(13, 55, 168, 0.15);
+        transform: translateY(-2px);
+    }
+
+    /* Mejoras en la tabla anidada */
+    .nested-studies-table .mud-table-body .mud-table-row {
+        transition: all 0.2s ease;
+    }
+
+    .nested-studies-table .mud-table-body .mud-table-row:hover {
+        background-color: #f0f4ff !important;
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.1);
+    }
+
+    /* Animación para los chips al hacer hover */
+    .nested-studies-table .mud-chip {
+        transition: all 0.2s ease;
+    }
+
+    .nested-studies-table .mud-chip:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.2);
+    }
+
+    /* Efecto de entrada para el campo de búsqueda */
+    .search-field-modal {
+        animation: fadeIn 0.5s ease;
+    }
+
+    .search-field-modal .mud-input-control {
+        transition: all 0.3s ease;
+    }
+
+    .search-field-modal .mud-input-control:focus-within {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 55, 168, 0.15);
+    }
+
+    /* Animación para el contenedor de la tabla del dialog */
+    .dialog-table-container {
+        animation: fadeIn 0.5s ease;
+        transition: all 0.3s ease;
+    }
+
+    .dialog-table-container:hover {
+        box-shadow: 0 4px 12px rgba(13, 55, 168, 0.1);
+    }
+</style>
+
 @code {
-    private readonly DialogOptions DiaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true, CloseButton = true };
+    private readonly DialogOptions DiaOptions = new() 
+    { 
+        BackgroundClass = "modal-estudios-dialog-backdrop", 
+        BackdropClick = true, 
+        MaxWidth = MaxWidth.Large, 
+        FullWidth = true, 
+        CloseButton = true 
+    };
     private MudTextField<string> searchRef;
     [Inject] IDialogService DialogService { get; set; }
 

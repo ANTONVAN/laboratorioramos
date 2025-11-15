@@ -1,4 +1,5 @@
 ﻿@page "/CreaOrden/{PostRequiere}"
+@using System.Collections.Generic
 @using LaboratorioRamos.Data.DtoEstudio
 @using LaboratorioRamos.Data.DtoMedico
 @using LaboratorioRamos.Data.DtoCotizacion
@@ -26,615 +27,1071 @@
 }
 else
 {
-    <MudBreadcrumbs Items="_items" Style="padding-bottom: 4px; padding-top:0px;"></MudBreadcrumbs>
+    <MudBreadcrumbs Items="_items" Class="mb-2"></MudBreadcrumbs>
 
-    <MudPaper Class="pa-4 mt-2" Elevation="4" Style="width:100%">
-        <MudGrid>
-            @* <MudItem xs="12" sm="12" md="12" >
-            <MudGrid>
-                <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
-                    <MudText Typo="Typo.h4" style="color: #0d37a8;">Creación y Consulta de Órdenes Médicas</MudText>
-                </MudItem>
-            </MudGrid>
-        </MudItem> *@
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pa-0">
+        @if (!NewCotizacion)
+        {
+            <MudPaper Elevation="2" Class="pa-4 search-container mb-4">
+                <MudText Typo="Typo.h6" Class="mb-4" Style="color: #0d37a8; font-weight: 600;">
+                    <MudIcon Icon="@Icons.Material.Filled.Search" Class="mr-2" Style="vertical-align: middle;" />
+                    Búsqueda de Órdenes
+                </MudText>
+                <EditForm Model="_busquedaCotizacion" OnValidSubmit="@BuscarOrdenes" style="width: 100%;">
+                    <MudGrid Spacing="2">
+                        <MudItem xs="12" md="4">
+                            <MudTextField 
+                                @bind-Value="_busquedaCotizacion.searchString1" 
+                                Disabled="@ValidateData" 
+                                Label="Número de orden o Nombre del Paciente" 
+                                Clearable="true" 
+                                HelperText="Ingrese el número de orden (12 dígitos)" 
+                                UserAttributes="@(new Dictionary<string, object> { { "autocomplete", "off" } })"
+                                Variant="Variant.Outlined"
+                                Adornment="Adornment.Start"
+                                AdornmentIcon="@Icons.Material.Filled.Assignment"
+                                Class="search-field" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudDatePicker 
+                                Clearable="true" 
+                                Label="Fecha Inicio" 
+                                Disabled="@ValidateData" 
+                                Mask="@(new DateMask("dd/MM/yyyy"))" 
+                                DateFormat="dd/MM/yyyy" 
+                                @bind-Date="_busquedaCotizacion.dateInicial" 
+                                PickerVariant="PickerVariant.Dialog" 
+                                Color="Color.Primary" 
+                                Variant="Variant.Outlined"
+                                Margin="Margin.Dense" 
+                                DisableToolbar="true" 
+                                AutoClose="true" 
+                                Culture="@CultureInfo.GetCultureInfo("es-MEX")"
+                                Adornment="Adornment.Start"
+                                AdornmentIcon="@Icons.Material.Filled.CalendarToday"
+                                Class="date-field" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6" md="3">
+                            <MudDatePicker 
+                                Clearable="true" 
+                                Label="Fecha Final" 
+                                Disabled="@ValidateData" 
+                                DateFormat="dd/MM/yyyy" 
+                                @bind-Date="_busquedaCotizacion.dateFinal" 
+                                PickerVariant="PickerVariant.Dialog" 
+                                Color="Color.Primary" 
+                                Variant="Variant.Outlined"
+                                Margin="Margin.Dense" 
+                                DisableToolbar="true" 
+                                AutoClose="true" 
+                                Culture="@CultureInfo.GetCultureInfo("es-MEX")"
+                                Adornment="Adornment.Start"
+                                AdornmentIcon="@Icons.Material.Filled.CalendarToday"
+                                Class="date-field" />
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="1" Class="d-flex align-center" Style="padding-bottom:24px;">
+                            @if (ValidateData)
+                            {
+                                <MudButton 
+                                    Disabled 
+                                    ButtonType="ButtonType.Button" 
+                                    Variant="Variant.Filled" 
+                                    Color="Color.Primary" 
+                                    FullWidth="true"
+                                    Class="search-button"
+                                    Style="min-height: 56px;">
+                                    <MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" />
+                                </MudButton>
+                            }
+                            else
+                            {
+                                <MudButton 
+                                    ButtonType="ButtonType.Submit" 
+                                    StartIcon="@Icons.Material.Filled.Search" 
+                                    Variant="Variant.Filled" 
+                                    Color="Color.Primary" 
+                                    FullWidth="true"
+                                    aria-label="Buscar órdenes"
+                                    Class="search-button"
+                                    Style="min-height: 56px;">
+                                    Buscar
+                                </MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="12" sm="12" md="1" Class="d-flex align-center" Style="padding-bottom:24px;">
+                            @if (ValidateData)
+                            {
+                                <MudButton 
+                                    Disabled 
+                                    ButtonType="ButtonType.Button" 
+                                    Variant="Variant.Filled" 
+                                    Color="Color.Info" 
+                                    FullWidth="true"
+                                    Style="min-height: 56px;">
+                                    <MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" />
+                                </MudButton>
+                            }
+                            else
+                            {
+                                <MudButton 
+                                    Variant="Variant.Filled" 
+                                    StartIcon="@Icons.Material.Filled.Add" 
+                                    OnClick="@NewItem" 
+                                    aria-label="Crear nueva orden" 
+                                    Color="@Color.Info" 
+                                    FullWidth="true"
+                                    Class="create-button"
+                                    Style="min-height: 56px;">
+                                    Crear Orden
+                                </MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </EditForm>
+            </MudPaper>
+            <MudPaper Elevation="2" Class="results-container">
+                <HistorialOrdenes Items="@_oCotizaciones" Loading="@ValidateData" OnVerEstudios="OpenDialog" OnEditar="EditOrden" />
+            </MudPaper>
+        }
+        else
+        {
+            <MudPaper Elevation="2" Class="pa-4 order-header mb-4">
+                <MudGrid Spacing="2" AlignItems="AlignItems.Center">
+                    <MudItem xs="12" sm="12" md="3" >
+                        <MudText Typo="Typo.h6" Align="Align.Left" Class="order-number">
+                            <MudIcon Icon="@Icons.Material.Outlined.Badge" Color="Color.Inherit" Size="Size.Medium" Class="animated-icon mr-1" />
+                            Órden No.: <b class="order-key">@CotizacionDraft.clave</b>
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="7" Class="d-flex justify-end">
+                        <MudText Typo="Typo.body1" Class="order-date">
+                            <MudIcon Icon="@Icons.Material.Outlined.CalendarToday" Color="Color.Inherit" Size="Size.Small" Class="mr-1" />
+                            <b>Registro: @DateTime.Now.ToLongDateString().ToUpper()</b>
+                        </MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="12" md="2" Class="d-flex justify-center">
+                        <MudTooltip Text="Salir sin guardar" Placement="Placement.Top">
+                            <MudButton OnClick="@CancelItem" 
+                                StartIcon="@Icons.Material.Filled.Cancel" 
+                                aria-label="Salir de creación de orden" 
+                                Color="@Color.Error" 
+                                Variant="Variant.Filled" 
+                                Class="add-item-btn rounded-0 animated-button exit-btn">
+                                Salir
+                            </MudButton>
+                        </MudTooltip>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
 
-            @if (!NewCotizacion)
+            @if (!ContinuarCotizacion)
             {
-                <MudItem xs="12" sm="12" md="12">
-                    <EditForm Model="_busquedaCotizacion" OnValidSubmit="@BuscarOrdenes" style="width: 100%;">
-                        <MudGrid>
-                            @* <MudItem xs="12" sm="12" md="1">
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            </MudItem> *@
-                            <MudItem xs="12" sm="12" md="4">
-                                @* <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Label="Número de solicitud:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField> *@
-                                <MudTextField @bind-Value="_busquedaCotizacion.searchString1" Disabled="(ValidateData?true:false)" Label="Número de orden:" Clearable="true" Class="mt-0" HelperText="Sólo Números (12 dígitos)"></MudTextField>
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="2">
-                                @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateInicial" /> *@
+                <MudPaper Elevation="2" Class="pa-4 city-selection-paper mb-4">
+                    <MudText Typo="Typo.h6" Class="mb-4" Style="color: #0d37a8; font-weight: 600;">
+                        <MudIcon Icon="@Icons.Material.Outlined.LocationCity" Class="mr-2" Style="vertical-align: middle;" />
+                        Selecciona la Ciudad
+                    </MudText>
+                    <EditForm Model="dtoGeneralesCotizacion" OnValidSubmit="@ContnueProcess" style="width: 100%;">
+                        <MudGrid Spacing="3">
+                            <MudItem xs="12" sm="6" md="6">
+                                <MudAutocomplete T="string" 
+                                    @bind-Value="dtoGeneralesCotizacion.Ciudad"
+                                    SearchFunc="SearchCiudad"
+                                    Label="Ciudad"
+                                    Clearable="true"
+                                    Variant="Variant.Outlined"
+                                    Adornment="Adornment.Start"
+                                    AdornmentIcon="@Icons.Material.Outlined.LocationCity"
+                                    Class="city-autocomplete"/>
 
-                                @* <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
-                            <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="_busquedaCotizacion.dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                                <MudDatePicker Clearable="true" Label="Fecha Inicio(dd/MM/yyyy)" HelperText="Rango de búsqueda (inicio)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateInicial" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")"/>
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="2">
-                                @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateFinal" /> *@
-                                @* <MudDatePicker Label="Fecha Final(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" Editable="true" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-none d-md-flex d-lg-none d-none d-lg-flex d-xl-none d-none d-xl-flex d-xxl-none d-none d-xxl-flex" />
-                            <MudDatePicker Label="Fecha Inicio(dd/MM/yyyy)" Disabled="(ValidateData?true:false)" OpenTo="OpenTo.Year" DateFormat="dd/MM/yyyy" Elevation="12" @bind-Date="_busquedaCotizacion.dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Class="d-flex d-sm-none d-none d-sm-flex d-md-none" /> *@
-                                <MudDatePicker Clearable="true" Label="Fecha Final(dd/MM/yyyy)" HelperText="Rango de búsqueda (fin)" Disabled="(ValidateData?true:false)" Mask="@(new DateMask("dd/MM/yyyy"))" Elevation="12" DateFormat="dd/MM/yyyy" @bind-Date="_busquedaCotizacion.dateFinal" PickerVariant="PickerVariant.Dialog" Color="Color.Primary" Margin="Margin.Dense" DisableToolbar="true" AutoClose="true" Culture="@CultureInfo.GetCultureInfo("es-MEX")" />
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="2">
-                                @* <MudIconButton Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" OnClick="() => BuscaFecha()" Class="ml-auto"></MudIconButton> *@
-                                @if (ValidateData)
+                                @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
                                 {
-                                    @* <MudIconButton ButtonType="ButtonType.Button" Variant="Variant.Text" Color="Color.Default" Class="ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudIconButton> *@
-                                    <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="rounded-0 w-100 ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
+                                    SelectedCiudad(dtoGeneralesCotizacion.Ciudad);
                                 }
-                                else
-                                {
-                                    @* <MudIconButton ButtonType="ButtonType.Submit" Icon="@Icons.Material.Outlined.Search" Color="Color.Primary" Size="Size.Large" aria-label="Buscar" Class="ml-auto"></MudIconButton> *@
-                                    <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Outlined.Search" Variant="Variant.Filled" Color="Color.Primary" aria-label="Buscar órdenes" Class="rounded-0 w-100 ml-auto">Buscar</MudButton>
-                                }
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="2">
-                                @if (ValidateData)
-                                {
-                                    <MudButton Disabled ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="rounded-0 w-100 ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
-                                }
-                                else
-                                {
-                                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Add" OnClick="@NewItem" aria-label="Crear nueva orden" Color="@Color.Info" Class="add-item-btn rounded-0">Crear Orden</MudButton>
-                                }
-
                             </MudItem>
                         </MudGrid>
                     </EditForm>
-                </MudItem>
-                @* <MudItem xs="12" sm="12" md="12" Class="d-flex justify-start">
-                    <MudButton Variant="Variant.Outlined" OnClick="@NewItem" Color="@Color.Info" Class="add-item-btn">Crear Nueva Orden</MudButton>
-                </MudItem> *@
-
-                <MudItem xs="12" sm="12" md="12" Class="pt-1">
-                    <HistorialOrdenes Items="@_oCotizaciones" Loading="@ValidateData" OnVerEstudios="OpenDialog" OnEditar="EditOrden" />
-                </MudItem>
+                </MudPaper>
             }
             else
             {
-                <MudItem xs="12" sm="12" md="12" >
-                    <MudGrid>
-                        <MudItem xs="12" sm="12" md="3" >
-                            <MudText Align="Align.Left">Órden No.: <b>@CotizacionDraft.clave</b></MudText>
-                        </MudItem>
-                        <MudItem xs="12" sm="12" md="7" Class="d-flex justify-end">
-                            <b><Label>Registro: @DateTime.Now.ToLongDateString().ToUpper()</Label></b>
-                        </MudItem>
-                        <MudItem xs="12" sm="12" md="2" Class="d-flex justify-center">
-                            <MudTooltip Text="Salir sin guardar">
-                                <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" aria-label="Salir de creación de orden" Color="@Color.Error" Variant="Variant.Filled" Class="add-item-btn rounded-0">Salir</MudButton>
-                            </MudTooltip>
-                        </MudItem>
-                        @* <MudItem xs="12" sm="12" md="3" Class="d-flex justify-center">
-                            <MudButton OnClick="@ContnueProcess"  StartIcon="@Icons.Material.Filled.DoubleArrow" Color="@Color.Info" Class="add-item-btn">Continuar</MudButton>
-                        </MudItem> *@
+                <MudPaper Elevation="2" Class="pa-4 stepper-container mb-4" Style="min-height:75vh;">
+                    <MudStepper NonLinear ShowResetButton OnPreviewInteraction="OnPreviewInteraction" @bind-ActiveIndex="_index" >
+                    <ConnectorTemplate Context="step">
+                        <div class="mud-stepper-nav-connector">
+                            @{
+                                int value = step.Completed ? 100 : 0;
+                                <MudProgressLinear Indeterminate="@(step.IsActive)" Striped Value="value" Min="0" Max="100" Color="Color.Success" Style="height: 2px; background-color: #d4ddeb; border-radius: 2px;" />
+                            }
+                        </div>
+                    </ConnectorTemplate>
+                    <LabelTemplate>
+                        @{
+                            if (context.IsActive && _index==4 && CreandoPDF ==true) {
+                                <MudProgressCircular Color="Color.Primary" Indeterminate="true" Class="stepper-progress" />
+                            }
+                            @if (context.IsActive)
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.ArrowRight" 
+                                    Color="Color.Primary" 
+                                    Size="Size.Large" 
+                                    Class="animated-icon stepper-active-icon pulse-animation">
+                                </MudIcon>
+                            }
+                            else if (context.Completed)
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.CheckCircle" 
+                                    Color="Color.Success" 
+                                    Size="Size.Medium" 
+                                    Class="animated-icon stepper-completed-icon">
+                                </MudIcon>
+                            }
+                            else
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Adjust" 
+                                    Color="Color.Default" 
+                                    Size="Size.Medium" 
+                                    Class="animated-icon stepper-pending-icon">
+                                </MudIcon>
+                            }
+                        } 
 
-                    </MudGrid>
-                </MudItem>
-
-                @if (!ContinuarCotizacion)
-                {
-                    <MudItem xs="12" sm="12" md="12">
-                        <MudPaper Class="pa-4" Elevation="2" Style="width:100%">
-                            <EditForm Model="dtoGeneralesCotizacion" OnValidSubmit="@ContnueProcess" style="width: 100%;">
-                                <MudGrid>
-                                    <MudItem xs="12" sm="6" md="6">
-                                        <MudAutocomplete T="string" @bind-Value="dtoGeneralesCotizacion.Ciudad"
+                    </LabelTemplate>
+                    <ChildContent>
+                        <MudStep>
+                            <MudDivider />
+                            <MudGrid class="pt-4">
+                                <MudItem xs="12" sm="6" md="6">
+                                    <MudText Typo="Typo.h6" Align="Align.Left" Class="step-title">
+                                        <MudIcon Icon="@Icons.Material.Outlined.LocationCity" Class="mr-2" Style="vertical-align: middle;" />
+                                        Paso 1: <b>Ciudad</b>
+                                    </MudText>
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="6" Class="pt-0">
+                                    <MudAutocomplete T="string" 
+                                        @bind-Value="dtoGeneralesCotizacion.Ciudad"
                                         SearchFunc="SearchCiudad"
                                         Label="Ciudad"
-                                        Clearable="true"/>
+                                        Clearable="true"
+                                        Variant="Variant.Outlined"
+                                        Adornment="Adornment.Start"
+                                        AdornmentIcon="@Icons.Material.Outlined.LocationCity"
+                                        Class="city-autocomplete" />
 
-                                        @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
-                                        {
-                                            SelectedCiudad(dtoGeneralesCotizacion.Ciudad);
-                                        }
-                                    </MudItem>
-                                    <MudItem xs="12" sm="12" md="12">
-                                        @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
-                                        {
-                                            @* <MudTable T="DtoSucursal" Items="@_oSucursalForCity" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTable"
-                                                      RowClass="cursor-pointer" OnRowClick="OnRowClick" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
+                                    @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
+                                    {
+                                        SelectedCiudad(dtoGeneralesCotizacion.Ciudad);
+                                    }
+                                </MudItem>
+                                <MudItem xs="12" sm="12" md="12" Class="pt-0">
+                                    @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
+                                    {
+                                            <MudDataGrid @ref="mudTable" T="DtoSucursal" MultiSelection="true" Items="@_oSucursalForCity" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged" FixedHeader="true" FixedFooter="false" Height="52vh" Class="sucursales-table" Loading="@(_oSucursalForCity == null)" Elevation="0" Hover="true" Striped="true">
                                                 <ToolBarContent>
-                                                    <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Sucursales</MudText> <br />
-                                                    <MudText Typo="Typo.body1" Align="Align.Center" style="color: #0d37a8;">&nbsp;&nbsp;&nbsp;(Opcional)</MudText> <br />
+                                                    <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 600;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.LocationOn" Class="mr-2" Style="vertical-align: middle;" />
+                                                        Sucursales (Opcional)
+                                                    </MudText>
+                                                    <MudSpacer />
+                                                    @if (_oSucursalForCity != null && _oSucursalForCity.Any())
+                                                    {
+                                                        <MudChip T="string"
+                                                            Color="Color.Info" 
+                                                            Variant="Variant.Text"
+                                                            Size="Size.Small">
+                                                            @_oSucursalForCity.Count @(_oSucursalForCity.Count == 1 ? "sucursal disponible" : "sucursales disponibles")
+                                                        </MudChip>
+                                                    }
                                                 </ToolBarContent>
-                                                <HeaderContent>
-                                                    <MudTh Style="color:#921313">Clave</MudTh>
-                                                    <MudTh Style="color:#921313">Nombre</MudTh>
-                                                    <MudTh Style="color:#921313">Ubicacion</MudTh>
-                                                    <MudTh Style="color:#921313">Telefono</MudTh>
-                                                    <MudTh Style="color:#921313">Correo</MudTh>
-                                                </HeaderContent>
-                                                <RowTemplate>
-                                                    <MudTd DataLabel="Clave">@sucur.Clave</MudTd>
-                                                    <MudTd DataLabel="Nombre">@sucur.Nombre</MudTd>
-                                                    <MudTd DataLabel="Ubicacion">@sucur.Ubicacion</MudTd>
-                                                    <MudTd DataLabel="Telefono">@sucur.Telefono</MudTd>
-                                                    <MudTd DataLabel="Correo">@sucur.Correo</MudTd>
-                                                </RowTemplate>
+                                                <Columns>
+                                                    <SelectColumn T="DtoSucursal" />
+                                                    <PropertyColumn Property="x => x.Clave" HeaderStyle="color: #0d37a8; font-weight: 600;" Title="Clave" />
+                                                    <PropertyColumn Property="x => x.Nombre" HeaderStyle="color: #0d37a8; font-weight: 600;" Title="Nombre" />
+                                                    <PropertyColumn Property="x => x.Ubicacion" HeaderStyle="color: #0d37a8; font-weight: 600;" Title="Ubicación" />
+                                                    <PropertyColumn Property="x => x.Telefono" HeaderStyle="color: #0d37a8; font-weight: 600;" Title="Teléfono" />
+                                                    <PropertyColumn Property="x => x.Correo" HeaderStyle="color: #0d37a8; font-weight: 600;" Title="Correo" />
+                                                </Columns>
+                                                <LoadingContent>
+                                                    <MudContainer Class="d-flex flex-column align-center justify-center" Style="min-height: 200px; padding: 2rem;">
+                                                        <MudProgressCircular 
+                                                            Indeterminate="true" 
+                                                            Size="Size.Large" 
+                                                            Color="Color.Primary"
+                                                            Class="mb-4" />
+                                                        <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 500;" Class="mb-2">
+                                                            Cargando sucursales...
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Style="color: #64748b;">
+                                                            Por favor espere mientras se obtienen las sucursales
+                                                        </MudText>
+                                                    </MudContainer>
+                                                </LoadingContent>
                                                 <NoRecordsContent>
-                                                    <MudText>Sin Registros para mostrar</MudText>
+                                                    <MudContainer Class="d-flex flex-column align-center justify-center" Style="min-height: 200px; padding: 2rem;">
+                                                        <MudIcon 
+                                                            Icon="@Icons.Material.Filled.LocationOff" 
+                                                            Size="Size.Large" 
+                                                            Class="mb-4" 
+                                                            Style="font-size: 5rem; color: #94a3b8; opacity: 0.7;" />
+                                                        <MudText Typo="Typo.h6" Style="color: #64748b; font-weight: 500;" Class="mb-2">
+                                                            No hay sucursales disponibles
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Style="color: #94a3b8;" Class="mb-4" Align="Align.Center">
+                                                            Seleccione una ciudad para ver las sucursales disponibles.
+                                                        </MudText>
+                                                    </MudContainer>
+                                                </NoRecordsContent>
+                                                <PagerContent>
+                                                    <MudDataGridPager T="DtoSucursal" />
+                                                </PagerContent>
+                                            </MudDataGrid>
+
+                                    }
+
+                                </MudItem>
+                            </MudGrid>
+                        </MudStep>
+                        <MudStep>
+                            <MudDivider />
+                            <MudGrid>
+                                <MudItem xs="12" sm="12" md="12">
+                                    <MudText Typo="Typo.h6" Align="Align.Left" Class="step-title">
+                                        <MudIcon Icon="@Icons.Material.Outlined.Person" Class="mr-2" Style="vertical-align: middle;" />
+                                        Paso 2: <b>Datos Generales</b>
+                                    </MudText>
+                                </MudItem>
+                                <MudItem xs="12" sm="12" md="12" Class="pt-0">
+                                    <MudTextField @bind-Value="dtoGeneralesCotizacion.Observaciones" 
+                                        T="string" 
+                                        Label="Observaciones (Opcional)" 
+                                        Lines="10" 
+                                        Variant="Variant.Outlined"
+                                        Adornment="Adornment.Start"
+                                        AdornmentIcon="@Icons.Material.Outlined.Notes"
+                                        Class="observations-field" />
+                                </MudItem>
+                                <MudItem xs="12" sm="6" md="6">
+                                    <MudTextField T="string" 
+                                        Label="Nombre paciente (opcional)" 
+                                        @bind-Value="dtoGeneralesCotizacion.Paciente"
+                                        Variant="Variant.Outlined"
+                                        Adornment="Adornment.Start"
+                                        AdornmentIcon="@Icons.Material.Outlined.Person"
+                                        Class="patient-field" />
+                                </MudItem>
+                                @if (visibleInfoPaciente)
+                                {
+                                    <MudItem xs="12" sm="12" md="12">
+                                            <MudTable T="DtoPaciente" Items="@dtoPaciente" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTablePaciente" Class="patients-table"
+                                            RowClass="cursor-pointer" RowClassFunc="@SelectedRowPaciente" OnRowClick="RowClickEventPaciente" Context="Pacient" Dense="false" Striped="true" Bordered="true" FixedHeader="true" Loading="@(dtoPaciente == null)" Elevation="0">
+                                                <ToolBarContent>
+                                                    <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 600;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-2" Style="vertical-align: middle;" />
+                                                        Pacientes (Opcional)
+                                                    </MudText>
+                                                    <MudSpacer />
+                                                    @if (dtoPaciente != null && dtoPaciente.Any())
+                                                    {
+                                                        <MudChip T="string"
+                                                            Color="Color.Info" 
+                                                            Variant="Variant.Text"
+                                                            Size="Size.Small">
+                                                            @dtoPaciente.Count @(dtoPaciente.Count == 1 ? "paciente encontrado" : "pacientes encontrados")
+                                                        </MudChip>
+                                                    }
+                                                </ToolBarContent>
+                                            <HeaderContent>
+                                                <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                    Expediente
+                                                </MudTh>
+                                                <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Person" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                    Nombre
+                                                </MudTh>
+                                                <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Wc" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                    Sexo
+                                                </MudTh>
+                                                <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.Cake" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                    Edad
+                                                </MudTh>
+                                                <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                    <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                    Fecha Nacimiento
+                                                </MudTh>
+                                            </HeaderContent>
+                                            <ColGroup>
+                                                <col style="width: 20%;" />
+                                                <col style="width: 40%;" />
+                                                <col style="width: 10%;" />
+                                                <col style="width: 10%;" />
+                                                <col style="width: 20%;" />
+                                            </ColGroup>
+                                            <RowTemplate>
+                                                <MudTd DataLabel="Expediente">
+                                                    <MudChip T="string"
+                                                        Color="Color.Primary" 
+                                                        Variant="Variant.Text"
+                                                        Size="Size.Small"
+                                                        Style="font-weight: 600;">
+                                                        @Pacient.Expediente
+                                                    </MudChip>
+                                                </MudTd>
+                                                <MudTd DataLabel="Nombre" Style="font-weight: 500;">
+                                                    @Pacient.NombrePaciente
+                                                </MudTd>
+                                                <MudTd DataLabel="Sexo">
+                                                    <MudText Typo="Typo.body2">@Pacient.Genero</MudText>
+                                                </MudTd>
+                                                <MudTd DataLabel="Edad">
+                                                    <MudText Typo="Typo.body2">@Pacient.Edad años</MudText>
+                                                </MudTd>
+                                                <MudTd DataLabel="FechaNacimiento">
+                                                    <MudText Typo="Typo.body2">@Pacient.FechaNacimiento</MudText>
+                                                </MudTd>
+                                            </RowTemplate>
+                                                <LoadingContent>
+                                                    <MudContainer Class="d-flex flex-column align-center justify-center" Style="min-height: 200px; padding: 2rem;">
+                                                        <MudProgressCircular 
+                                                            Indeterminate="true" 
+                                                            Size="Size.Large" 
+                                                            Color="Color.Primary"
+                                                            Class="mb-4" />
+                                                        <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 500;" Class="mb-2">
+                                                            Cargando pacientes...
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Style="color: #64748b;">
+                                                            Por favor espere mientras se obtienen los resultados
+                                                        </MudText>
+                                                    </MudContainer>
+                                                </LoadingContent>
+                                                <NoRecordsContent>
+                                                    <MudContainer Class="d-flex flex-column align-center justify-center" Style="min-height: 200px; padding: 2rem;">
+                                                        <MudIcon 
+                                                            Icon="@Icons.Material.Filled.PersonOff" 
+                                                            Size="Size.Large" 
+                                                            Class="mb-4" 
+                                                            Style="font-size: 5rem; color: #94a3b8; opacity: 0.7;" />
+                                                        <MudText Typo="Typo.h6" Style="color: #64748b; font-weight: 500;" Class="mb-2">
+                                                            No se encontraron pacientes
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Style="color: #94a3b8;" Class="mb-4" Align="Align.Center">
+                                                            Ingrese el nombre del paciente en el campo de búsqueda para encontrar resultados.
+                                                        </MudText>
+                                                    </MudContainer>
                                                 </NoRecordsContent>
                                                 <PagerContent>
                                                     <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
                                                 </PagerContent>
-                                            </MudTable> *@
+                                            </MudTable>
+                                        </MudItem>
+                                    }
 
-                                        }
-
-                                    </MudItem>
-                                    @* <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
-                                    <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" Color="@Color.Error" Class="add-item-btn">Cancelar</MudButton>
+                            </MudGrid>
+                        </MudStep>
+                        <MudStep HasError="@(selectedEstudios.Count()==0)">
+                            <MudDivider />
+                            <MudGrid>
+                                <MudItem xs="12" sm="12" md="12">
+                                    <MudText Typo="Typo.h6" Align="Align.Left" Class="step-title">
+                                        <MudIcon Icon="@Icons.Material.Outlined.Science" Class="mr-2" Style="vertical-align: middle;" />
+                                        Paso 3: <b>Estudios</b>
+                                    </MudText>
                                 </MudItem>
-                                <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
-                                    <MudButton ButtonType="ButtonType.Submit" StartIcon="@Icons.Material.Filled.DoubleArrow" Color="@Color.Info" Class="add-item-btn">Continuar</MudButton>
-                                </MudItem> *@
-                                </MudGrid>
-                            </EditForm>
-                        </MudPaper>
+                                <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center pt-0">
+                                    <MudTooltip Text="Agregar estudios a la orden" Placement="Placement.Top">
+                                        <MudButton Variant="Variant.Filled" 
+                                            OnClick="@AbrirModalEstudios" 
+                                            StartIcon="@Icons.Material.Filled.Add" 
+                                            aria-label="Abrir modal de estudios" 
+                                            Color="@Color.Info" 
+                                            Class="add-item-btn rounded-0 animated-button add-studies-btn">
+                                            Agregar Estudios
+                                        </MudButton>
+                                    </MudTooltip>
+                                </MudItem>                                            
+                                @if (visibleInfoEstudio)
+                                {
+                                    <MudItem xs="12" sm="12" md="12" Class="studies-table-container pt-1">
+                                        <MudForm Spacing="2">
+                                            <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudiosOriginal" Elevation="0" Hover="true" Dense="false" Striped="true" Bordered="true" Breakpoint="Breakpoint.Sm"
+                                            RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele" Class="studies-table step3-studies-table" FixedHeader="true" FixedFooter="false" Height="45vh" Loading="@(selectedEstudiosOriginal == null)">
+                                                <ToolBarContent>
+                                                    <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 600;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Science" Class="mr-2" Style="vertical-align: middle;" />
+                                                        Estudios Seleccionados
+                                                    </MudText>
+                                                    <MudSpacer />
+                                                    @if (selectedEstudiosOriginal != null && selectedEstudiosOriginal.Any())
+                                                    {
+                                                        <MudChip T="string"
+                                                            Color="Color.Info" 
+                                                            Variant="Variant.Text"
+                                                            Size="Size.Small">
+                                                            @selectedEstudiosOriginal.Count @(selectedEstudiosOriginal.Count == 1 ? "estudio seleccionado" : "estudios seleccionados")
+                                                        </MudChip>
+                                                    }
+                                                </ToolBarContent>
+                                                <ColGroup>
+                                                    <col style="width: 8%;" />
+                                                    <col style="width: 8%;" />
+                                                    <col style="width: 15%;" />
+                                                    <col style="width: 55%;" />
+                                                    <col style="width: 14%;" />
+                                                </ColGroup>
+                                                <HeaderContent>
+                                                    <MudTh Style="color: #0d37a8; font-weight: 600;"></MudTh>
+                                                    <MudTh Style="color: #0d37a8; font-weight: 600;"></MudTh>
+                                                    <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Tag" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                        Clave
+                                                    </MudTh>
+                                                    <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Science" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                        Nombre
+                                                    </MudTh>
+                                                    <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                        <MudIcon Icon="@Icons.Material.Filled.Schedule" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                        Días
+                                                    </MudTh>
+                                                </HeaderContent>
+                                                <RowTemplate>
+                                                    <MudTd>
+                                                        <MudTooltip Text="Eliminar estudio" Placement="Placement.Top">
+                                                            <MudIconButton Size="@Size.Small" 
+                                                                Icon="@Icons.Material.Outlined.Delete" 
+                                                                aria-label="Eliminar estudio" 
+                                                                OnClick="(()=> DeleteOrderItem(GridEstudioSele))" 
+                                                                Color="Color.Error"
+                                                                Class="animated-icon delete-icon" />
+                                                        </MudTooltip>
+                                                    </MudTd>
+                                                    <MudTd>
+                                                        @if (GridEstudioSele.Estudios != null)
+                                                        {
+                                                            <MudButton Variant="Variant.Outlined" 
+                                                                Size="Size.Small" 
+                                                                OnClick="@(() => ShowBtnPressEstudioSelect(GridEstudioSele.Clave))"
+                                                                Color="Color.Info"
+                                                                Class="animated-button expand-btn">
+                                                                <MudIcon Icon="@((GridEstudioSele.ShowDetails == true) ? Icons.Material.Filled.ExpandLess : Icons.Material.Filled.ExpandMore)" 
+                                                                    Size="Size.Small" 
+                                                                    Class="animated-icon" />
+                                                            </MudButton>
+                                                        }
+                                                    </MudTd>
+                                                    <MudTd DataLabel="Clave">
+                                                        <MudChip T="string"
+                                                            Color="Color.Primary" 
+                                                            Variant="Variant.Text"
+                                                            Size="Size.Small"
+                                                            Style="font-weight: 600;">
+                                                            @GridEstudioSele.Clave
+                                                        </MudChip>
+                                                    </MudTd>
+                                                    <MudTd DataLabel="Nombre" Style="font-weight: 500;">
+                                                        @GridEstudioSele.Nombre
+                                                    </MudTd>
+                                                    <MudTd DataLabel="Días">
+                                                        <MudText Typo="Typo.body2">@GridEstudioSele.Dias</MudText>
+                                                    </MudTd>
+                                                </RowTemplate>
 
-                    </MudItem>
-                }
-                else
-                {
-                    <MudItem xs="12" sm="12" md="12" Class="pt-0" Style="height:75vh;">
-                        @* <MudText Class="p-2" Style="background-color: #0d37a8;color: white;" Align="Align.Center">Órden No.: <b>@CotizacionDraft.clave &nbsp; &nbsp;&nbsp;&nbsp;</b></MudText> *@
-                        <MudStepper NonLinear ShowResetButton OnPreviewInteraction="OnPreviewInteraction" @bind-ActiveIndex="_index" >
-                            <ConnectorTemplate Context="step">
-                                <div class="mud-stepper-nav-connector">
-                                    @{
-                                        int value = step.Completed ? 100 : 0;
-                                        <MudProgressLinear Indeterminate="@(step.IsActive)" Striped Value="value" Min="0" Max="100" Color="Color.Success" Style="height: 2px; background-color: #d4ddeb; border-radius: 2px;" />
-                                    }
-                                </div>
-                            </ConnectorTemplate>
-                            <LabelTemplate>
+                                                <ChildRowContent>
+                                                    @if (GridEstudioSele.ShowDetails)
+                                                    {
+                                                        <MudTr>
+                                                            <td colspan="1">
+                                                                &nbsp;
+                                                            </td>
+                                                            <td colspan="3">
+                                                                <MudCard Elevation="0">
+                                                                    <MudCardContent Class="pa-0">
+                                                                        <MudTable Items="@GridEstudioSele.Estudios" Context="StudiContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Dense="true" Striped="true" Class="nested-studies-table">
+                                                                            <HeaderContent>
+                                                                                <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                                                    <MudIcon Icon="@Icons.Material.Filled.Tag" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                                                    Clave
+                                                                                </MudTh>
+                                                                                <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                                                    <MudIcon Icon="@Icons.Material.Filled.Science" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                                                    Nombre
+                                                                                </MudTh>
+                                                                                <MudTh Style="color: #0d37a8; font-weight: 600;">
+                                                                                    <MudIcon Icon="@Icons.Material.Filled.Schedule" Class="table-header-icon mr-1" Size="Size.Small" />
+                                                                                    Días
+                                                                                </MudTh>
+                                                                            </HeaderContent>
+                                                                            <RowTemplate>
+                                                                                <MudTd DataLabel="Clave">@StudiContext.Clave</MudTd>
+                                                                                <MudTd DataLabel="Nombre">@StudiContext.Nombre</MudTd>
+                                                                                <MudTd DataLabel="Días">@StudiContext.Dias</MudTd>
+                                                                            </RowTemplate>
+                                                                        </MudTable>
+                                                                    </MudCardContent>
+                                                                </MudCard>
+                                                            </td>
+                                                        </MudTr>
+                                                    }
+                                                </ChildRowContent>
+                                                <LoadingContent>
+                                                    <MudContainer Class="d-flex flex-column align-center justify-center" Style="min-height: 200px; padding: 2rem;">
+                                                        <MudProgressCircular 
+                                                            Indeterminate="true" 
+                                                            Size="Size.Large" 
+                                                            Color="Color.Primary"
+                                                            Class="mb-4" />
+                                                        <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 500;" Class="mb-2">
+                                                            Cargando estudios...
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Style="color: #64748b;">
+                                                            Por favor espere mientras se cargan los estudios
+                                                        </MudText>
+                                                    </MudContainer>
+                                                </LoadingContent>
+                                                <NoRecordsContent>
+                                                    <MudContainer Class="d-flex flex-column align-center justify-center" Style="min-height: 200px; padding: 2rem;">
+                                                        <MudIcon 
+                                                            Icon="@Icons.Material.Filled.Science" 
+                                                            Size="Size.Large" 
+                                                            Class="mb-4" 
+                                                            Style="font-size: 5rem; color: #94a3b8; opacity: 0.7;" />
+                                                        <MudText Typo="Typo.h6" Style="color: #64748b; font-weight: 500;" Class="mb-2">
+                                                            No hay estudios seleccionados
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Style="color: #94a3b8;" Class="mb-4" Align="Align.Center">
+                                                            Utilice el botón "Agregar Estudios" para seleccionar estudios de la orden.
+                                                        </MudText>
+                                                    </MudContainer>
+                                                </NoRecordsContent>
+                                                <PagerContent>
+                                                    <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
+                                                </PagerContent>
+                                            </MudTable>
+
+                                        </MudForm>
+                                    </MudItem>
+                                }
+                            </MudGrid>
+                        </MudStep>
+                        <MudStep>
+                            <MudDivider />
+                            <MudGrid>
+                                <MudItem xs="12" sm="12" md="12">
+                                    <MudText Typo="Typo.h6" Align="Align.Left" Class="step-title">
+                                        <MudIcon Icon="@Icons.Material.Outlined.Info" Class="mr-2" Style="vertical-align: middle;" />
+                                        Paso 4: <b>Indicaciones</b>
+                                    </MudText>
+                                </MudItem>
                                 @{
-                                    if (context.IsActive && _index==4 && CreandoPDF ==true) {
-                                        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-                                    }
-                                    @if (context.IsActive)
+                                    List<string> listindicaciones = new();
+                                    foreach (var item in selectedEstudios)
                                     {
-                                        <MudIcon Icon="@Icons.Material.Filled.ArrowRight" Color="Color.Primary" Size="Size.Large"></MudIcon>
-                                    }
-                                    else if (context.Completed)
-                                    {
-                                        <div style="height: 10px; width:10px; background-color: var(--mud-palette-success); border-radius: 50%;"></div>
-                                    }
-                                    else
-                                    {
-                                        // <div style="height: 10px; width:10px; background-color: #d4ddeb; border-radius: 50%;"></div>
-                                        <MudIcon Icon="@Icons.Material.Filled.Adjust" Color="Color.Default" Size="Size.Medium"></MudIcon>
-                                    }
-                                } 
-
-                            </LabelTemplate>
-                            <ChildContent>
-                                @* <MudStep Title="Ciudad"> *@
-                                <MudStep>
-                                    <MudDivider />
-                                    <MudGrid class="pt-4">
-                                        <MudItem xs="12" sm="6" md="6">
-                                            <MudText Align="Align.Left">Paso 1: <b>Ciudad</b></MudText>
-                                        </MudItem>
-                                        <MudItem xs="12" sm="6" md="6" Class="pt-0">
-                                            <MudAutocomplete T="string" @bind-Value="dtoGeneralesCotizacion.Ciudad"
-                                            SearchFunc="SearchCiudad"
-                                            Label="Ciudad"
-                                            Clearable="true" />
-
-                                            @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
-                                            {
-                                                SelectedCiudad(dtoGeneralesCotizacion.Ciudad);
-                                            }
-                                        </MudItem>
-                                        <MudItem xs="12" sm="12" md="12" Class="pt-0">
-                                            @if (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Ciudad))
-                                            {
-                                                @* <MudTable @ref="mudTable" T="DtoSucursal" Items="@_oSucursalForCity" MultiSelection="true" Hover="true" SelectOnRowClick="false"
-          @bind-SelectedItems="selectedItems" OnRowClick="@RowClickEvent" Breakpoint="Breakpoint.Sm" RowClass="cursor-pointer" Context="sucur" Dense="true" Striped="true" Bordered="true" FixedHeader="true" Class="rounded-0"> *@
-                                                @* <MudTable @ref="mudTable" T="DtoSucursal" Items="@_oSucursalForCity" MultiSelection="true" SelectionChangeable="true" Hover="true"
-                                                OnRowClick="@OnRowClick" SelectOnRowClick="false" SelectedItemsChanged="@SelectedItemsChanged" Context="sucur" Dense="true" Striped="true" Bordered="true" Class="rounded-0">
-                                                    <ToolBarContent>
-                                                        <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Sucursales</MudText> <br />
-                                                        <MudText Typo="Typo.body1" Align="Align.Center" style="color: #0d37a8;">&nbsp;&nbsp;&nbsp;(Opcional)</MudText> <br />
-                                                    </ToolBarContent>
-                                                    <HeaderContent>
-                                                        <MudTh></MudTh>
-                                                        <MudTh Style="color:#921313">Clave</MudTh>
-                                                        <MudTh Style="color:#921313">Nombre</MudTh>
-                                                        <MudTh Style="color:#921313">Ubicacion</MudTh>
-                                                        <MudTh Style="color:#921313">Telefono</MudTh>
-                                                        <MudTh Style="color:#921313">Correo</MudTh>
-                                                    </HeaderContent>
-                                                    <RowTemplate>
-                                                        <MudTd DataLabel="Clave">@sucur.Clave</MudTd>
-                                                        <MudTd DataLabel="Nombre">@sucur.Nombre</MudTd>
-                                                        <MudTd DataLabel="Ubicacion">@sucur.Ubicacion</MudTd>
-                                                        <MudTd DataLabel="Telefono">@sucur.Telefono</MudTd>
-                                                        <MudTd DataLabel="Correo">@sucur.Correo</MudTd>
-                                                    </RowTemplate>
-                                                    <NoRecordsContent>
-                                                        <MudText>Sin Registros para mostrar</MudText>
-                                                    </NoRecordsContent>
-                                                    <PagerContent>
-                                                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
-                                                    </PagerContent>
-                                                </MudTable> *@
-
-                                                <MudDataGrid @ref="mudTable" T="DtoSucursal" MultiSelection="true" Items="@_oSucursalForCity" RowClick="@RowClicked" SelectedItemsChanged="@SelectedItemsChanged" FixedHeader="true" FixedFooter="false" Height="52vh">
-                                                    <ToolBarContent>
-                                                        <MudText Typo="Typo.h6" Align="Align.Left" style="color: #0d37a8;">Sucursales</MudText>&nbsp; &nbsp;&nbsp;&nbsp;<br />
-                                                        <MudText Typo="Typo.body1" Align="Align.Left" style="color: #0d37a8;">(Opcional)</MudText>
-                                                        @* <MudSpacer /> *@
-                                                    </ToolBarContent>
-                                                    <Columns>
-                                                        <SelectColumn T="DtoSucursal" />
-                                                        <PropertyColumn Property="x => x.Clave" HeaderStyle="color:#921313" />
-                                                        <PropertyColumn Property="x => x.Nombre" HeaderStyle="color:#921313"/>
-                                                        <PropertyColumn Property="x => x.Ubicacion" HeaderStyle="color:#921313"/>
-                                                        <PropertyColumn Property="x => x.Telefono" HeaderStyle="color:#921313"/>
-                                                        <PropertyColumn Property="x => x.Correo" HeaderStyle="color:#921313" />
-                                                    </Columns>
-                                                    <NoRecordsContent>
-                                                        <MudText>Sin Registros para mostrar</MudText>
-                                                    </NoRecordsContent>
-                                                    <PagerContent>
-                                                        <MudDataGridPager T="DtoSucursal" />
-                                                    </PagerContent>
-                                                </MudDataGrid>
-
-                                            }
-
-                                        </MudItem>
-                                    </MudGrid>
-                                </MudStep>
-                                @* <MudStep Title="Generales Paciente" SecondaryText="(Opcional)"> *@
-                                <MudStep>
-                                    <MudDivider />
-                                    <MudGrid>
-                                        <MudItem xs="12" sm="12" md="12">
-                                            <MudText Align="Align.Left">Paso 2: <b>Datos Generales</b></MudText>
-                                        </MudItem>
-                                        @* <MudItem xs="12" sm="12" md="12">
-                                            <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Ciudad: <b>@dtoGeneralesCotizacion.Ciudad</b></MudText>
-                                        </MudItem>
-                                        @if (!String.IsNullOrEmpty(SucursalName))
+                                        if (item.Estudios==null)
                                         {
-                                            <MudItem xs="12" sm="12" md="12">
-                                                <MudText Typo="Typo.h6" Align="Align.Start" style="color: #0d37a8;">Sucursal: <b>@SucursalName</b></MudText>
-                                            </MudItem>
-                                        }
- *@
-                                        <MudItem xs="12" sm="12" md="12" Class="pt-0">
-                                            <MudTextField @bind-Value="dtoGeneralesCotizacion.Observaciones" T="string" Label="Observaciones (Opcional)" Lines="10" />
-                                        </MudItem>
-                                        <MudItem xs="12" sm="6" md="6">
-                                            @* <MudTextField T="string" Label="Paciente" @bind-Value="dtoGeneralesCotizacion.Paciente" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" OnKeyUp="ValidaEnterPaciente" OnAdornmentClick="@(() => BuscarPaciente())" /> *@
-                                            <MudTextField T="string" Label="Nombre paciente (opcional)" @bind-Value="dtoGeneralesCotizacion.Paciente"/>
-                                        </MudItem>
-                                        @if (visibleInfoPaciente)
-                                        {
-                                            <MudItem xs="12" sm="12" md="12">
-                                                <MudTable T="DtoPaciente" Items="@dtoPaciente" Hover="true" Breakpoint="Breakpoint.Sm" @ref="mudTablePaciente" Class="rounded-0"
-                                                RowClass="cursor-pointer" RowClassFunc="@SelectedRowPaciente" OnRowClick="RowClickEventPaciente" Context="Pacient" Dense="true" Striped="true" Bordered="true" FixedHeader="true">
-                                                    <ToolBarContent>
-                                                        <MudText Typo="Typo.h6" Align="Align.Center" style="color: #0d37a8;">Pacientes</MudText> <br />
-                                                        <MudText Typo="Typo.body1" Align="Align.Center" style="color: #0d37a8;">&nbsp;&nbsp;&nbsp;(Opcional)</MudText> <br />
-                                                        @* <MudSpacer /> *@
-                                                    </ToolBarContent>
-                                                    <HeaderContent>
-                                                        <MudTh Style="color:#921313">Expediente</MudTh>
-                                                        <MudTh Style="color:#921313">Nombre</MudTh>
-                                                        <MudTh Style="color:#921313">Sexo</MudTh>
-                                                        <MudTh Style="color:#921313">Edad</MudTh>
-                                                        <MudTh Style="color:#921313">FechaNacimiento</MudTh>
-                                                    </HeaderContent>
-                                                    <RowTemplate>
-                                                        @* <MudTd DataLabel="Codigo">@sucur.Codigo</MudTd> *@
-                                                        <MudTd DataLabel="Expediente">@Pacient.Expediente</MudTd>
-                                                        <MudTd DataLabel="Nombre">@Pacient.NombrePaciente</MudTd>
-                                                        <MudTd DataLabel="Sexo">@Pacient.Genero</MudTd>
-                                                        <MudTd DataLabel="Edad">@Pacient.Edad</MudTd>
-                                                        <MudTd DataLabel="FechaNacimiento">@Pacient.FechaNacimiento</MudTd>
-                                                    </RowTemplate>
-                                                    <NoRecordsContent>
-                                                        <MudText>Sin Registros para mostrar</MudText>
-                                                    </NoRecordsContent>
-                                                    <PagerContent>
-                                                        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
-                                                    </PagerContent>
-                                                </MudTable>
-                                            </MudItem>
-                                        }
-
-                                    </MudGrid>
-                                </MudStep>
-                                @* <MudStep Title="Estudios" SecondaryText="Agregar Estudios" HasError="@(selectedEstudios.Count()==0)"> *@
-                                <MudStep HasError="@(selectedEstudios.Count()==0)">
-                                    <MudDivider />
-                                    <MudGrid>
-                                        <MudItem xs="12" sm="12" md="12">
-                                            <MudText Align="Align.Left">Paso 3: <b>Estudios</b></MudText>
-                                        </MudItem>
-                                        <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center pt-0">
-                                            <MudTooltip Text="Agregar estudios a la orden">
-                                                <MudButton Variant="Variant.Outlined" OnClick="@AbrirModalEstudios" StartIcon="@Icons.Material.Filled.Add" aria-label="Abrir modal de estudios" Color="@Color.Info" Class="add-item-btn rounded-0">Agregar Estudios</MudButton>
-                                            </MudTooltip>
-                                        </MudItem>                                            
-                                        @if (visibleInfoEstudio)
-                                        {
-                                            <MudItem xs="12" sm="12" md="12" Class="pt-1">
-                                                <MudForm Spacing="2">
-                                                    @* <MudDataGrid T="DtoEstudioResponsePrice" Items="@selectedEstudios" Filterable="false" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" FixedHeader="true" StartedEditingItem="@DeleteOrderItem">
-                                                    <ToolBarContent>
-                                                        <MudSpacer />
-                                                        <MudText Typo="Typo.h6" style="color: #0d37a8;">Estudios Seleccionados</MudText>
-                                                        <MudSpacer />
-
-                                                    </ToolBarContent>
-                                                    <Columns>
-                                                        <TemplateColumn>
-                                                            <CellTemplate>
-                                                                <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" OnClick="(()=> DeleteOrderItem(context.Item))" />
-                                                            </CellTemplate>
-                                                        </TemplateColumn>
-                                                        <PropertyColumn Property="x => x.Clave" Editable="false" />
-                                                        <PropertyColumn Property="x => x.Nombre" />
-                                                        <PropertyColumn Property="x => x.Dias" />
-
-                                                    </Columns>
-                                                    <PagerContent>
-                                                        <MudDataGridPager T="DtoEstudioResponsePrice" />
-                                                    </PagerContent>
-                                                </MudDataGrid>
-*@
-                                                    <MudTable T="DtoEstudioResponsePrice" Items="@selectedEstudiosOriginal" Elevation="3" Hover="true" Dense="true" Striped="true" Bordered="true" Breakpoint="Breakpoint.Sm"
-                                                    RowClass="cursor-pointer" OnRowClick="@OnRowClickEstudio" SelectOnRowClick="true" Context="GridEstudioSele" Class="rounded-0" FixedHeader="true" FixedFooter="false" Height="53vh">
-                                                        <ColGroup>
-                                                            <col style="width:10px;" />
-                                                            <col style="width:10px;" />
-                                                            <col />
-                                                            <col />
-                                                            <col />
-                                                        </ColGroup>
-                                                        <HeaderContent>
-                                                            <MudTh></MudTh>
-                                                            <MudTh></MudTh>
-                                                            <MudTh>Clave</MudTh>
-                                                            <MudTh>Nombre</MudTh>
-                                                            <MudTh>Días</MudTh>
-                                                        </HeaderContent>
-                                                        <RowTemplate>
-                                                            <MudTd>
-                                                                <MudTooltip Text="Eliminar">
-                                                                    <MudIconButton Size="@Size.Small" Icon="@Icons.Material.Outlined.Delete" aria-label="Eliminar estudio" OnClick="(()=> DeleteOrderItem(GridEstudioSele))" />
-                                                                </MudTooltip>
-                                                            </MudTd>
-                                                            <MudTd>
-                                                                @if (GridEstudioSele.Estudios != null)
-                                                                {
-                                                                    <MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPressEstudioSelect(GridEstudioSele.Clave))"><MudText Typo="Typo.body1" Align="Align.Center"><strong> @((GridEstudioSele.ShowDetails == true) ? "-" : "+")</strong></MudText></MudButton>
-                                                                }
-
-                                                            </MudTd>
-                                                            <MudTd DataLabel="Clave">@GridEstudioSele.Clave</MudTd>
-                                                            <MudTd DataLabel="Nombre">@GridEstudioSele.Nombre</MudTd>
-                                                            <MudTd DataLabel="Días">@GridEstudioSele.Dias</MudTd>
-                                                        </RowTemplate>
-
-                                                        <ChildRowContent>
-                                                            @if (GridEstudioSele.ShowDetails)
-                                                            {
-                                                                <MudTr>
-                                                                    <td colspan="1">
-                                                                        &nbsp;
-                                                                    </td>
-                                                                    <td colspan="3">
-                                                                        <MudCard Elevation="0">
-                                                                            @*<MudCardHeader>
-                                                                                <CardHeaderContent>
-                                                                                <MudText Typo="Typo.body1" Align="Align.Center"><strong>Estudios</strong></MudText>
-                                                                            </CardHeaderContent>
-                                                                        </MudCardHeader>*@
-                                                                            <MudCardContent Class="pa-0">
-                                                                                <MudTable Items="@GridEstudioSele.Estudios" Context="StudiContext" Hover="true" Breakpoint="Breakpoint.Sm" Elevation="0" Class="rounded-0">
-                                                                                    <HeaderContent>
-                                                                                        <MudTh>Clave</MudTh>
-                                                                                        <MudTh>Nombre</MudTh>
-                                                                                        <MudTh>Días</MudTh>
-                                                                                    </HeaderContent>
-                                                                                    <RowTemplate>
-                                                                                        <MudTd DataLabel="Clave">@StudiContext.Clave</MudTd>
-                                                                                        <MudTd DataLabel="Nombre">@StudiContext.Nombre</MudTd>
-                                                                                        <MudTd DataLabel="Días">@StudiContext.Dias</MudTd>
-                                                                                    </RowTemplate>
-                                                                                </MudTable>
-                                                                            </MudCardContent>
-                                                                        </MudCard>
-                                                                    </td>
-                                                                </MudTr>
-                                                            }
-                                                        </ChildRowContent>
-                                                        <NoRecordsContent>
-                                                            <MudText>Sin Registros para mostrar</MudText>
-                                                        </NoRecordsContent>
-                                                        <PagerContent>
-                                                            <MudTablePager PageSizeOptions="new int[] { 25, 50, 100 }" />
-                                                        </PagerContent>
-                                                    </MudTable>
-
-                                                </MudForm>
-                                            </MudItem>
-                                        }
-                                    </MudGrid>
-                                </MudStep>
-                                @* <MudStep Title="Indicaciones" SecondaryText="Atención" > *@
-                                <MudStep>
-                                    <MudDivider />
-                                    <MudGrid>
-                                        <MudItem xs="12" sm="12" md="12">
-                                            <MudText Align="Align.Left">Paso 4: <b>Indicaciones</b></MudText>
-                                        </MudItem>
-                                        @{
-                                            List<string> listindicaciones = new();
-                                            foreach (var item in selectedEstudios)
+                                            foreach (var itemIndi in item.Indicaciones)
                                             {
-                                                if (item.Estudios==null)
+                                                var indiexiste = listindicaciones.FirstOrDefault(e => e.Equals(itemIndi.Descripcion));
+                                                if (indiexiste == null)
                                                 {
-                                                    foreach (var itemIndi in item.Indicaciones)
-                                                    {
-                                                        var indiexiste = listindicaciones.FirstOrDefault(e => e.Equals(itemIndi.Descripcion));
-                                                        if (indiexiste == null)
-                                                        {
-                                                            listindicaciones.Add(itemIndi.Descripcion);
-                                                            <MudItem xs="12" sm="12" md="12" Class="justify-start pt-0">@itemIndi.Descripcion</MudItem>
-                                                        }
-
-                                                    }
-
-                                                }else{
-                                                    foreach (var itemEstudiPack in item.Estudios)
-                                                    {
-                                                        foreach (var itemIndipack in itemEstudiPack.Indicaciones)
-                                                        {
-                                                            var indiexiste = listindicaciones.FirstOrDefault(e => e.Equals(itemIndipack.Descripcion));
-                                                            if (indiexiste == null)
-                                                            {
-                                                                listindicaciones.Add(itemIndipack.Descripcion);
-                                                                <MudItem xs="12" sm="12" md="12" Class="justify-start">@itemIndipack.Descripcion</MudItem>
-                                                            }
-                                                        }
-                                                    }
+                                                    listindicaciones.Add(itemIndi.Descripcion);
+                                                    <MudItem xs="12" sm="12" md="12" Class="justify-start pt-0">@itemIndi.Descripcion</MudItem>
                                                 }
 
                                             }
+
+                                        }else{
+                                            foreach (var itemEstudiPack in item.Estudios)
+                                            {
+                                                foreach (var itemIndipack in itemEstudiPack.Indicaciones)
+                                                {
+                                                    var indiexiste = listindicaciones.FirstOrDefault(e => e.Equals(itemIndipack.Descripcion));
+                                                    if (indiexiste == null)
+                                                    {
+                                                        listindicaciones.Add(itemIndipack.Descripcion);
+                                                        <MudItem xs="12" sm="12" md="12" Class="justify-start">@itemIndipack.Descripcion</MudItem>
+                                                    }
+                                                }
+                                            }
                                         }
-                                        <MudItem xs="12" sm="12" md="12" Class="justify-start"></MudItem>
-                                    </MudGrid>
-                                </MudStep>
-                                @* <MudStep Title="Recibo" SecondaryText=""> *@
-                                <MudStep>
-                                    <MudGrid>
-                                        <MudItem xs="12" sm="12" md="12">
-                                            <MudText Align="Align.Left">Paso 5: <b>Recibo</b></MudText>
-                                        </MudItem>
-                                        @* <MudItem xs="12" sm="7" md="12">
-                                        <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Recibo</MudText><MudSpacer />
-                                    </MudItem> *@
-                                        <MudItem xs="12" sm="7" md="12" id="iFrameId" Class="h-55vh">
-                                            <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
-                                                <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" aria-label="Generando recibo" />
-                                            </MudItem>
-                                        </MudItem>
-                                    </MudGrid>
-                                </MudStep>
-                            </ChildContent>
-                            <ActionContent Context="stepper">
-                                @* <MudIconButton OnClick="@(() => stepper.PreviousStepAsync())" Icon="@Icons.Material.Filled.KeyboardDoubleArrowLeft" Color="Color.Primary" Disabled="@(_index <= 0)" >Anterior</MudIconButton> *@
-                                <MudButton Variant="Variant.Text"
-                                StartIcon="@Icons.Material.Filled.KeyboardDoubleArrowLeft"
-                                Color="Color.Primary"
-                                Style="text-transform:none" OnClick="@(() => stepper.PreviousStepAsync())" Disabled="@(_index <= 0)">
-                                    Anterior
-                                </MudButton>
-                                <MudSpacer />
-                                @* <MudIconButton OnClick="@(() => stepper.NextStepAsync())" Icon="@Icons.Material.Filled.KeyboardDoubleArrowRight" Color="Color.Primary">Siguiente</MudIconButton> *@
-                                @if (@CreandoPDF)
-                                {
-                                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-                                }else{
-                                    <MudButton Variant="Variant.Text"
-                                    EndIcon="@Icons.Material.Filled.KeyboardDoubleArrowRight"
-                                    Color="Color.Primary"
-                                    Style="text-transform:none" OnClick="@(() => stepper.NextStepAsync())" Disabled="@(_index > 3)">
-                                        Siguiente
-                                    </MudButton>
+
+                                    }
                                 }
-                            </ActionContent>
-                        </MudStepper>
-
-                        @* <MudForm Spacing="2">
-                        <MudGrid>
-                            <MudItem xs="12" sm="12" md="12" Class="d-flex justify-center">
-                                <MudButton OnClick="@CancelItem" StartIcon="@Icons.Material.Filled.Cancel" Color="@Color.Error" Class="add-item-btn">Cancelar</MudButton>
-                            </MudItem>
-                            <MudItem xs="12" sm="12" md="6" Class="d-flex justify-center">
-                                <MudButton OnClick="@AddItem" StartIcon="@Icons.Material.Filled.Save" Color="@Color.Info" Class="add-item-btn">Crear órden</MudButton>
-                            </MudItem> 
-                        </MudGrid>
-                    </MudForm>*@
-
-                    </MudItem>
-                }
+                                <MudItem xs="12" sm="12" md="12" Class="justify-start"></MudItem>
+                            </MudGrid>
+                        </MudStep>
+                        <MudStep>
+                            <MudGrid>
+                                <MudItem xs="12" sm="12" md="12">
+                                    <MudText Typo="Typo.h6" Align="Align.Left" Class="step-title">
+                                        <MudIcon Icon="@Icons.Material.Outlined.Receipt" Class="mr-2" Style="vertical-align: middle;" />
+                                        Paso 5: <b>Recibo</b>
+                                    </MudText>
+                                </MudItem>
+                                
+                                @if (CotizacionDraft != null && !String.IsNullOrEmpty(CotizacionDraft.clave))
+                                {
+                                    <MudItem xs="12" sm="12" md="12" Class="pt-2">
+                                        <MudPaper Elevation="2" Class="patient-info-card">
+                                            <MudGrid Spacing="3">
+                                                <MudItem xs="12" sm="6" md="2">
+                                                    <div class="info-field">
+                                                        <MudText Typo="Typo.caption" Class="info-label">
+                                                            Solicitud
+                                                        </MudText>
+                                                        <MudText Typo="Typo.h6" Class="info-value-main">
+                                                            @CotizacionDraft.clave
+                                                        </MudText>
+                                                    </div>
+                                                    <div class="info-field mt-3">
+                                                        <MudText Typo="Typo.caption" Class="info-label">
+                                                            Registro
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Class="info-value-small">
+                                                            @(GetFechaRegistroFormateada())
+                                                        </MudText>
+                                                    </div>
+                                                </MudItem>
+                                                
+                                                <MudItem xs="12" sm="6" md="2">
+                                                    <div class="info-field">
+                                                        <MudText Typo="Typo.caption" Class="info-label">
+                                                            Edad
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body1" Class="info-value" Style="font-weight: 600;">
+                                                            @(dtoPacienteSelected != null ? $"{dtoPacienteSelected.Edad} años" : "-")
+                                                        </MudText>
+                                                    </div>
+                                                    <div class="info-field mt-3">
+                                                        <MudText Typo="Typo.caption" Class="info-label">
+                                                            Médico
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Class="info-value-small" Style="word-wrap: break-word; line-height: 1.4;">
+                                                            @(CotizacionDraft.NombreMedico ?? (PostRequiere == "2" && dtoMedico != null ? $"{dtoMedico.Nombre} {dtoMedico.PrimerApellido} {dtoMedico.SegundoApellido}".Trim() : "-"))
+                                                        </MudText>
+                                                    </div>
+                                                </MudItem>
+                                                
+                                                <MudItem xs="12" sm="6" md="3">
+                                                    <div class="info-field">
+                                                        <MudText Typo="Typo.caption" Class="info-label">
+                                                            Paciente
+                                                        </MudText>
+                                                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1" Class="patient-name-stack">
+                                                            @if (dtoPacienteSelected != null && dtoPacienteSelected.Genero == "F")
+                                                            {
+                                                                <MudIcon Icon="@Icons.Material.Filled.Wc" Class="gender-icon-female" />
+                                                            }
+                                                            else if (dtoPacienteSelected != null && dtoPacienteSelected.Genero == "M")
+                                                            {
+                                                                <MudIcon Icon="@Icons.Material.Filled.Wc" Class="gender-icon-male" />
+                                                            }
+                                                            <MudText Typo="Typo.body1" Class="info-value patient-name">
+                                                                @(dtoPacienteSelected != null ? dtoPacienteSelected.NombrePaciente : (!String.IsNullOrEmpty(dtoGeneralesCotizacion.Paciente) ? dtoGeneralesCotizacion.Paciente : "-"))
+                                                            </MudText>
+                                                        </MudStack>
+                                                    </div>
+                                                    <div class="info-field mt-3">
+                                                        <MudText Typo="Typo.caption" Class="info-label">
+                                                            Expediente
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Class="info-value-small">
+                                                            @(dtoPacienteSelected != null ? dtoPacienteSelected.Expediente : "-")
+                                                        </MudText>
+                                                    </div>
+                                                </MudItem>
+                                                
+                                                <MudItem xs="12" sm="6" md="2">
+                                                    <div class="info-field">
+                                                        <MudText Typo="Typo.caption" Class="info-label">
+                                                            Fecha Nac.
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Class="info-value-small">
+                                                            @(dtoPacienteSelected != null && !String.IsNullOrEmpty(dtoPacienteSelected.FechaNacimiento) ? dtoPacienteSelected.FechaNacimiento : "-")
+                                                        </MudText>
+                                                    </div>
+                                                    <div class="info-field mt-3">
+                                                        <MudText Typo="Typo.caption" Class="info-label">
+                                                            Compañía
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Class="info-value-small">
+                                                            @(CotizacionDraft.nombreCompania ?? (PostRequiere == "3" && dtoEmpresa != null && !String.IsNullOrEmpty(dtoEmpresa.NombreComercial) ? dtoEmpresa.NombreComercial : "PARTICULARES"))
+                                                        </MudText>
+                                                    </div>
+                                                </MudItem>
+                                                
+                                                <MudItem xs="12" sm="6" md="2">
+                                                    <div class="info-field">
+                                                        <MudText Typo="Typo.caption" Class="info-label">
+                                                            Teléfono
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Class="info-value-small">
+                                                            @(dtoPacienteSelected != null && !String.IsNullOrEmpty(dtoPacienteSelected.Telefono) ? dtoPacienteSelected.Telefono : "-")
+                                                        </MudText>
+                                                    </div>
+                                                    <div class="info-field mt-3">
+                                                        <MudText Typo="Typo.caption" Class="info-label">
+                                                            Celular
+                                                        </MudText>
+                                                        <MudText Typo="Typo.body2" Class="info-value-small">
+                                                            @(dtoPacienteSelected != null && !String.IsNullOrEmpty(dtoPacienteSelected.Telefono) ? dtoPacienteSelected.Telefono : (PostRequiere == "2" && dtoMedico != null && !String.IsNullOrEmpty(dtoMedico.Telefono) ? dtoMedico.Telefono : "-"))
+                                                        </MudText>
+                                                    </div>
+                                                </MudItem>
+                                                
+                                                <MudItem xs="12" sm="12" md="1" Class="d-flex align-end justify-end patient-actions-column">
+                                                    <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center" Class="patient-action-buttons">
+                                                        <MudTooltip Text="Descargar PDF" Placement="Placement.Left">
+                                                            <MudIconButton 
+                                                                Icon="@Icons.Material.Filled.Download" 
+                                                                Color="Color.Success" 
+                                                                Variant="Variant.Filled"
+                                                                OnClick="() => DownloadPDF()"
+                                                                Class="action-button-square action-button-download"
+                                                                aria-label="Descargar PDF" />
+                                                        </MudTooltip>
+                                                        
+                                                        <MudTooltip Text="Imprimir PDF" Placement="Placement.Left">
+                                                            <MudIconButton 
+                                                                Icon="@Icons.Material.Filled.Print" 
+                                                                Color="Color.Error" 
+                                                                Variant="Variant.Filled"
+                                                                OnClick="() => PrintPDF()"
+                                                                Class="action-button-square action-button-print"
+                                                                aria-label="Imprimir PDF" />
+                                                        </MudTooltip>
+                                                        
+                                                        <MudTooltip Text="Ver Reporte" Placement="Placement.Left">
+                                                            <MudIconButton 
+                                                                Icon="@Icons.Material.Filled.BarChart" 
+                                                                Color="Color.Info" 
+                                                                Variant="Variant.Filled"
+                                                                OnClick="() => ViewReport()"
+                                                                Class="action-button-square action-button-report"
+                                                                aria-label="Ver reporte" />
+                                                        </MudTooltip>
+                                                    </MudStack>
+                                                </MudItem>
+                                            </MudGrid>
+                                        </MudPaper>
+                                    </MudItem>
+                                }
+                                
+                                <MudItem xs="12" sm="12" md="12" id="iFrameId" Class="h-55vh d-flex justify-center">
+                                    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" aria-label="Generando recibo" />
+                                </MudItem>
+                            </MudGrid>
+                        </MudStep>
+                    </ChildContent>
+                    <ActionContent Context="stepper">
+                        <MudButton Variant="Variant.Outlined"
+                            StartIcon="@Icons.Material.Filled.KeyboardDoubleArrowLeft"
+                            Color="Color.Primary"
+                            Style="text-transform:none" 
+                            OnClick="@(() => stepper.PreviousStepAsync())" 
+                            Disabled="@(_index <= 0)"
+                            Class="animated-button stepper-prev-btn">
+                            Anterior
+                        </MudButton>
+                        <MudSpacer />
+                        @if (@CreandoPDF)
+                        {
+                            <MudProgressCircular Color="Color.Primary" Indeterminate="true" Class="stepper-progress" />
+                        }else{
+                            <MudButton Variant="Variant.Filled"
+                                EndIcon="@Icons.Material.Filled.KeyboardDoubleArrowRight"
+                                Color="Color.Primary"
+                                Style="text-transform:none" 
+                                OnClick="@(() => stepper.NextStepAsync())" 
+                                Disabled="@(_index > 3)"
+                                Class="animated-button stepper-next-btn">
+                                Siguiente
+                            </MudButton>
+                        }
+                    </ActionContent>
+                </MudStepper>
+                </MudPaper>
             }
-            @if (ShowOrdenes)
-            {
+        }
+    </MudContainer>
 
-            }
-        </MudGrid>
-    </MudPaper>
 }
 
 
-
-<MudDialog @bind-Visible="visibleInfoCotizacion" Options="diaOptionsCotizados" >
+<MudDialog @bind-Visible="visibleInfoCotizacion" Options="diaOptionsCotizados" Class="dialog-studies">
     <TitleContent>
-        <MudText Typo="Typo.h4" Color="Color.Primary" Align="Align.Center">
-            <MudIcon Icon="@Icons.Material.Filled.MedicalInformation" Color="Color.Success" Class="mr-3" Size="Size.Large" />Estudios Cotizados
+        <MudText Typo="Typo.h5" Color="Color.Primary" Class="d-flex align-center dialog-title">
+            <MudIcon Icon="@Icons.Material.Filled.MedicalInformation" 
+                Color="Color.Success" 
+                Class="mr-2" 
+                Size="Size.Medium" />
+            Estudios Cotizados
         </MudText>
     </TitleContent>
     <DialogContent>
-        <MudGrid>
-
-            <MudItem xs="12" sm="12" md="12">
-                <MudDataGrid Items="@_oCotizacionEstudios" Hover="true" Dense="true" Striped="true" Bordered="true" Class="rounded-0" Height="Auto">
-                    <Columns>
-                        <PropertyColumn Property="x => x.Id" Title="ID" CellClass="justify-center" />
-                        @* <PropertyColumn Property="x => x.EstudioId" CellClass="justify-center" /> *@
-                        <PropertyColumn Property="x => x.Clave" CellClass="justify-center" />
-                        <PropertyColumn Property="x => x.Nombre" CellClass="justify-center" />
-                    </Columns>
-                    <PagerContent>
-                        <MudDataGridPager T="DtoCotizacionEstudios" />
-                    </PagerContent>
-                </MudDataGrid>
-            </MudItem>
-
-        </MudGrid>
-
+        @if (_oCotizacionEstudios == null || !_oCotizacionEstudios.Any())
+        {
+            <MudContainer Class="d-flex flex-column align-center justify-center" Style="min-height: 200px; padding: 2rem;">
+                <MudIcon 
+                    Icon="@Icons.Material.Filled.Science" 
+                    Size="Size.Large" 
+                    Class="mb-4" 
+                    Style="font-size: 5rem; color: #94a3b8; opacity: 0.7;" />
+                <MudText Typo="Typo.h6" Style="color: #64748b; font-weight: 500;" Class="mb-2">
+                    No hay estudios cotizados
+                </MudText>
+                <MudText Typo="Typo.body2" Style="color: #94a3b8;" Align="Align.Center">
+                    No se encontraron estudios para esta orden.
+                </MudText>
+            </MudContainer>
+        }
+        else
+        {
+            <MudDataGrid Items="@_oCotizacionEstudios" Hover="true" Dense="false" Striped="true" Bordered="true" Class="dialog-studies-table" Height="Auto" FixedHeader="true" Elevation="0" @bind-SelectedItems="_selectedEstudiosPrint">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 600;">
+                        <MudIcon Icon="@Icons.Material.Filled.Science" Class="mr-2" Style="vertical-align: middle;" />
+                        Estudios de la Orden
+                    </MudText>
+                    <MudSpacer />
+                    @if (_oCotizacionEstudios != null && _oCotizacionEstudios.Any())
+                    {
+                        <MudChip T="string"
+                            Color="Color.Info" 
+                            Variant="Variant.Text"
+                            Size="Size.Small"
+                            Style="background-color: #e3f2fd; color: #1976d2; font-weight: 500;">
+                            @_oCotizacionEstudios.Count @(_oCotizacionEstudios.Count == 1 ? "estudio" : "estudios")
+                        </MudChip>
+                    }
+                </ToolBarContent>
+                <Columns>
+                    <TemplateColumn Title="ID" HeaderStyle="color: #0d37a8; font-weight: 600;" CellClass="justify-center">
+                        <HeaderTemplate>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                <MudIcon Icon="@Icons.Material.Filled.Tag" Size="Size.Small" Style="color: #0d37a8;" />
+                                <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 600;">ID</MudText>
+                            </MudStack>
+                        </HeaderTemplate>
+                        <CellTemplate>
+                            <MudChip T="int"
+                                Color="Color.Default"
+                                Variant="Variant.Filled"
+                                Size="Size.Small"
+                                Style="background-color: #e1bee7; color: #4a148c; font-weight: 600; border-radius: 16px; padding: 4px 12px;">
+                                @context.Item.Id
+                            </MudChip>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Clave" HeaderStyle="color: #0d37a8; font-weight: 600;" CellClass="justify-center">
+                        <HeaderTemplate>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                <MudIcon Icon="@Icons.Material.Filled.Key" Size="Size.Small" Style="color: #0d37a8;" />
+                                <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 600;">Clave</MudText>
+                            </MudStack>
+                        </HeaderTemplate>
+                        <CellTemplate>
+                            <MudText Typo="Typo.body2" Style="font-weight: 500; color: #424242;">
+                                @context.Item.Clave
+                            </MudText>
+                        </CellTemplate>
+                    </TemplateColumn>
+                    <TemplateColumn Title="Nombre" HeaderStyle="color: #0d37a8; font-weight: 600;" CellClass="justify-start">
+                        <HeaderTemplate>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                <MudIcon Icon="@Icons.Material.Filled.Description" Size="Size.Small" Style="color: #0d37a8;" />
+                                <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 600;">Nombre</MudText>
+                            </MudStack>
+                        </HeaderTemplate>
+                        <CellTemplate>
+                            <MudText Typo="Typo.body2" Style="font-weight: 500; color: #424242;">
+                                @context.Item.Nombre
+                            </MudText>
+                        </CellTemplate>
+                    </TemplateColumn>
+                </Columns>
+                <NoRecordsContent>
+                    <MudContainer Class="d-flex flex-column align-center justify-center" Style="min-height: 150px; padding: 2rem;">
+                        <MudIcon 
+                            Icon="@Icons.Material.Filled.Inbox" 
+                            Size="Size.Large" 
+                            Class="mb-3" 
+                            Style="font-size: 4rem; color: #94a3b8; opacity: 0.7;" />
+                        <MudText Typo="Typo.body2" Style="color: #94a3b8;">No hay estudios disponibles</MudText>
+                    </MudContainer>
+                </NoRecordsContent>
+                <PagerContent>
+                    <MudDataGridPager T="DtoCotizacionEstudios" />
+                </PagerContent>
+            </MudDataGrid>
+        }
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Outlined" OnClick="CancelPrint" Color="@Color.Default" Class="add-item-btn rounded-0" aria-label="Cerrar">Cerrar</MudButton>
+        <MudButton 
+            Variant="Variant.Filled"
+            Color="@Color.Error" 
+            Class="dialog-action-button dialog-button-cancel" 
+            OnClick="CancelPrint" 
+            aria-label="Cerrar">
+            <MudIcon Icon="@Icons.Material.Filled.Close" Class="cancel-icon-custom mr-2" />
+            CANCELAR
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
-<MudDialog @bind-Visible="visibleEditCotizacion" Options="diaOptionsEdit">
+<MudDialog @bind-Visible="visibleEditCotizacion" Options="diaOptionsEdit" Class="dialog-edit">
     <TitleContent>
-        <MudText Typo="Typo.h6" Color="Color.Warning" Align="Align.Justify">
-            <MudIcon Icon="@Icons.Material.Filled.WarningAmber" Color="Color.Warning" Class="mr-3" Size="Size.Large" />Atención Usuario
+        <MudText Typo="Typo.h5" Color="Color.Warning" Class="d-flex align-center dialog-title">
+            <MudIcon Icon="@Icons.Material.Filled.WarningAmber" 
+                Color="Color.Warning" 
+                Class="mr-2" 
+                Size="Size.Medium" />
+            Atención Usuario
         </MudText>
     </TitleContent>
     <DialogContent>
-        <div tabindex="0" @onkeydown="HandleEditDialogKeyDown">
-        <MudText Typo="Typo.h6" Color="Color.Primary" Align="Align.Center">
-            ¡Desea Editar este registro!
-        </MudText>
+        <div tabindex="0" @onkeydown="HandleEditDialogKeyDown" class="dialog-content-wrapper">
+            <MudContainer Class="d-flex flex-column align-center justify-center" Style="padding: 2rem;">
+                <MudIcon 
+                    Icon="@Icons.Material.Filled.Edit" 
+                    Size="Size.Large" 
+                    Class="mb-4" 
+                    Style="font-size: 4rem; color: #ff9800; opacity: 0.8;" />
+                <MudText Typo="Typo.h6" Color="Color.Primary" Align="Align.Center" Class="dialog-message mb-3">
+                    <MudIcon Icon="@Icons.Material.Filled.Info" 
+                        Color="Color.Info" 
+                        Class="mr-2" 
+                        Size="Size.Medium" />
+                    ¿Desea editar este registro?
+                </MudText>
+                <MudText Typo="Typo.body2" Style="color: #64748b;" Align="Align.Center">
+                    Esta acción abrirá el formulario de edición para modificar la orden seleccionada.
+                </MudText>
+            </MudContainer>
         </div>
     </DialogContent>
     <DialogActions>
-        <MudButton @ref="acceptEditBtn" Variant="Variant.Outlined" OnClick="@EditQuotation" Color="@Color.Info" Class="add-item-btn" aria-label="Aceptar edición">Aceptar</MudButton>
-        <MudButton Variant="Variant.Outlined" OnClick="@CancelEdit" Color="@Color.Error" Class="add-item-btn" aria-label="Cancelar edición">Cancelar</MudButton>
-        @* <MudIconButton Icon="@Icons.Material.Filled.CheckCircle" aria-label="Aceptar" Color="Color.Success" OnClick="EditQuotation"></MudIconButton>
-        <MudIconButton Icon="@Icons.Material.Filled.Cancel" aria-label="Cancelar" Color="Color.Error" OnClick="CancelEdit"></MudIconButton> *@
+        <MudButton 
+            Variant="Variant.Filled" 
+            OnClick="@CancelEdit" 
+            Color="@Color.Error" 
+            Class="dialog-action-button dialog-button-cancel" 
+            Disabled="@ValidateDataMod"
+            aria-label="Cancelar edición">
+            <MudIcon Icon="@Icons.Material.Filled.Close" Class="mr-2" />
+            CANCELAR
+        </MudButton>
+        <MudButton 
+            @ref="acceptEditBtn" 
+            Variant="Variant.Filled"
+            OnClick="@EditQuotation" 
+            Class="dialog-action-button dialog-button-accept" 
+            aria-label="Aceptar edición">
+            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Class="mr-2" />
+            ACEPTAR
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -649,56 +1106,909 @@ else
 
 
 <style>
+    /* Ajustes generales de inputs */
+    .mud-input-input-control {
+        align-items: normal;
+    }
+
+    /* Contenedor de búsqueda */
+    .search-container {
+        border-radius: 8px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 1px solid #e0e0e0;
+    }
+
+    .search-field .mud-input-control,
+    .date-field .mud-input-control {
+        transition: all 0.3s ease;
+    }
+
+    .search-field .mud-input-control:focus-within,
+    .date-field .mud-input-control:focus-within {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 55, 168, 0.15);
+    }
+
+    .search-button,
+    .create-button {
+        transition: all 0.3s ease;
+        border-radius: 4px;
+    }
+
+    .search-button:hover:not(:disabled),
+    .create-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 55, 168, 0.3);
+    }
+
+    /* Contenedor de resultados */
+    .results-container {
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    /* Base Styles */
     .selected {
-    background-color: #6285a9 !important;
+        background-color: #6285a9 !important;
+        transition: background-color 0.3s ease;
     }
 
     .selected > td {
-    color: white !important;
+        color: white !important;
     }
 
     .selected > td .mud-input {
-    color: white !important;
+        color: white !important;
     }
 
     .mud-table-cell-custom-group {
-    font-weight: 500;
+        font-weight: 500;
     }
 
     .mud-table-cell-custom-group-footer {
-    padding-bottom: 50px;
-    text-align: right;
+        padding-bottom: 50px;
+        text-align: right;
     }
 
     .mud-stepper .mud-stepper-nav .mud-step {
-    padding: 0px !important;
-    position: relative;
-    cursor: default;
+        padding: 0px !important;
+        position: relative;
+        cursor: default;
     }
 
     .mud-stepper.mud-stepper__horizontal .mud-stepper-nav-connector {
-    align-self: center;
-    margin: -3px -3px -2px -9px;
+        align-self: center;
+        margin: -3px -3px -2px -9px;
     }
 
     .mud-table-pagination-toolbar {
-    border-top: 1px solid var(--mud-palette-table-lines);
-    height: 25px;
-    padding-right: 2px;
-    padding-inline-end: 2px;
-    padding-inline-start: unset;
-    flex-wrap: nowrap;
+        border-top: 1px solid var(--mud-palette-table-lines);
+        height: 25px;
+        padding-right: 2px;
+        padding-inline-end: 2px;
+        padding-inline-start: unset;
+        flex-wrap: nowrap;
     }
 
     .mud-card-actions {
-    display: flex;
-    padding: 0px;
-    align-items: center;
+        display: flex;
+        padding: 0px;
+        align-items: center;
     }
 
     .mud-stepper .mud-stepper-content {
-    padding: 0 24px;
-    height: clamp(360px, 66vh, 80vh);
+        padding: 0 24px;
+        height: clamp(360px, 66vh, 80vh);
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    /* Contenedor de tabla de estudios en el paso 3 - Ajustado para que quede dentro del stepper */
+    .studies-table-container {
+        width: 100%;
+        overflow: visible;
+    }
+
+    .studies-table-container .mud-form {
+        margin: 0;
+        width: 100%;
+    }
+
+    /* Tabla de estudios en el paso 3 con altura controlada para que quede dentro del stepper */
+    .step3-studies-table {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Estilos responsive para pantallas pequeñas */
+    @@media (max-width: 960px) {
+        .step3-studies-table {
+            max-height: 40vh;
+        }
+    }
+
+    /* Toolbar de la tabla - Homologado con estilo de imagen */
+    .mud-toolbar {
+        padding: 16px;
+        background-color: #ffffff;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    /* Iconos en toolbar con animación */
+    .mud-toolbar .mud-icon {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #0d37a8;
+    }
+
+    .mud-toolbar:hover .mud-icon {
+        transform: scale(1.1);
+        transition: transform 0.2s ease;
+    }
+
+    /* Chip de contador con estilo de imagen */
+    .mud-chip {
+        font-weight: 500;
+        font-size: 0.8125rem;
+        transition: all 0.2s ease;
+    }
+
+    .mud-chip:hover {
+        transform: scale(1.05);
+    }
+
+    .mud-table-cell {
+        padding: 16px;
+    }
+
+    /* Consolidated utilities */
+    .w-100 { width: 100% !important; }
+    .h-55vh { height: 55vh !important; }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @@keyframes pulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    @@keyframes rotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @@keyframes bounce {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-5px);
+        }
+    }
+
+    @@keyframes iconPulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    @@keyframes iconRotate {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Animated Icons - Estilo profesional */
+    .animated-icon {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .animated-icon:hover {
+        transform: scale(1.2);
+        transition: transform 0.2s ease;
+    }
+
+    /* Iconos en headers de tablas con animación - Estilo exacto de imagen */
+    .table-header-icon {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #0d37a8;
+        vertical-align: middle;
+        display: inline-block;
+    }
+
+    /* Animación en hover sobre headers */
+    .patients-table .mud-table-head .mud-table-cell:hover .table-header-icon,
+    .sucursales-table .mud-table-head .mud-table-cell:hover .table-header-icon,
+    .studies-table .mud-table-head .mud-table-cell:hover .table-header-icon,
+    .dialog-studies-table .mud-table-head .mud-table-cell:hover .table-header-icon {
+        transform: scale(1.2) translateY(-2px);
+        color: #1565c0;
+        transition: all 0.3s ease;
+        animation: iconPulse 0.5s ease-in-out;
+    }
+
+    /* Animación en hover sobre filas */
+    .patients-table .mud-table-body .mud-table-row:hover .table-header-icon,
+    .sucursales-table .mud-table-body .mud-table-row:hover .table-header-icon,
+    .studies-table .mud-table-body .mud-table-row:hover .table-header-icon {
+        animation: iconPulse 0.4s ease-in-out;
+    }
+
+    .pulse-animation {
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .stepper-active-icon {
+        animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .stepper-completed-icon {
+        animation: fadeIn 0.5s ease;
+    }
+
+    .stepper-pending-icon {
+        opacity: 0.6;
+    }
+
+    .delete-icon:hover {
+        animation: bounce 0.5s ease;
+    }
+
+    /* Animated Buttons */
+    .animated-button {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .animated-button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .animated-button:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .animated-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .animated-button:active {
+        transform: translateY(0);
+    }
+
+    .search-btn:hover,
+    .create-btn:hover,
+    .add-studies-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    .exit-btn:hover {
+        transform: translateY(-2px) scale(1.02);
+    }
+
+    .stepper-next-btn:hover,
+    .stepper-prev-btn:hover {
+        transform: translateX(2px);
+    }
+
+    .stepper-prev-btn:hover {
+        transform: translateX(-2px);
+    }
+
+    /* Dialog Styles */
+    .mud-dialog-backdrop-blur {
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+        background-color: rgba(0, 0, 0, 0.5) !important;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .mud-dialog {
+        animation: fadeIn 0.4s ease, slideIn 0.4s ease;
+        border-radius: 8px;
+    }
+
+    .dialog-studies .mud-dialog-content,
+    .dialog-edit .mud-dialog-content {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 24px;
+    }
+
+    /* Asegurar que el dialog tenga overflow visible para el botón de cerrar */
+    .dialog-studies .mud-dialog,
+    .dialog-edit .mud-dialog {
+        overflow: visible !important;
+    }
+
+    .dialog-studies .mud-dialog-container,
+    .dialog-edit .mud-dialog-container {
+        overflow: visible !important;
+    }
+
+    /* Estilos para el botón de cerrar en todos los modales */
+    .dialog-studies .mud-dialog-title-close-button,
+    .dialog-edit .mud-dialog-title-close-button,
+    .dialog-studies button[aria-label*="close" i],
+    .dialog-edit button[aria-label*="close" i],
+    .dialog-studies .mud-icon-button[aria-label*="close" i],
+    .dialog-edit .mud-icon-button[aria-label*="close" i] {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        z-index: 1000 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        color: rgba(0, 0, 0, 0.54) !important;
+        background-color: transparent !important;
+        border-radius: 50% !important;
+        transition: all 0.2s ease !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .dialog-studies .mud-dialog-title-close-button:hover,
+    .dialog-edit .mud-dialog-title-close-button:hover,
+    .dialog-studies button[aria-label*="close" i]:hover,
+    .dialog-edit button[aria-label*="close" i]:hover,
+    .dialog-studies .mud-icon-button[aria-label*="close" i]:hover,
+    .dialog-edit .mud-icon-button[aria-label*="close" i]:hover {
+        background-color: rgba(0, 0, 0, 0.04) !important;
+        color: rgba(0, 0, 0, 0.87) !important;
+        transform: scale(1.1) !important;
+    }
+
+    .dialog-studies .mud-dialog-title,
+    .dialog-edit .mud-dialog-title {
+        position: relative !important;
+        padding-right: 48px !important;
+    }
+
+    /* Asegurar que el contenedor del título tenga posición relativa */
+    .dialog-studies .mud-dialog-title-container,
+    .dialog-edit .mud-dialog-title-container {
+        position: relative !important;
+    }
+
+    /* Estilos adicionales para asegurar visibilidad del botón de cerrar */
+    .dialog-studies .mud-dialog-actions,
+    .dialog-edit .mud-dialog-actions {
+        position: relative !important;
+    }
+
+    /* Asegurar que el header del dialog tenga posición relativa */
+    .dialog-studies .mud-dialog-header,
+    .dialog-edit .mud-dialog-header {
+        position: relative !important;
+    }
+
+    /* Estilos generales para el botón de cerrar - Compatible con todas las versiones de MudBlazor */
+    .dialog-studies .mud-dialog .mud-button-root,
+    .dialog-edit .mud-dialog .mud-button-root {
+        position: relative;
+    }
+
+    /* Asegurar que el botón de cerrar esté visible en el header */
+    .dialog-studies .mud-dialog-header .mud-icon-button,
+    .dialog-edit .mud-dialog-header .mud-icon-button,
+    .dialog-studies .mud-dialog-title .mud-icon-button,
+    .dialog-edit .mud-dialog-title .mud-icon-button {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        z-index: 1000 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* Estilos para el botón de cerrar cuando está en el título directamente */
+    .dialog-studies .mud-dialog-title > .mud-icon-button,
+    .dialog-edit .mud-dialog-title > .mud-icon-button {
+        position: absolute !important;
+        top: 0 !important;
+        right: 0 !important;
+        z-index: 1000 !important;
+    }
+
+    /* Estilos globales para asegurar que el botón de cerrar sea visible */
+    .dialog-studies .mud-dialog button[type="button"]:last-child,
+    .dialog-edit .mud-dialog button[type="button"]:last-child {
+        position: relative;
+    }
+
+    /* Asegurar que ningún estilo esté ocultando el botón de cerrar */
+    .dialog-studies .mud-dialog *[class*="close"],
+    .dialog-edit .mud-dialog *[class*="close"] {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* Estilos específicos para el botón de cerrar de MudBlazor - Solo el botón de cerrar */
+    .dialog-studies .mud-dialog .mud-dialog-title-container > button:last-child,
+    .dialog-edit .mud-dialog .mud-dialog-title-container > button:last-child,
+    .dialog-studies .mud-dialog .mud-dialog-title > button:last-child,
+    .dialog-edit .mud-dialog .mud-dialog-title > button:last-child,
+    .dialog-studies .mud-dialog .mud-dialog-title-container .mud-icon-button:last-child,
+    .dialog-edit .mud-dialog .mud-dialog-title-container .mud-icon-button:last-child {
+        position: absolute !important;
+        top: 4px !important;
+        right: 4px !important;
+        z-index: 1001 !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: flex !important;
+    }
+
+    .dialog-title {
+        animation: fadeIn 0.5s ease;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .dialog-content-wrapper {
+        animation: slideIn 0.4s ease;
+        padding: 1rem;
+    }
+
+    .dialog-message {
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        line-height: 1.6;
+    }
+
+    .dialog-action-button {
+        min-width: 140px;
+        margin: 0 4px;
+        transition: all 0.3s ease;
+        border-radius: 4px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 20px;
+    }
+
+    .dialog-action-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Estilos específicos para botones de cancelar - Rojo/Pink como en imagen */
+    .dialog-button-cancel {
+        background-color: darkred !important;
+        color: white !important;
+        border: none !important;
+    }
+
+    .dialog-button-cancel:hover:not(:disabled) {
+        background-color: #b71c1c !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+    }
+
+    /* Estilos personalizados para botón CANCELAR según imagen - Fondo blanco, borde rosa, texto rosa */
+    .dialog-button-cancel-custom {
+        background-color: #ffffff !important;
+        color: #e91e63 !important;
+        border: 1px solid #e91e63 !important;
+        border-radius: 8px !important;
+        text-transform: uppercase !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.5px !important;
+        padding: 10px 20px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .dialog-button-cancel-custom:hover:not(:disabled) {
+        background-color: #fce4ec !important;
+        border-color: #c2185b !important;
+        color: #c2185b !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(233, 30, 99, 0.2);
+    }
+
+    .cancel-icon-custom {
+        color: white !important;
+    }
+
+    .dialog-button-cancel-custom:hover:not(:disabled) .cancel-icon-custom {
+        color: #c2185b !important;
+    }
+
+    /* Estilos específicos para botones de aceptar/imprimir - Gris como en imagen */
+    .dialog-button-accept {
+        background-color: #0a8f41 !important;
+        color: white !important;
+        border: none !important;
+    }
+
+    .dialog-button-accept:hover:not(:disabled) {
+        background-color: #1ac761 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(117, 117, 117, 0.3);
+    }
+
+    /* Estilos para botones de seleccionar todos - Azul como en imagen */
+    .dialog-button-select-all {
+        background-color: #1976d2 !important;
+        color: white !important;
+        border: none !important;
+    }
+
+    .dialog-button-select-all:hover:not(:disabled) {
+        background-color: #1565c0 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+    }
+
+    /* Estilos para botones de deseleccionar todos - Gris como en imagen */
+    .dialog-button-deselect-all {
+        background-color: #757575 !important;
+        color: white !important;
+        border: none !important;
+    }
+
+    .dialog-button-deselect-all:hover:not(:disabled) {
+        background-color: #616161 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(117, 117, 117, 0.3);
+    }
+
+
+    /* Form Fields */
+    .city-autocomplete,
+    .observations-field,
+    .patient-field {
+        transition: all 0.3s ease;
+    }
+
+    .city-autocomplete:focus-within,
+    .observations-field:focus-within,
+    .patient-field:focus-within {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(13, 55, 168, 0.15);
+    }
+
+    /* Order Header */
+    .order-header {
+        background: linear-gradient(135deg, #0d37a8 0%, #033a71 100%);
+        color: white;
+        animation: fadeIn 0.6s ease;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(13, 55, 168, 0.2);
+    }
+
+    .order-number {
+        color: white !important;
+        font-weight: 600;
+    }
+
+    .order-key {
+        color: #ffd700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        font-size: 1.1em;
+    }
+
+    .order-date {
+        color: white !important;
+    }
+
+    /* Step Titles */
+    .step-title {
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #0d37a8;
+        animation: slideIn 0.5s ease;
+        color: #0d37a8;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    /* City Selection Paper */
+    .city-selection-paper {
+        animation: fadeIn 0.5s ease;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Stepper Container */
+    .stepper-container {
+        border-radius: 8px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Stepper Progress */
+    .stepper-progress {
+        animation: rotate 1s linear infinite;
+    }
+
+    /* Expand Button */
+    .expand-btn {
+        transition: transform 0.3s ease;
+    }
+
+    .expand-btn:hover {
+        transform: scale(1.1);
+    }
+
+    /* Table Styles - Homologado con ConsultaExpedientes - Estilo exacto de imagen */
+    .patients-table,
+    .sucursales-table,
+    .studies-table,
+    .dialog-studies-table {
+        border-radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .patients-table .mud-table-head,
+    .sucursales-table .mud-table-head,
+    .studies-table .mud-table-head,
+    .dialog-studies-table .mud-table-head {
+        background-color: #f5f7fa;
+    }
+
+    .patients-table .mud-table-head .mud-table-cell,
+    .sucursales-table .mud-table-head .mud-table-cell,
+    .studies-table .mud-table-head .mud-table-cell,
+    .dialog-studies-table .mud-table-head .mud-table-cell {
+        padding: 16px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        letter-spacing: 0.01em;
+        border-bottom: 2px solid #e0e0e0;
+        color: #0d37a8;
+    }
+
+    /* Efecto hover en headers con animación de iconos */
+    .patients-table .mud-table-head .mud-table-cell:hover,
+    .sucursales-table .mud-table-head .mud-table-cell:hover,
+    .studies-table .mud-table-head .mud-table-cell:hover,
+    .dialog-studies-table .mud-table-head .mud-table-cell:hover {
+        background-color: #e8ecf5;
+        transition: background-color 0.2s ease;
+    }
+
+    .patients-table .mud-table-body .mud-table-row,
+    .sucursales-table .mud-table-body .mud-table-row,
+    .studies-table .mud-table-body .mud-table-row,
+    .dialog-studies-table .mud-table-body .mud-table-row {
+        transition: all 0.2s ease;
+    }
+
+    .patients-table .mud-table-body .mud-table-row:hover,
+    .sucursales-table .mud-table-body .mud-table-row:hover,
+    .studies-table .mud-table-body .mud-table-row:hover,
+    .dialog-studies-table .mud-table-body .mud-table-row:hover {
+        background-color: #f0f4ff !important;
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.1);
+    }
+
+    .patients-table .mud-table-body .mud-table-cell,
+    .sucursales-table .mud-table-body .mud-table-cell,
+    .studies-table .mud-table-body .mud-table-cell,
+    .dialog-studies-table .mud-table-body .mud-table-cell {
+        padding: 16px;
+        vertical-align: middle;
+        font-size: 0.875rem;
+        color: #1a1a1a;
+    }
+
+    /* Badges de expediente/clave con estilo de imagen */
+    .patients-table .mud-chip,
+    .studies-table .mud-chip,
+    .dialog-studies-table .mud-chip {
+        font-weight: 600;
+        font-size: 0.8125rem;
+        padding: 4px 12px;
+        border-radius: 16px;
+        transition: all 0.2s ease;
+    }
+
+    .patients-table .mud-chip:hover,
+    .studies-table .mud-chip:hover,
+    .dialog-studies-table .mud-chip:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.2);
+    }
+
+    /* Estilos específicos para el modal de estudios cotizados */
+    .dialog-studies-table .mud-table-body .mud-table-cell {
+        padding: 12px 16px;
+        vertical-align: middle;
+    }
+
+    /* Badge de ID con estilo morado claro como en la imagen */
+    .dialog-studies-table .mud-chip[style*="background-color: #e1bee7"] {
+        background-color: #e1bee7 !important;
+        color: #4a148c !important;
+        font-weight: 600;
+        border-radius: 16px;
+        padding: 4px 12px;
+        box-shadow: 0 1px 3px rgba(74, 20, 140, 0.2);
+    }
+
+    /* Badge de contador de estudios */
+    .dialog-studies-table .mud-chip[style*="background-color: #e3f2fd"] {
+        background-color: #e3f2fd !important;
+        color: #1976d2 !important;
+        font-weight: 500;
+        border-radius: 20px;
+        padding: 6px 14px;
+    }
+
+    /* Texto en negrita para nombres como en la imagen */
+    .patients-table .mud-table-body .mud-table-cell[style*="font-weight: 500"],
+    .studies-table .mud-table-body .mud-table-cell[style*="font-weight: 500"] {
+        font-weight: 600 !important;
+        color: #1a1a1a;
+    }
+
+    /* Estilos específicos para MudDataGrid */
+    .sucursales-table .mud-data-grid-header,
+    .dialog-studies-table .mud-data-grid-header {
+        background-color: #f5f7fa;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .sucursales-table .mud-data-grid-header .mud-table-cell,
+    .dialog-studies-table .mud-data-grid-header .mud-table-cell {
+        padding: 16px;
+        font-weight: 600;
+    }
+
+    .sucursales-table .mud-table-body .mud-table-row:hover,
+    .dialog-studies-table .mud-table-body .mud-table-row:hover {
+        background-color: #f0f4ff !important;
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.1);
+    }
+
+    /* Estilos para tablas anidadas */
+    .nested-studies-table {
+        margin: 8px 0;
+        border-radius: 4px;
+    }
+
+    .nested-studies-table .mud-table-head {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .nested-studies-table .mud-table-head .mud-table-cell {
+        padding: 12px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #0d37a8;
+    }
+
+    .nested-studies-table .mud-table-body .mud-table-row {
+        transition: background-color 0.2s ease;
+    }
+
+    .nested-studies-table .mud-table-body .mud-table-row:hover {
+        background-color: #f0f4ff !important;
+    }
+
+    .nested-studies-table .mud-table-body .mud-table-cell {
+        padding: 12px;
+        font-size: 0.875rem;
+    }
+
+    /* Table Row Hover Effects */
+    .mud-table-row:hover {
+        background-color: #f0f4ff !important;
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    /* Links mejorados */
+    .mud-link.mud-link-underline-always {
+        text-decoration: underline;
+        transition: color 0.2s ease;
+    }
+
+    .mud-link.mud-link-underline-always:hover {
+        color: #0a2d7a !important;
+    }
+
+    /* Botones de acción */
+    .action-button {
+        transition: all 0.3s ease;
+        border-radius: 8px;
+    }
+
+    .action-button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .expand-button {
+        transition: all 0.3s ease;
+    }
+
+    .expand-button:hover:not(:disabled) {
+        transform: scale(1.1);
+        background-color: rgba(13, 55, 168, 0.1) !important;
+    }
+
+    /* Animaciones suaves */
+    .mud-paper {
+        transition: box-shadow 0.3s ease;
+    }
+
+    .mud-paper:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Mejoras de accesibilidad */
+    .action-button:focus,
+    .expand-button:focus,
+    .search-button:focus,
+    .create-button:focus {
+        outline: 2px solid #0d37a8;
+        outline-offset: 2px;
+    }
+
+    /* Responsive */
+    @@media (max-width: 960px) {
+        .search-container {
+            padding: 16px !important;
+        }
     }
 
     @@media (max-width: 600px) {
@@ -709,20 +2019,370 @@ else
         #iFrameId {
             height: 45vh !important;
         }
-        .mud-toolbar { --mud-internal-toolbar-height: 22px !important; }
+        .mud-toolbar { 
+            --mud-internal-toolbar-height: 22px !important; 
+        }
+        
+        .order-header {
+            padding: 1rem !important;
+        }
+        
+        .step-title {
+            font-size: 1rem;
+        }
+        
+        .animated-button {
+            font-size: 0.875rem;
+            padding: 0.5rem;
+        }
+
+        .search-button,
+        .create-button {
+            font-size: 0.875rem;
+            padding: 0.5rem;
+        }
     }
 
-    .mud-toolbar {
-    --mud-internal-toolbar-height: 25px !important;
+    /* Loading States */
+    .mud-progress-circular {
+        animation: rotate 1s linear infinite;
     }
 
-    .mud-table-cell {
-    padding: 0px 0px 0px 10px !important;
+    /* Estado de carga mejorado */
+    .mud-table-loading {
+        opacity: 0.6;
     }
 
-    /* Consolidated utilities */
-    .w-100 { width: 100% !important; }
-    .h-55vh { height: 55vh !important; }
+    /* Smooth Transitions */
+    * {
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    /* Focus States */
+    .mud-button:focus-visible,
+    .mud-text-field:focus-within,
+    .mud-autocomplete:focus-within {
+        outline: 2px solid #0d37a8;
+        outline-offset: 2px;
+    }
+
+    /* Tarjeta de Información del Paciente - Estilo profesional */
+    .patient-info-card {
+        background: #ffffff !important;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 16px;
+        border: 1px solid #e0e7ed;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .patient-info-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #0d37a8 0%, #1976d2 100%);
+    }
+
+    .patient-info-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
+    }
+
+    /* Campos de información */
+    .info-field {
+        margin-bottom: 12px;
+        min-height: 48px;
+    }
+
+    .info-label {
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.7rem;
+        margin-bottom: 6px;
+        display: block;
+        line-height: 1.2;
+    }
+
+    .info-value-main {
+        color: #1e293b;
+        font-weight: 700;
+        font-size: 1.125rem;
+        line-height: 1.4;
+        letter-spacing: 0.3px;
+    }
+
+    .info-value {
+        color: #1e293b;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        line-height: 1.5;
+    }
+
+    .info-value-small {
+        color: #475569;
+        font-weight: 500;
+        font-size: 0.8125rem;
+        line-height: 1.4;
+        word-wrap: break-word;
+        margin-top: 2px;
+    }
+
+    .patient-name-stack {
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+
+    .patient-name {
+        color: #1e293b;
+        font-weight: 600;
+        font-size: 0.9375rem;
+        word-wrap: break-word;
+        line-height: 1.4;
+    }
+
+    /* Iconos de género */
+    .gender-icon-female {
+        color: #e91e63 !important;
+        font-size: 1.25rem !important;
+        margin-right: 4px;
+        flex-shrink: 0;
+    }
+
+    .gender-icon-male {
+        color: #2196f3 !important;
+        font-size: 1.25rem !important;
+        margin-right: 4px;
+        flex-shrink: 0;
+    }
+
+    /* Columna de acciones del paciente */
+    .patient-actions-column {
+        min-height: 100%;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+    }
+
+    .patient-action-buttons {
+        padding-bottom: 4px;
+    }
+
+    /* Botones de acción cuadrados con bordes muy redondeados - Estilo imagen 2 */
+    .action-button-square {
+        width: 56px !important;
+        height: 56px !important;
+        min-width: 56px !important;
+        max-width: 56px !important;
+        border-radius: 16px !important;
+        padding: 0 !important;
+        margin: 0 6px !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(0, 0, 0, 0.12) !important;
+        position: relative;
+        overflow: hidden;
+        border: none !important;
+    }
+
+    .action-button-square::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4);
+        transform: translate(-50%, -50%);
+        transition: width 0.5s ease, height 0.5s ease;
+        opacity: 0;
+    }
+
+    .action-button-square:hover:not(:disabled)::before {
+        width: 120px;
+        height: 120px;
+        opacity: 1;
+    }
+
+    .action-button-square:hover:not(:disabled) {
+        transform: translateY(-4px) scale(1.08);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .action-button-square:active:not(:disabled) {
+        transform: translateY(-2px) scale(1.04);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2) !important;
+        transition: all 0.1s ease !important;
+    }
+
+    /* Botón de descarga - Verde vibrante como en imagen 2 */
+    .action-button-download {
+        background-color: #4caf50 !important;
+        background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+    }
+
+    .action-button-download:hover:not(:disabled) {
+        background: linear-gradient(135deg, #43a047 0%, #5cb660 100%) !important;
+        box-shadow: 0 6px 16px rgba(76, 175, 80, 0.45), 0 4px 8px rgba(76, 175, 80, 0.3) !important;
+    }
+
+    .action-button-download:active:not(:disabled) {
+        background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%) !important;
+        box-shadow: 0 3px 8px rgba(76, 175, 80, 0.35) !important;
+    }
+
+    /* Botón de impresión - Rojo vibrante como en imagen 2 */
+    .action-button-print {
+        background-color: #f44336 !important;
+        background: linear-gradient(135deg, #f44336 0%, #ef5350 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+    }
+
+    .action-button-print:hover:not(:disabled) {
+        background: linear-gradient(135deg, #e53935 0%, #ef5350 100%) !important;
+        box-shadow: 0 6px 16px rgba(244, 67, 54, 0.45), 0 4px 8px rgba(244, 67, 54, 0.3) !important;
+    }
+
+    .action-button-print:active:not(:disabled) {
+        background: linear-gradient(135deg, #d32f2f 0%, #e53935 100%) !important;
+        box-shadow: 0 3px 8px rgba(244, 67, 54, 0.35) !important;
+    }
+
+    /* Botón de reporte - Azul como en imagen 1 */
+    .action-button-report {
+        background-color: #2196f3 !important;
+        background: linear-gradient(135deg, #2196f3 0%, #42a5f5 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+    }
+
+    .action-button-report:hover:not(:disabled) {
+        background: linear-gradient(135deg, #1e88e5 0%, #42a5f5 100%) !important;
+        box-shadow: 0 6px 16px rgba(33, 150, 243, 0.45), 0 4px 8px rgba(33, 150, 243, 0.3) !important;
+    }
+
+    .action-button-report:active:not(:disabled) {
+        background: linear-gradient(135deg, #1976d2 0%, #1e88e5 100%) !important;
+        box-shadow: 0 3px 8px rgba(33, 150, 243, 0.35) !important;
+    }
+
+    /* Iconos dentro de los botones */
+    .action-button-square .mud-icon-root {
+        font-size: 1.75rem !important;
+        color: #ffffff !important;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+        transition: transform 0.3s ease;
+    }
+
+    /* Animación de pulso para los iconos */
+    .action-button-square:hover:not(:disabled) .mud-icon-root {
+        animation: iconPulse 0.6s ease-in-out;
+        transform: scale(1.1);
+    }
+
+    .action-button-square:active:not(:disabled) .mud-icon-root {
+        transform: scale(1.05);
+    }
+
+    /* Estado deshabilitado */
+    .action-button-square:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Estilos responsive para la tarjeta de información */
+    @@media (max-width: 960px) {
+        .patient-info-card {
+            padding: 16px;
+        }
+
+        .info-value-main {
+            font-size: 1rem;
+        }
+
+        .info-value {
+            font-size: 0.875rem;
+        }
+
+        .info-value-small {
+            font-size: 0.75rem;
+        }
+
+        .action-button-square {
+            width: 50px !important;
+            height: 50px !important;
+            min-width: 50px !important;
+            max-width: 50px !important;
+            border-radius: 14px !important;
+            margin: 0 4px !important;
+        }
+
+        .action-button-square .mud-icon-root {
+            font-size: 1.5rem !important;
+        }
+
+        .patient-action-buttons {
+            flex-direction: row;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .patient-actions-column {
+            justify-content: center;
+            margin-top: 16px;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .patient-info-card {
+            padding: 12px;
+        }
+
+        .info-value-main {
+            font-size: 0.9375rem;
+        }
+
+        .info-value {
+            font-size: 0.8125rem;
+        }
+
+        .info-value-small {
+            font-size: 0.7rem;
+        }
+
+        .action-button-square {
+            width: 48px !important;
+            height: 48px !important;
+            min-width: 48px !important;
+            max-width: 48px !important;
+            border-radius: 12px !important;
+            margin: 0 3px !important;
+        }
+
+        .action-button-square .mud-icon-root {
+            font-size: 1.375rem !important;
+        }
+
+        .gender-icon-female,
+        .gender-icon-male {
+            font-size: 1.125rem !important;
+        }
+
+        .patient-name {
+            font-size: 0.875rem;
+        }
+    }
 
 </style>
 
@@ -741,9 +2401,30 @@ else
         new BreadcrumbItem("Home", href: "/ConsultaExpedientesMedico", icon: Icons.Material.Filled.Home),
         new BreadcrumbItem("Creación de Órden Médica", href: null,disabled: true, icon: Icons.Material.Filled.Badge),
     };
-    private readonly DialogOptions diaOptions = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Large, FullWidth = true, CloseButton = true };
-    private readonly DialogOptions diaOptionsCotizados = new() { BackgroundClass = "my-custom-class", BackdropClick = true, MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = true };
-    private readonly DialogOptions diaOptionsEdit = new() { BackgroundClass = "my-custom-class", BackdropClick = false, MaxWidth = MaxWidth.Medium, FullWidth = false, CloseButton = true };
+    private readonly DialogOptions diaOptions = new() 
+    { 
+        BackgroundClass = "mud-dialog-backdrop-blur", 
+        BackdropClick = true, 
+        MaxWidth = MaxWidth.Large, 
+        FullWidth = true, 
+        CloseButton = true
+    };
+    private readonly DialogOptions diaOptionsCotizados = new() 
+    { 
+        BackgroundClass = "mud-dialog-backdrop-blur", 
+        BackdropClick = true, 
+        MaxWidth = MaxWidth.Medium, 
+        FullWidth = true, 
+        CloseButton = true
+    };
+    private readonly DialogOptions diaOptionsEdit = new() 
+    { 
+        BackgroundClass = "mud-dialog-backdrop-blur", 
+        BackdropClick = false, 
+        MaxWidth = MaxWidth.Medium, 
+        FullWidth = false, 
+        CloseButton = true
+    };
     // private string UrlOrdenes = "services/records/api/Quotation/filter";
     // private string UrlOrdenesNew = "services/records/api/Quotation/studies";
     // private string UrlAsignOrdenesNew = "services/records/api/Quotation/general";
@@ -791,6 +2472,7 @@ else
     private List<DtoCotizacionResponse> _oCotizacionesDelete = new();
     private DtoCotizacionResponse _RowEditOrden = new();
     private List<DtoCotizacionEstudios> _oCotizacionEstudios = new();
+    private HashSet<DtoCotizacionEstudios> _selectedEstudiosPrint = new();
     private List<DtoSucursalByCity> _oSucursalByCity = new();
     private List<DtoSucursal> _oSucursalForCity = new();
     private List<DtoEstudioResponsePrice> _oEstudioResponsePrice = new();
@@ -812,6 +2494,7 @@ else
 
     private bool dataLoaded = false;
     private bool ValidateData = true;
+    private bool ValidateDataMod = false;
     private bool searchEstudiosTxt = false;
     private bool ShowOrdenes = false;
     private bool visibleInfoCotizacion = false;
@@ -2857,10 +4540,13 @@ else
 
     }
 
+    private MemoryStream _currentPdfStream = null;
+
     private async Task CreatePdfOrder(DtoGeneralesCotizacion _dtoGeneralesCotizacion, DtoPaciente _dtoPaciente, HashSet<DtoEstudioResponsePrice> _dtoEstudioResponsePrices, DtoCotizacion _cotizacionDraft)
     {
 
         MemoryStream archivopdf = await _PdfGenerator.CreatePDFOrder(_dtoGeneralesCotizacion, _dtoPaciente, _dtoEstudioResponsePrices, _cotizacionDraft);
+        _currentPdfStream = archivopdf;
         //_PdfGenerator.ViewPDFOrder(IJSRuntime, "iFrameId", new());
         try
         {
@@ -2882,6 +4568,128 @@ else
             llamado = 0;
         }
 
+    }
+
+    private async Task DownloadPDF()
+    {
+        try
+        {
+            MemoryStream pdfStream = null;
+            
+            if (_currentPdfStream == null)
+            {
+                _currentPdfStream = await _PdfGenerator.CreatePDFOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+            }
+            
+            if (_currentPdfStream != null && _currentPdfStream.Length > 0)
+            {
+                // Crear una copia del stream para no consumirlo
+                if (_currentPdfStream.CanSeek)
+                {
+                    _currentPdfStream.Position = 0;
+                }
+                var pdfBytes = _currentPdfStream.ToArray();
+                pdfStream = new MemoryStream(pdfBytes);
+                
+                _PdfGenerator.DownloadPDF(IJSRuntime, pdfStream);
+            }
+            else
+            {
+                ShowSnack("No hay PDF disponible para descargar", 3);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowSnack($"Error al descargar el PDF: {ex.Message}", 4);
+        }
+    }
+
+    private async Task PrintPDF()
+    {
+        try
+        {
+            MemoryStream pdfStream = null;
+            
+            if (_currentPdfStream == null)
+            {
+                _currentPdfStream = await _PdfGenerator.CreatePDFOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+            }
+            
+            if (_currentPdfStream != null && _currentPdfStream.Length > 0)
+            {
+                // Crear una copia del stream para no consumirlo
+                if (_currentPdfStream.CanSeek)
+                {
+                    _currentPdfStream.Position = 0;
+                }
+                var pdfBytes = _currentPdfStream.ToArray();
+                pdfStream = new MemoryStream(pdfBytes);
+                
+                // Abrir PDF en nueva pestaña para imprimir
+                _PdfGenerator.ViewPDFInNewTab(IJSRuntime, pdfStream);
+            }
+            else
+            {
+                ShowSnack("No hay PDF disponible para imprimir", 3);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowSnack($"Error al imprimir el PDF: {ex.Message}", 4);
+        }
+    }
+
+    private async Task ViewReport()
+    {
+        try
+        {
+            MemoryStream pdfStream = null;
+            
+            if (_currentPdfStream == null)
+            {
+                _currentPdfStream = await _PdfGenerator.CreatePDFOrder(dtoGeneralesCotizacion, dtoPacienteSelected, selectedEstudiosOriginal, CotizacionDraft);
+            }
+            
+            if (_currentPdfStream != null && _currentPdfStream.Length > 0)
+            {
+                // Crear una copia del stream para no consumirlo
+                if (_currentPdfStream.CanSeek)
+                {
+                    _currentPdfStream.Position = 0;
+                }
+                var pdfBytes = _currentPdfStream.ToArray();
+                pdfStream = new MemoryStream(pdfBytes);
+                
+                _PdfGenerator.ViewPDFInNewTab(IJSRuntime, pdfStream);
+            }
+            else
+            {
+                ShowSnack("No hay PDF disponible para ver", 3);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowSnack($"Error al visualizar el reporte: {ex.Message}", 4);
+        }
+    }
+
+    private string GetFechaRegistroFormateada()
+    {
+        try
+        {
+            if (CotizacionDraft != null && !String.IsNullOrEmpty(CotizacionDraft.registro))
+            {
+                if (DateTime.TryParse(CotizacionDraft.registro, out DateTime fecha))
+                {
+                    return fecha.ToString("dd/MM/yyyy");
+                }
+            }
+            return DateTime.Now.ToString("dd/MM/yyyy");
+        }
+        catch
+        {
+            return DateTime.Now.ToString("dd/MM/yyyy");
+        }
     }
 
     void OnDateChange(DateTime? newDate)
@@ -2910,6 +4718,7 @@ else
 
     private async Task EditQuotation()
     {
+        ValidateDataMod = true;
         try
         {
             dtoGeneralesCotizacion = new();
@@ -3003,6 +4812,10 @@ else
             dtoGeneralesCotizacion = new();
             SucursalName = "";
         }
+        finally
+        {
+            ValidateDataMod = false;
+        }
 
 
 
@@ -3030,7 +4843,7 @@ else
     private void CancelPrint()
     {
         visibleInfoCotizacion = false;
-
+        _selectedEstudiosPrint.Clear();
     }
     private void CancelEdit()
     {

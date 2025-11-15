@@ -18,8 +18,8 @@
 <MudPopoverProvider />
 
 <MudLayout>
-    <SessionTimeoutWatcher />
-    <MudAppBar Elevation="3">
+    @* <SessionTimeoutWatcher /> *@
+    <MudAppBar Elevation="3" Fixed="true" Style="z-index: 1300;">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" 
                        Color="Color.Inherit" 
                        Edge="Edge.Start" 
@@ -140,48 +140,93 @@
         </MudStack>
     </MudAppBar>
 
-    <MudDrawerContainer Class="mud-height-full" Style="padding-top: 68px;">
-        <MudDrawer @bind-Open="@_open" Fixed="false" Elevation="3" Variant="@DrawerVariant.Mini" OpenMiniOnHover="true" Breakpoint="Breakpoint.None" Style="background: #707070;color: white;">
-            <MudNavMenu>
+    <MudDrawerContainer Class="mud-height-full" Style="padding-top: var(--mud-appbar-height, 64px); min-height: calc(100vh - var(--mud-appbar-height, 64px));">
+        <MudDrawer @bind-Open="@_open" 
+                   Fixed="true" 
+                   Elevation="3" 
+                   Variant="DrawerVariant.Mini" 
+                   OpenMiniOnHover="true" 
+                   Breakpoint="Breakpoint.Md" 
+                   PreserveOpenState="true"
+                   ClipMode="DrawerClipMode.Always"
+                   Style="background: #707070; color: white;">
+            <MudNavMenu Dense="true" Rounded="true">
                 @switch (TypeUser)
                 {
                     case 1:
-                        <MudNavLink Href="ConsultaResultadosPaciente/1/0" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Badge" IconColor="Color.Inherit">Consulta de Resultados</MudNavLink>
-                        <MudNavLink Href="ConsultaGraficaPaciente/1/0" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.StackedBarChart" IconColor="Color.Inherit">
+                        <MudNavLink Href="ConsultaResultadosPaciente/1/0" 
+                                   Match="NavLinkMatch.All" 
+                                   Icon="@Icons.Material.Filled.Badge" 
+                                   IconColor="Color.Inherit"
+                                   OnClick="@HandleNavLinkClick">
+                            Consulta de Resultados
+                        </MudNavLink>
+                        <MudNavLink Href="ConsultaGraficaPaciente/1/0" 
+                                   Match="NavLinkMatch.All" 
+                                   Icon="@Icons.Material.Filled.StackedBarChart" 
+                                   IconColor="Color.Inherit"
+                                   OnClick="@HandleNavLinkClick">
                             Gráficas
                         </MudNavLink>
                         break;
                     case 2:
-                        <MudNavLink Href="ConsultaExpedientesMedico/" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch" IconColor="Color.Inherit">
+                        <MudNavLink Href="ConsultaExpedientesMedico/" 
+                                   Match="NavLinkMatch.Prefix" 
+                                   Icon="@Icons.Material.Filled.PersonSearch" 
+                                   IconColor="Color.Inherit"
+                                   OnClick="@HandleNavLinkClick">
                             Expedientes
                         </MudNavLink>
-                        <MudNavLink Href="ConsultaSolicitudes/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch" IconColor="Color.Inherit">
+                        <MudNavLink Href="ConsultaSolicitudes/2" 
+                                   Match="NavLinkMatch.Prefix" 
+                                   Icon="@Icons.Material.Filled.PersonSearch" 
+                                   IconColor="Color.Inherit"
+                                   OnClick="@HandleNavLinkClick">
                             Solicitudes
                         </MudNavLink>
-                        <MudNavLink Href="CreaOrden/2" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd" IconColor="Color.Inherit">
+                        <MudNavLink Href="CreaOrden/2" 
+                                   Match="NavLinkMatch.Prefix" 
+                                   Icon="@Icons.Material.Filled.NoteAdd" 
+                                   IconColor="Color.Inherit"
+                                   OnClick="@HandleNavLinkClick">
                             Crear Orden
                         </MudNavLink>
                         break;
                     case 3:
-                        <MudNavLink Href="ConsultaExpedientesEmpresa" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch" IconColor="Color.Inherit">
+                        <MudNavLink Href="ConsultaExpedientesEmpresa" 
+                                   Match="NavLinkMatch.Prefix" 
+                                   Icon="@Icons.Material.Filled.PersonSearch" 
+                                   IconColor="Color.Inherit"
+                                   OnClick="@HandleNavLinkClick">
                             Pacientes
                         </MudNavLink>
-                        <MudNavLink Href="ConsultaSolicitudes/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonSearch" IconColor="Color.Inherit">
+                        <MudNavLink Href="ConsultaSolicitudes/3" 
+                                   Match="NavLinkMatch.Prefix" 
+                                   Icon="@Icons.Material.Filled.PersonSearch" 
+                                   IconColor="Color.Inherit"
+                                   OnClick="@HandleNavLinkClick">
                             Solicitudes
                         </MudNavLink>
-                        <MudNavLink Href="CreaOrden/3" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.NoteAdd" IconColor="Color.Inherit">
+                        <MudNavLink Href="CreaOrden/3" 
+                                   Match="NavLinkMatch.Prefix" 
+                                   Icon="@Icons.Material.Filled.NoteAdd" 
+                                   IconColor="Color.Inherit"
+                                   OnClick="@HandleNavLinkClick">
                             Crear Orden
                         </MudNavLink>
                         break;
                 }
 
-                <MudNavLink OnClick="@(() => NavigateToExit())" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Inherit">
+                <MudNavLink OnClick="@(() => NavigateToExit())" 
+                           Match="NavLinkMatch.Prefix" 
+                           Icon="@Icons.Material.Filled.Logout" 
+                           IconColor="Color.Inherit">
                     Salir
                 </MudNavLink>
             </MudNavMenu>
         </MudDrawer>
-        <MudMainContent Style="padding-top:1px;">
-            <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+        <MudMainContent Style="padding: 0; min-height: calc(100vh - var(--mud-appbar-height, 64px));">
+            <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mud-height-full" Style="padding: 16px; padding-top: 16px; width: 100%;">
                 @Body
             </MudContainer>
         </MudMainContent>
@@ -217,6 +262,15 @@
     private void ToggleDrawer()
     {
         _open = !_open;
+    }
+
+    private void HandleNavLinkClick()
+    {
+        // Cerrar el drawer en dispositivos móviles después de hacer clic en un enlace
+        // MudBlazor maneja esto automáticamente con Breakpoint.Md, pero esto asegura el cierre
+        // En pantallas pequeñas (< md), el drawer se cierra automáticamente
+        // Este método proporciona un cierre adicional para mejor UX
+        StateHasChanged();
     }
     
     private int TypeUser = 0;

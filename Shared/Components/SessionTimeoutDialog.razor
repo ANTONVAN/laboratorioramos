@@ -30,28 +30,12 @@
 
     private void OnContinue()
     {
-        try
-        {
-            MudDialog?.Close(DialogResult.Ok(true));
-        }
-        catch (Exception ex)
-        {
-            // Log error if needed
-            Console.WriteLine($"Error closing dialog: {ex.Message}");
-        }
+        MudDialog?.Close(DialogResult.Ok(true));
     }
 
     private void OnCancel()
     {
-        try
-        {
-            MudDialog?.Close(DialogResult.Cancel());
-        }
-        catch (Exception ex)
-        {
-            // Log error if needed
-            Console.WriteLine($"Error canceling dialog: {ex.Message}");
-        }
+        MudDialog?.Close(DialogResult.Cancel());
     }
 }
 

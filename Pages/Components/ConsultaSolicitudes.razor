@@ -125,6 +125,28 @@
         </EditForm>
     </MudPaper>
     <MudPaper Elevation="2" Class="results-container">
+        <!-- Header Section with Badge -->
+        <div class="results-header">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="results-header-content">
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Folder" Class="results-header-icon" Size="Size.Medium" />
+                    <MudText Typo="Typo.h6" Class="results-header-title">
+                        Resultados de Búsqueda
+                    </MudText>
+                </MudStack>
+                @if (!ValidateData && LstExpedientes != null && LstExpedientes.Any())
+                {
+                    <MudChip 
+                        T="string"
+                        Size="Size.Small" 
+                        Variant="Variant.Filled"
+                        Class="results-count-badge">
+                        @LstExpedientes.Count @(LstExpedientes.Count == 1 ? "expediente encontrado" : "expedientes encontrados")
+                    </MudChip>
+                }
+            </MudStack>
+        </div>
+        
         <MudTable 
             @ref="_tableO" 
             Items="@LstExpedientes.OrderByDescending(op=>op.Solicitud)" 
@@ -136,23 +158,7 @@
             Loading="@(ValidateData || _isDownloading)"
             FixedHeader="true" 
             FixedFooter="false"
-            Class="solicitudes-table">
-            <ToolBarContent>
-                <MudText Typo="Typo.h6" Style="color: #0d37a8; font-weight: 600;">
-                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-2" Style="vertical-align: middle;" />
-                    Resultados de Búsqueda
-                </MudText>
-                <MudSpacer />
-                @if (!ValidateData && LstExpedientes != null && LstExpedientes.Any())
-                {
-                    <MudChip T="string"
-                        Color="Color.Info" 
-                        Variant="Variant.Text"
-                        Size="Size.Small">
-                        @LstExpedientes.Count @(LstExpedientes.Count == 1 ? "solicitud encontrada" : "solicitudes encontradas")
-                    </MudChip>
-                }
-            </ToolBarContent>
+            Class="solicitudes-table results-table">
             <ColGroup>
                 <col style="width: 3%;" />
                 <col style="width: 15%;" />
@@ -166,33 +172,47 @@
             
             <HeaderContent>
                 <MudTh Style="color: #0d37a8; font-weight: 600;"></MudTh>
-                <MudTh Style="color: #0d37a8; font-weight: 600;">
-                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-1" Size="Size.Small" />
-                    Número de Solicitud
+                <MudTh Style="color: #0d37a8; font-weight: 700;">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.Work" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                        <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Número de Solicitud</MudText>
+                    </MudStack>
                 </MudTh>
-                <MudTh Style="color: #0d37a8; font-weight: 600;">
-                    <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Class="mr-1" Size="Size.Small" />
-                    Fecha de Ingreso
+                <MudTh Style="color: #0d37a8; font-weight: 700;">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                        <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Fecha de Ingreso</MudText>
+                    </MudStack>
                 </MudTh>
-                <MudTh Style="color: #0d37a8; font-weight: 600;">
-                    <MudIcon Icon="@Icons.Material.Filled.Person" Class="mr-1" Size="Size.Small" />
-                    Nombre
+                <MudTh Style="color: #0d37a8; font-weight: 700;">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                        <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Nombre</MudText>
+                    </MudStack>
                 </MudTh>
-                <MudTh Style="color: #0d37a8; font-weight: 600;">
-                    <MudIcon Icon="@Icons.Material.Filled.Wc" Class="mr-1" Size="Size.Small" />
-                    Sexo
+                <MudTh Style="color: #0d37a8; font-weight: 700;">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.Wc" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                        <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Sexo</MudText>
+                    </MudStack>
                 </MudTh>
-                <MudTh Style="color: #0d37a8; font-weight: 600;">
-                    <MudIcon Icon="@Icons.Material.Filled.Cake" Class="mr-1" Size="Size.Small" />
-                    Edad
+                <MudTh Style="color: #0d37a8; font-weight: 700;">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.Cake" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                        <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Edad</MudText>
+                    </MudStack>
                 </MudTh>
-                <MudTh Style="color: #0d37a8; font-weight: 600;">
-                    <MudIcon Icon="@Icons.Material.Filled.LocationOn" Class="mr-1" Size="Size.Small" />
-                    Sucursal
+                <MudTh Style="color: #0d37a8; font-weight: 700;">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.LocationOn" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                        <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Sucursal</MudText>
+                    </MudStack>
                 </MudTh>
-                <MudTh Style="color: #0d37a8; font-weight: 600; text-align: center;">
-                    <MudIcon Icon="@Icons.Material.Filled.Handyman" Class="mr-1" Size="Size.Small" />
-                    Acciones
+                <MudTh Style="color: #0d37a8; font-weight: 700; text-align: center;">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Filled.Build" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                        <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Acciones</MudText>
+                    </MudStack>
                 </MudTh>
             </HeaderContent>
             <RowTemplate>
@@ -222,19 +242,26 @@
 
                 <MudTd DataLabel="Número de Solicitud">
                     <MudTooltip Text="@($"Ver detalles de la solicitud {context.Solicitud}")">
-                        <MudLink 
-                            OnClick="@(() => NavigationResultado(context, null))" 
-                            Underline="Underline.Always"
-                            Style="font-weight: 600; color: #0d37a8;">
+                        <MudChip 
+                            T="string"
+                            Color="Color.Default"
+                            Variant="Variant.Filled"
+                            Size="Size.Small"
+                            Class="solicitud-chip"
+                            OnClick="@(() => NavigationResultado(context, null))">
                             @context.Solicitud
-                        </MudLink>
+                        </MudChip>
                     </MudTooltip>
                 </MudTd>
-                <MudTd DataLabel="Fecha de Ingreso" Style="font-weight: 500;">
-                    <MudText Typo="Typo.body2">@context.Registro</MudText>
+                <MudTd DataLabel="Fecha de Ingreso">
+                    <MudText Typo="Typo.body2" Style="font-weight: 500; color: #424242;">
+                        @context.Registro
+                    </MudText>
                 </MudTd>
-                <MudTd DataLabel="Nombre" Style="font-weight: 500;">
-                    @context.Nombre
+                <MudTd DataLabel="Nombre">
+                    <MudText Typo="Typo.body2" Style="font-weight: 500; color: #424242;">
+                        @context.Nombre
+                    </MudText>
                 </MudTd>
                 <MudTd DataLabel="Sexo">
                     <MudChip T="string"
@@ -245,61 +272,78 @@
                     </MudChip>
                 </MudTd>
                 <MudTd DataLabel="Edad">
-                    <MudText Typo="Typo.body2">@context.Edad años</MudText>
+                    <MudText Typo="Typo.body2" Style="font-weight: 500; color: #424242;">
+                        @context.Edad años
+                    </MudText>
                 </MudTd>
                 <MudTd DataLabel="Sucursal">
-                    <MudText Typo="Typo.body2">@context.Sucursal</MudText>
+                    <MudText Typo="Typo.body2" Style="font-weight: 500; color: #424242;">
+                        @context.Sucursal
+                    </MudText>
                 </MudTd>
                 <MudTd DataLabel="Acciones" Style="text-align: center;">
                     @if (countStudi > 0)
                     {
-                        @if (ValidateData)
-                        {
-                            <MudTooltip Text="Descargar PDF Completo">
+                        <MudStack Row="true" Justify="Justify.Center" Spacing="1">
+                            <MudTooltip Text="@($"Ver detalles de la solicitud {context.Solicitud}")">
                                 <MudIconButton 
-                                    Icon="@Icons.Material.Filled.Download" 
-                                    Color="Color.Success" 
+                                    Icon="@Icons.Material.Filled.Visibility" 
+                                    Color="Color.Primary" 
                                     Size="Size.Small" 
                                     Variant="Variant.Filled"
-                                    Disabled="true" 
-                                    aria-label="Descargar estudios"
-                                    Class="action-button mr-2" />
-                            </MudTooltip>
-                            <MudTooltip Text="Seleccionar Estudios para Imprimir">
-                                <MudIconButton 
-                                    Icon="@Icons.Material.Filled.Print" 
-                                    Color="Color.Error" 
-                                    Size="Size.Small" 
-                                    Variant="Variant.Filled"
-                                    Disabled="true" 
-                                    aria-label="Imprimir estudios"
-                                    Class="action-button" />
-                            </MudTooltip>
-                        }
-                        else
-                        {
-                            <MudTooltip Text="Descargar PDF Completo">
-                                <MudIconButton 
-                                    Icon="@Icons.Material.Filled.Download" 
-                                    Color="Color.Success" 
-                                    Size="Size.Small" 
-                                    Variant="Variant.Filled"
-                                    OnClick="() => ImprimirExpGral(context)"
+                                    OnClick="@(() => NavigationResultado(context, null))"
                                     Disabled="ValidateData || _isDownloading"
-                                    Class="action-button mr-2" />
+                                    Class="action-button action-button-view" />
                             </MudTooltip>
                             
-                            <MudTooltip Text="Seleccionar Estudios para Imprimir">
-                                <MudIconButton 
-                                    Icon="@Icons.Material.Filled.Print" 
-                                    Color="Color.Error" 
-                                    Size="Size.Small" 
-                                    Variant="Variant.Filled"
-                                    OnClick="() => OpenDialog(context)"
-                                    Disabled="ValidateData || _isDownloading"
-                                    Class="action-button" />
-                            </MudTooltip>
-                        }
+                            @if (ValidateData)
+                            {
+                                <MudTooltip Text="Descargar PDF Completo">
+                                    <MudIconButton 
+                                        Icon="@Icons.Material.Filled.Download" 
+                                        Color="Color.Success" 
+                                        Size="Size.Small" 
+                                        Variant="Variant.Filled"
+                                        Disabled="true" 
+                                        aria-label="Descargar estudios"
+                                        Class="action-button" />
+                                </MudTooltip>
+                                <MudTooltip Text="Seleccionar Estudios para Imprimir">
+                                    <MudIconButton 
+                                        Icon="@Icons.Material.Filled.Print" 
+                                        Color="Color.Error" 
+                                        Size="Size.Small" 
+                                        Variant="Variant.Filled"
+                                        Disabled="true" 
+                                        aria-label="Imprimir estudios"
+                                        Class="action-button" />
+                                </MudTooltip>
+                            }
+                            else
+                            {
+                                <MudTooltip Text="Descargar PDF Completo">
+                                    <MudIconButton 
+                                        Icon="@Icons.Material.Filled.Download" 
+                                        Color="Color.Success" 
+                                        Size="Size.Small" 
+                                        Variant="Variant.Filled"
+                                        OnClick="() => ImprimirExpGral(context)"
+                                        Disabled="ValidateData || _isDownloading"
+                                        Class="action-button" />
+                                </MudTooltip>
+                                
+                                <MudTooltip Text="Seleccionar Estudios para Imprimir">
+                                    <MudIconButton 
+                                        Icon="@Icons.Material.Filled.Print" 
+                                        Color="Color.Error" 
+                                        Size="Size.Small" 
+                                        Variant="Variant.Filled"
+                                        OnClick="() => OpenDialog(context)"
+                                        Disabled="ValidateData || _isDownloading"
+                                        Class="action-button" />
+                                </MudTooltip>
+                            }
+                        </MudStack>
                     }
                     else
                     {
@@ -522,17 +566,31 @@
                         Bordered="true" 
                         Elevation="0" 
                         Striped="true" 
-                        HeaderClass="dialog-table-header" 
-                        Class="dialog-table"
+                        Class="dialog-table dialog-studies-table"
                         Dense="true"
                         FixedHeader="true"
                         Height="400px"
                         Filter="new Func<DtoResponseMedicoPacienteStudios,bool>(FilterFuncEstudios)">
                         
                         <HeaderContent>
-                            <MudTh Style="color: #0d37a8; font-weight: 700;">Estudio</MudTh>
-                            <MudTh Style="color: #0d37a8; font-weight: 700;">Fecha de Entrega</MudTh>
-                            <MudTh Style="color: #0d37a8; font-weight: 700;">Estatus</MudTh>
+                            <MudTh Style="color: #0d37a8; font-weight: 700;">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                    <MudIcon Icon="@Icons.Material.Filled.Science" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                                    <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Estudio</MudText>
+                                </MudStack>
+                            </MudTh>
+                            <MudTh Style="color: #0d37a8; font-weight: 700;">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                    <MudIcon Icon="@Icons.Material.Filled.CalendarToday" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                                    <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Fecha de Entrega</MudText>
+                                </MudStack>
+                            </MudTh>
+                            <MudTh Style="color: #0d37a8; font-weight: 700;">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                    <MudIcon Icon="@Icons.Material.Filled.Info" Class="table-header-icon" Size="Size.Small" Style="color: #0d37a8;" />
+                                    <MudText Typo="Typo.body2" Style="color: #0d37a8; font-weight: 700;">Estatus</MudText>
+                                </MudStack>
+                            </MudTh>
                         </HeaderContent>
                         
                         <RowTemplate>
@@ -584,11 +642,11 @@
     
     <DialogActions>
         <MudButton 
-            OnClick="CancelPrint" 
-            Variant="Variant.Outlined"
-            Color="Color.Secondary"
-            Disabled="ValidateDataMod"
-            Class="dialog-action-button">
+            OnClick="CancelPrint"
+                   Variant="Variant.Filled"
+                   Color="@Color.Error" 
+            Class="dialog-action-button dialog-button-cancel" 
+            Disabled="ValidateDataMod">
             <MudIcon Icon="@Icons.Material.Filled.Close" Class="mr-2" />
             Cancelar
         </MudButton>
@@ -614,8 +672,8 @@
             </MudButton>
             
             <MudButton 
-                OnClick="SelectAllStudies" 
-                Variant="Variant.Outlined"
+                OnClick="SelectAllStudies"
+                       Variant="Variant.Filled"
                 Color="Color.Info"
                 Disabled="ValidateDataMod || selectedItems.Count == SolicitudMedicaPrint.Estudios.Count"
                 Class="dialog-action-button">
@@ -624,8 +682,8 @@
             </MudButton>
             
             <MudButton 
-                OnClick="DeselectAllStudies" 
-                Variant="Variant.Outlined"
+                OnClick="DeselectAllStudies"
+                       Variant="Variant.Filled"
                 Color="Color.Default"
                 Disabled="ValidateDataMod || selectedItems.Count == 0"
                 Class="dialog-action-button">
@@ -676,45 +734,161 @@
         overflow: hidden;
     }
 
+    /* Results Header */
+    .results-header {
+        margin-bottom: 20px;
+        padding: 16px 24px;
+        padding-bottom: 16px;
+        border-bottom: 2px solid #e0e7ed;
+    }
+
+    .results-header-content {
+        width: 100%;
+    }
+
+    .results-header-icon {
+        color: #0d37a8;
+        transition: all 0.3s ease;
+    }
+
+    .results-header-title {
+        color: #0d37a8;
+        font-weight: 700;
+        font-size: 1.25rem;
+    }
+
+    .results-count-badge {
+        background-color: #e3f2fd !important;
+        color: #1976d2 !important;
+        font-weight: 600;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .results-count-badge:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(25, 118, 210, 0.3);
+    }
+
     /* Tabla de solicitudes */
     .solicitudes-table {
         border-radius: 8px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    .solicitudes-table .mud-table-head {
+    .results-table {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    .solicitudes-table .mud-table-head,
+    .results-table .mud-table-head {
         background-color: #f5f7fa;
     }
 
-    .solicitudes-table .mud-table-head .mud-table-cell {
+    .solicitudes-table .mud-table-head .mud-table-cell,
+    .results-table .mud-table-head .mud-table-cell {
         padding: 16px;
         font-weight: 600;
+        font-size: 0.875rem;
+        letter-spacing: 0.01em;
         border-bottom: 2px solid #e0e0e0;
+        color: #0d37a8;
     }
 
-    .solicitudes-table .mud-table-body .mud-table-row {
+    .solicitudes-table .mud-table-body .mud-table-row,
+    .results-table .mud-table-body .mud-table-row {
         transition: all 0.2s ease;
     }
 
-    .solicitudes-table .mud-table-body .mud-table-row:hover {
+    .solicitudes-table .mud-table-body .mud-table-row:hover,
+    .results-table .mud-table-body .mud-table-row:hover {
         background-color: #f0f4ff !important;
         transform: scale(1.01);
         box-shadow: 0 2px 8px rgba(13, 55, 168, 0.1);
     }
 
-    .solicitudes-table .mud-table-body .mud-table-cell {
+    .solicitudes-table .mud-table-body .mud-table-cell,
+    .results-table .mud-table-body .mud-table-cell {
         padding: 16px;
         vertical-align: middle;
+        font-size: 0.875rem;
+        color: #1a1a1a;
+    }
+
+    /* Table Header Icons */
+    .table-header-icon {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #0d37a8;
+        vertical-align: middle;
+        display: inline-block;
+    }
+
+    .solicitudes-table .mud-table-head .mud-table-cell:hover .table-header-icon,
+    .results-table .mud-table-head .mud-table-cell:hover .table-header-icon {
+        transform: scale(1.2) translateY(-2px);
+        color: #1565c0;
+        transition: all 0.3s ease;
+        animation: iconPulse 0.5s ease-in-out;
+    }
+
+    /* Table Header Icons in Dialog - Homologado con tabla principal */
+    .dialog-studies-table .mud-table-head .mud-table-cell .table-header-icon {
+        color: #0d37a8;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .dialog-studies-table .mud-table-head .mud-table-cell:hover .table-header-icon {
+        transform: scale(1.2) translateY(-2px);
+        color: #1565c0;
+        transition: all 0.3s ease;
+        animation: iconPulse 0.5s ease-in-out;
+    }
+
+    /* Solicitud Chip - Estilo morado como en la imagen */
+    .solicitud-chip {
+        background-color: #e1bee7 !important;
+        color: #4a148c !important;
+        font-weight: 600;
+        border-radius: 16px;
+        padding: 4px 12px;
+        box-shadow: 0 1px 3px rgba(74, 20, 140, 0.2);
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .solicitud-chip:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 8px rgba(74, 20, 140, 0.3);
+        background-color: #ce93d8 !important;
+    }
+
+    .solicitud-chip:active {
+        transform: scale(0.98);
     }
 
     /* Botones de acción */
     .action-button {
         transition: all 0.3s ease;
         border-radius: 8px;
+        margin: 0 2px;
     }
 
     .action-button:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-2px) scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .action-button-view {
+        background-color: #9c27b0 !important;
+        color: white !important;
+    }
+
+    .action-button-view:hover:not(:disabled) {
+        background-color: #7b1fa2 !important;
+        transform: translateY(-2px) scale(1.1);
     }
 
     .expand-button {
@@ -733,15 +907,6 @@
         border-bottom: 1px solid #e0e0e0;
     }
 
-    /* Links mejorados */
-    .mud-link.mud-link-underline-always {
-        text-decoration: underline;
-        transition: color 0.2s ease;
-    }
-
-    .mud-link.mud-link-underline-always:hover {
-        color: #0a2d7a !important;
-    }
 
     /* Responsive mejoras */
     @@media (max-width: 960px) {
@@ -761,6 +926,42 @@
 
     .mud-paper:hover {
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* Animations */
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @@keyframes iconPulse {
+        0%, 100% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+    }
+
+    @@keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .results-header {
+        animation: slideIn 0.4s ease;
     }
 
     /* Mejoras de accesibilidad */
@@ -820,16 +1021,38 @@
     .dialog-table {
         width: 100%;
         max-width: 100%;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
 
-    .dialog-table-header {
-        background: linear-gradient(135deg, #0d37a8 0%, #1976d2 100%);
-        color: white !important;
+    /* Dialog Table Header - Homologado con tabla principal */
+    .dialog-studies-table .mud-table-head {
+        background-color: #f5f7fa;
     }
 
-    .dialog-table-header th {
-        color: white !important;
-        font-weight: 700;
+    .dialog-studies-table .mud-table-head .mud-table-cell {
+        padding: 16px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        letter-spacing: 0.01em;
+        border-bottom: 2px solid #e0e0e0;
+        color: #0d37a8;
+    }
+
+    .dialog-studies-table .mud-table-body .mud-table-row {
+        transition: all 0.2s ease;
+    }
+
+    .dialog-studies-table .mud-table-body .mud-table-row:hover {
+        background-color: #f0f4ff !important;
+        transform: scale(1.01);
+        box-shadow: 0 2px 8px rgba(13, 55, 168, 0.1);
+    }
+
+    .dialog-studies-table .mud-table-body .mud-table-cell {
+        padding: 16px;
+        vertical-align: middle;
+        font-size: 0.875rem;
+        color: #1a1a1a;
     }
 
     .study-name-cell-dialog {
