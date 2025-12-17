@@ -437,13 +437,14 @@
         try
         {
             var authState = await _authStateProvider.GetAuthenticationStateAsync();
-            Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
+            
             if (!authState.User.Identity.IsAuthenticated)
             {
                 NavigationManager.NavigateTo("/", true);
             }
             else
             {
+                Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
                 dtoFiltro.DateInicial = DateTime.Now;
                 dtoFiltro.DateFinal = DateTime.Now;
                 try

@@ -1,4 +1,5 @@
 @using MudBlazor
+@using MudBlazor.Components
 @using Microsoft.AspNetCore.Components
 
 <MudDialog>
@@ -22,7 +23,8 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter] public IDialogReference? MudDialog { get; set; }
+    // MudBlazor provides the dialog instance via cascading parameters when shown with IDialogService.Show<T>()
+    [CascadingParameter] public IMudDialogInstance? MudDialog { get; set; }
 
     [Parameter] public string ContentText { get; set; } = string.Empty;
     [Parameter] public string ButtonText { get; set; } = "Continuar sesión";
