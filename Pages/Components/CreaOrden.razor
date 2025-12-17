@@ -2572,7 +2572,7 @@ else
                     {
                         ListEstudio = estudiosResponse.Content.ReadFromJsonAsync<List<DtoEstudiosGral>>();
                     }
-                    
+
                     // Consulta de paquetes de estudios
                     var packsResponse = await Http.GetAsync(UrlAllPack);
                     var packsSuccess = await ApiHandler.HandleResponseAsync<List<DtoPackEstudioOrden>>(packsResponse, "consulta de paquetes de estudios",false);
@@ -3858,6 +3858,7 @@ else
         if (items.Count==0)
         {
             priAct=0;
+            SucursalID = "";
         }
         else
         {
@@ -3867,6 +3868,7 @@ else
                 mudTable.SelectedItems.Remove(item);
             }
             mudTable.SelectedItems.Add(rowActual);
+            SucursalID = rowActual.IdSucursal;
             priAct=1;
         }
 
