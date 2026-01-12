@@ -1823,7 +1823,39 @@
             _isLoading = true;
             StateHasChanged();
 
-            var archivoPDF = await _pdfGenerator.CreatePDF(_config, IJSRuntime, Http, itemSolicitud.Estudios);
+            DtoResponseMedicoPaciente _solicitudMedicaPrintGral = new()
+            {
+                ClavePatologica = itemSolicitud.ClavePatologica,
+                Compania = itemSolicitud.Compania,
+                Edad = itemSolicitud.Edad,
+                EnvioCorreo = itemSolicitud.EnvioCorreo,
+                EnvioWhatsapp = itemSolicitud.EnvioWhatsapp,
+                Expediente = itemSolicitud.Expediente,
+                ExpedienteId = itemSolicitud.ExpedienteId,
+                FechaNacimiento = itemSolicitud.FechaNacimiento,
+                Nombre = itemSolicitud.Nombre,
+                Parcialidad = itemSolicitud.Parcialidad,
+                Registro = itemSolicitud.Registro,
+                Saldo = itemSolicitud.Saldo,
+                SaldoPendiente = itemSolicitud.SaldoPendiente,
+                Sexo = itemSolicitud.Sexo,
+                ShowEstudios = itemSolicitud.ShowEstudios,
+                Solicitud = itemSolicitud.Solicitud,
+                SolicitudId = itemSolicitud.SolicitudId,
+                Sucursal = itemSolicitud.Sucursal,
+                Telefono = itemSolicitud.Telefono,
+                Estudios = new()
+            };
+
+            foreach (var item in itemSolicitud.Estudios)
+            {
+                if (LstEstatusPrint.Contains(item.EstatusId))
+                {
+                    _solicitudMedicaPrintGral.Estudios.Add(item);
+                }
+            }
+
+            var archivoPDF = await _pdfGenerator.CreatePDF(_config, IJSRuntime, Http, _solicitudMedicaPrintGral.Estudios);
             _pdfGenerator.ViewPDFInNewTab(IJSRuntime, archivoPDF);
 
             Http.DefaultRequestHeaders.Remove("branchid");
