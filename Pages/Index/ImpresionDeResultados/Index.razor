@@ -1,4 +1,4 @@
-﻿@layout LabRamosLayout
+@layout LabRamosLayout
 @page "/ImpresionDeResultados"
 @page "/Consulta"
 @using LaboratorioRamos.Data.DtoPaciente
@@ -12,6 +12,7 @@
 @inject ISnackbar Snackbar
 @inject IJSRuntime IJSRuntime
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
+@inject LoginReturnUrlStore LoginReturnStore
 
 <PageTitle>Login</PageTitle>
 
@@ -128,7 +129,9 @@
                         
                         Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
                         ApiHandler.ShowSuccessMessage("¡Login exitoso! Accediendo a impresión de resultados.");
-                        await IJSRuntime.InvokeAsync<object>("open", CancellationToken.None, "/ImpresionResultados");
+                        var pendingImp = await LoginReturnStore.GetAndClearPendingReturnPathAsync(4);
+                        var openImp = !string.IsNullOrEmpty(pendingImp) ? pendingImp : "/ImpresionResultados";
+                        await IJSRuntime.InvokeAsync<object>("open", CancellationToken.None, openImp);
                         ValidateData = false;
                     }
                     else

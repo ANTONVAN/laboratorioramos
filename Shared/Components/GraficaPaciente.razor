@@ -1,15 +1,17 @@
-﻿@using ApexCharts;
+@using ApexCharts;
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoEstudio;
 @using LaboratorioRamos.Data.DtoEstudio.DtoRequestEstudio;
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
 @using System.Text.RegularExpressions
+@using LaboratorioRamos.Helper
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider _authStateProvider
 @inject Cryp Cryp
 @inject ISnackbar Snackbar
 @inject IJSRuntime IJSRuntime
+@inject LoginReturnUrlStore LoginReturnStore
 
 @if (ShowBreadcrumbs)
 {
@@ -196,15 +198,16 @@
         "TOPIRAMATO","KEPPRA (LEVETIRACETAM)","CARBAMAZEPINA","DIFENILHIDANTOINA (EPAMIN)"
     };
 
-    protected async override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         if (RequireAuth)
         {
             var authState = await _authStateProvider.GetAuthenticationStateAsync();
-            if (!authState.User.Identity.IsAuthenticated)
+            if (authState.User.Identity?.IsAuthenticated != true)
             {
-                NavigationManager.NavigateTo("/", true);
+                await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
+                NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
                 return;
             }
             if (PostRequiere == "1")

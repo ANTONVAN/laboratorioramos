@@ -1,4 +1,4 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @using LaboratorioRamos.Data.DtoMedico
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoExpediente
@@ -6,6 +6,8 @@
 @using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
 
+@using LaboratorioRamos.Helper
+@inject LoginReturnUrlStore LoginReturnStore
 @inject AuthenticationStateProvider _authStateProvider;
 @inject IHttpContextAccessor httpContextAccessor;
 @inject Cryp Cryp;
@@ -329,7 +331,21 @@
     {
         await base.OnInitializedAsync();
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated != true)
+        {
+            await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
+            NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
+            return;
+        }
+
         var idenUser = authState.User.Claims.ToList();
+        if (idenUser.Count < 3)
+        {
+            await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
+            NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
+            return;
+        }
+
         TypeUser = int.Parse(idenUser[2].Value);
         var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
         if (TypeUser == 1) //Paciente

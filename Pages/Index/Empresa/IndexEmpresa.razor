@@ -1,4 +1,4 @@
-﻿@layout LabRamosLayout
+@layout LabRamosLayout
 @page "/Empresa"
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoEmpresa
@@ -13,6 +13,7 @@
 @inject Cryp Cryp
 @inject ISnackbar Snackbar
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
+@inject LoginReturnUrlStore LoginReturnStore
 @inject ILogger<IndexEmpresa> Logger
 
 <PageTitle>Acceso Empresa - Laboratorio Ramos</PageTitle>
@@ -479,7 +480,13 @@
             // Pequeña pausa para mostrar el mensaje de éxito
             await Task.Delay(1000);
 
-            NavigationManager.NavigateTo("/ConsultaExpedientesEmpresa/", true);
+            var pending = await LoginReturnStore.GetAndClearPendingReturnPathAsync(3);
+            var fromQuery = LoginRedirectHelper.GetSafeReturnPathForUserType(NavigationManager, 3);
+            var afterLogin = !string.IsNullOrEmpty(pending) ? pending : fromQuery;
+            if (!string.IsNullOrEmpty(afterLogin))
+                NavigationManager.NavigateTo(afterLogin, true);
+            else
+                NavigationManager.NavigateTo("/ConsultaExpedientesEmpresa/", true);
         }
         catch (Exception ex)
         {

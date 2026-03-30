@@ -1,4 +1,4 @@
-﻿using LaboratorioRamos.Data.DtoStateProvider;
+using LaboratorioRamos.Data.DtoStateProvider;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.Security.Claims;
@@ -104,7 +104,7 @@ namespace LaboratorioRamos.Helper
                     new Claim("testsuncretr", userSession.testsuncretr.ToString()),
                     new Claim("testsunfltr", userSession.filtros.ToString()),
                     new Claim("type", userSession.Type.ToString()),
-                }));
+                }, "CustAuth"));
             }
             else
             {

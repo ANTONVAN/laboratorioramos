@@ -29,6 +29,7 @@ builder.Services.AddApexCharts();
 
 builder.Services.AddScoped<Cryp>();
 builder.Services.AddScoped<LaboratorioRamos.Services.IApiResponseHandler, LaboratorioRamos.Services.ApiResponseHandler>();
+builder.Services.AddScoped<LaboratorioRamos.Services.LoginReturnUrlStore>();
 builder.Services.AddMudServices(config =>
 {
     config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.TopCenter;

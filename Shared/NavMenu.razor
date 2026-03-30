@@ -1,4 +1,4 @@
-﻿@inject AuthenticationStateProvider _authStateProvider;
+@inject AuthenticationStateProvider _authStateProvider;
 @inject NavigationManager NavigationManager
 
 
@@ -66,7 +66,11 @@
     {
         await base.OnInitializedAsync();
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
+        if (authState.User.Identity?.IsAuthenticated != true)
+            return;
         var idenUser = authState.User.Claims.ToList();
+        if (idenUser.Count < 3)
+            return;
         TypeUser = int.Parse(idenUser[2].Value);
     }
 

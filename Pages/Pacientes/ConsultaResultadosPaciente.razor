@@ -1,4 +1,5 @@
-﻿@page "/ConsultaResultadosPaciente/{PostRequiere}/{PostPaciente}"
+@page "/ConsultaResultadosPaciente/{PostRequiere}/{PostPaciente}"
+@page "/ConsultaResultadosPacientes/{PostRequiere}/{PostPaciente}"
 
 @using LaboratorioRamos.Data.DtoEmpresa
 @using LaboratorioRamos.Data.DtoMedico
@@ -22,6 +23,7 @@
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 @inject IDialogService DialogService
 @inject ILogger<ConsultaResultadosPaciente> Logger
+@inject LoginReturnUrlStore LoginReturnStore
 
 <PageTitle>Consulta de Resultados - Laboratorio Ramos</PageTitle>
 
@@ -1377,9 +1379,10 @@
             Logger.LogInformation("Inicializando ConsultaResultadosPaciente - PostRequiere: {PostRequiere}", PostRequiere);
 
             var authState = await _authStateProvider.GetAuthenticationStateAsync();
-            if (!authState.User.Identity.IsAuthenticated)
+            if (authState.User.Identity?.IsAuthenticated != true)
             {
-                NavigationManager.NavigateTo("/", true);
+                await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
+                NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
                 return;
             }
 

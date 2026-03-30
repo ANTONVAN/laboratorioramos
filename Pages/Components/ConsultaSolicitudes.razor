@@ -1,4 +1,4 @@
-﻿@page "/ConsultaSolicitudes/{PostRequiere}"
+@page "/ConsultaSolicitudes/{PostRequiere}"
 
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoMedico
@@ -20,7 +20,8 @@
 @inject ISnackbar Snackbar
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 @inject IJSRuntime IJSRuntime
-@inject IConfiguration _config;
+@inject IConfiguration _config
+@inject LoginReturnUrlStore LoginReturnStore
 
 <PageTitle>Consulta de Solicitudes</PageTitle>
 
@@ -1239,9 +1240,10 @@
         await base.OnInitializedAsync();
         //AuthenticationState authState = await _authStateProvider.GetAuthenticationStateAsync();
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
-        if (!authState.User.Identity.IsAuthenticated)
+        if (authState.User.Identity?.IsAuthenticated != true)
         {
-            NavigationManager.NavigateTo("/", true);
+            await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
+            NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
         }
         else
         {

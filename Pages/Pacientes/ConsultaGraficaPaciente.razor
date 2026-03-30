@@ -1,4 +1,5 @@
-﻿@page "/ConsultaGraficaPaciente/{PostRequiere}/{PostPaciente}"
+@page "/ConsultaGraficaPaciente/{PostRequiere}/{PostPaciente}"
+@page "/ConsultaGraficaPacientes/{PostRequiere}/{PostPaciente}"
 @using ApexCharts;
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoEstudio;
@@ -13,6 +14,7 @@
 @inject ISnackbar Snackbar
 @inject IJSRuntime IJSRuntime
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
+@inject LoginReturnUrlStore LoginReturnStore
 
 
 <MudBreadcrumbs Items="_items" Class="mb-2"></MudBreadcrumbs>
@@ -219,13 +221,14 @@
     #endregion
 
     #region Funsiones Página
-    protected async override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
-        if (!authState.User.Identity.IsAuthenticated)
+        if (authState.User.Identity?.IsAuthenticated != true)
         {
-            NavigationManager.NavigateTo("/", true);
+            await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
+            NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
         }
         else
         {

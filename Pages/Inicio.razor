@@ -1,9 +1,10 @@
-﻿@page "/Inicio"
+@page "/Inicio"
 
 @using LaboratorioRamos.Data.DtoPaciente
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider _authStateProvider
-@inject Cryp Cryp;
+@inject Cryp Cryp
+@inject LoginReturnUrlStore LoginReturnStore
 
 
 
@@ -26,9 +27,10 @@
         await base.OnInitializedAsync();
         //AuthenticationState authState = await _authStateProvider.GetAuthenticationStateAsync();
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
-        if (!authState.User.Identity.IsAuthenticated)
+        if (authState.User.Identity?.IsAuthenticated != true)
         {
-            NavigationManager.NavigateTo("/", true);
+            await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
+            NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
         }
         else
         {

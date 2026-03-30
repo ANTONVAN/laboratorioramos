@@ -1,4 +1,4 @@
-﻿@page "/ImpresionResultados"
+@page "/ImpresionResultados"
 @layout LabRamosLayout
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoExpediente
@@ -17,6 +17,7 @@
 @inject IJSRuntime IJSRuntime
 @inject IConfiguration _config;
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
+@inject LoginReturnUrlStore LoginReturnStore
 
 <PageTitle>Consulta de Resultados</PageTitle>
 
@@ -100,9 +101,10 @@ else
         await base.OnInitializedAsync();
         //AuthenticationState authState = await _authStateProvider.GetAuthenticationStateAsync();
         var authState = await _authStateProvider.GetAuthenticationStateAsync();
-        if (!authState.User.Identity.IsAuthenticated)
+        if (authState.User.Identity?.IsAuthenticated != true)
         {
-            NavigationManager.NavigateTo("/", true);
+            await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
+            NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
         }
         else
         {

@@ -1,4 +1,4 @@
-﻿@page "/ConsultaExpedientesEmpresa"
+@page "/ConsultaExpedientesEmpresa"
 @using LaboratorioRamos.Data.DtoEmpresa
 @using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
 @using LaboratorioRamos.Data.DtoFiltro
@@ -11,6 +11,7 @@
 @inject Cryp Cryp;
 @inject ISnackbar Snackbar
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
+@inject LoginReturnUrlStore LoginReturnStore
 
 <PageTitle>Consulta de Expedientes</PageTitle>
 
@@ -439,9 +440,10 @@
         try
         {
             var authState = await _authStateProvider.GetAuthenticationStateAsync();
-            if (!authState.User.Identity.IsAuthenticated)
+            if (authState.User.Identity?.IsAuthenticated != true)
             {
-                NavigationManager.NavigateTo("/", true);
+                await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
+                NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
             }
             else
             {

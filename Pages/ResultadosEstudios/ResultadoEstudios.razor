@@ -1,4 +1,4 @@
-﻿@page "/ResultadoEstudios/{PostRequiere}/{PostSolicitud}"
+@page "/ResultadoEstudios/{PostRequiere}/{PostSolicitud}"
 @using LaboratorioRamos.Data.DtoEdenImagenologia
 @using LaboratorioRamos.Data.DtoEstudio
 @using LaboratorioRamos.Data.DtoMedico
@@ -28,6 +28,7 @@
 @inject IConfiguration _config;
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler;
 @inject IDialogService DialogService
+@inject LoginReturnUrlStore LoginReturnStore
 
 
 <PageTitle>Resultados</PageTitle>
@@ -1667,9 +1668,10 @@ else
             HttpEDEN.DefaultRequestHeaders.Add("Token", _config.GetSection("TokenAPIS:Eden").Value.Trim());
 
             var authState = await _authStateProvider.GetAuthenticationStateAsync();
-            if (!authState.User.Identity.IsAuthenticated)
+            if (authState.User.Identity?.IsAuthenticated != true)
             {
-                NavigationManager.NavigateTo("/", true);
+                await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
+                NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
             }
             else
             {
