@@ -1848,12 +1848,10 @@ else
                                         //estuido = estuido[..^1];
                                         dtoResponseMedicoPacienteStudios = JsonConvert.DeserializeObject<DtoResponseMedicoPacienteStudios>(estuido);
                                         var studioselec = dtoResultadosEstudiosGral.Estudios.FirstOrDefault(e => e.Id.Equals(dtoResponseMedicoPacienteStudios.EstudioId));
-                                        if (studioselec.EstatusId == 7 || studioselec.EstatusId == 6)
+                                        //if (studioselec.EstatusId == 7 || studioselec.EstatusId == 6)
+                                        if (studioselec.EstatusId == 7)
                                         {
-                                            dtoResultadosEstudios.Estudios = new() { studioselec };
-                                        }
-                                        else if (studioselec.EstatusId == 12)
-                                        {
+                                            
                                             if (studioselec.DepartamentoId == 3)
                                             {
                                                 Data.DtoResultadosEstudios.Estudios _estudios = new Data.DtoResultadosEstudios.Estudios();
@@ -1884,24 +1882,58 @@ else
                                             {
                                                 dtoResultadosEstudios.Estudios = new() { studioselec };
                                             }
+                                            else
+                                            {
+                                                dtoResultadosEstudios.Estudios = new() { studioselec };
+                                            }
                                         }
+                                        // else if (studioselec.EstatusId == 12)
+                                        // {
+                                        //     if (studioselec.DepartamentoId == 3)
+                                        //     {
+                                        //         Data.DtoResultadosEstudios.Estudios _estudios = new Data.DtoResultadosEstudios.Estudios();
+                                        //         // var archivopdf = await _PdfGenerator.CreatePDFByIdSolicitud(_config, IJSRuntime, Http, studioselec.Id);
+                                        //         // _estudios.PdfBase64 = Convert.ToBase64String(archivopdf.ToArray());
+
+                                        //         var archivopdf = await _PdfGenerator.CreatePDFByIdSolicitud(_config, IJSRuntime, Http, studioselec.Id);
+                                        //         if (archivopdf.Length > 0)
+                                        //         {
+                                        //             _estudios.PdfBase64 = Convert.ToBase64String(archivopdf.ToArray());
+                                        //         }
+                                        //         else
+                                        //         {
+                                        //             _estudios.PdfBase64 = ""; // PDF vacío
+                                        //         }
+                                        //         _estudios.Nombre = studioselec.Nombre;
+                                        //         _estudios.EstatusId = studioselec.EstatusId;
+                                        //         _estudios.Clave = studioselec.Clave;
+                                        //         _estudios.Id = studioselec.Id;
+                                        //         _estudios.SucursalCaptura = studioselec.SucursalCaptura;
+                                        //         if (!String.IsNullOrEmpty(_estudios.PdfBase64))
+                                        //         {
+                                        //             dtoResultadosEstudios.Estudios.Add(_estudios);
+                                        //         }
+
+                                        //     }
+                                        //     else if (studioselec.DepartamentoId == 4)
+                                        //     {
+                                        //         dtoResultadosEstudios.Estudios = new() { studioselec };
+                                        //     }
+                                        // }
                                     }
                                     else
                                     {
                                         dtoResultadosEstudios.Estudios = new();
                                         foreach (var itemStudiosgr in dtoResultadosEstudiosGral.Estudios)
                                         {
-                                            if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 6)
+                                            //if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 6)
+                                            if (itemStudiosgr.EstatusId == 7)
                                             {
-                                                dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
-                                            }
-                                            else if (itemStudiosgr.EstatusId == 12)
-                                            {
+                                                
+
                                                 if (itemStudiosgr.DepartamentoId == 3)
                                                 {
                                                     Data.DtoResultadosEstudios.Estudios _estudios = new Data.DtoResultadosEstudios.Estudios();
-                                                    // var archivopdf = await _PdfGenerator.CreatePDFByIdSolicitud(_config, IJSRuntime, Http, itemStudiosgr.Id);
-                                                    // _estudios.PdfBase64 = Convert.ToBase64String(archivopdf.ToArray());
 
                                                     var archivopdf = await _PdfGenerator.CreatePDFByIdSolicitud(_config, IJSRuntime, Http, itemStudiosgr.Id);
                                                     if (archivopdf.Length > 0)
@@ -1927,7 +1959,42 @@ else
                                                 {
                                                     dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
                                                 }
+                                                else
+                                                {
+                                                    dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
+                                                }
                                             }
+                                            // else if (itemStudiosgr.EstatusId == 12)
+                                            // {
+                                            //     if (itemStudiosgr.DepartamentoId == 3)
+                                            //     {
+                                            //         Data.DtoResultadosEstudios.Estudios _estudios = new Data.DtoResultadosEstudios.Estudios();
+                                                    
+                                            //         var archivopdf = await _PdfGenerator.CreatePDFByIdSolicitud(_config, IJSRuntime, Http, itemStudiosgr.Id);
+                                            //         if (archivopdf.Length > 0)
+                                            //         {
+                                            //             _estudios.PdfBase64 = Convert.ToBase64String(archivopdf.ToArray());
+                                            //         }
+                                            //         else
+                                            //         {
+                                            //             _estudios.PdfBase64 = ""; // PDF vacío
+                                            //         }
+                                            //         _estudios.Nombre = itemStudiosgr.Nombre;
+                                            //         _estudios.EstatusId = itemStudiosgr.EstatusId;
+                                            //         _estudios.Clave = itemStudiosgr.Clave;
+                                            //         _estudios.Id = itemStudiosgr.Id;
+                                            //         _estudios.SucursalCaptura = itemStudiosgr.SucursalCaptura;
+                                            //         if (!String.IsNullOrEmpty(_estudios.PdfBase64))
+                                            //         {
+                                            //             dtoResultadosEstudios.Estudios.Add(_estudios);
+                                            //         }
+
+                                            //     }
+                                            //     else if (itemStudiosgr.DepartamentoId == 4)
+                                            //     {
+                                            //         dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
+                                            //     }
+                                            // }
                                         }
                                     }
 
@@ -1938,17 +2005,14 @@ else
                                     dtoResultadosEstudios.Estudios = new();
                                     foreach (var itemStudiosgr in dtoResultadosEstudiosGral.Estudios)
                                     {
-                                        if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 6)
+                                        //if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 6)
+                                        if (itemStudiosgr.EstatusId == 7)
                                         {
-                                            dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
-                                        }
-                                        else if (itemStudiosgr.EstatusId == 12)
-                                        {
+                                            
+
                                             if (itemStudiosgr.DepartamentoId == 3)
                                             {
                                                 Data.DtoResultadosEstudios.Estudios _estudios = new Data.DtoResultadosEstudios.Estudios();
-                                                // var archivopdf = await _PdfGenerator.CreatePDFByIdSolicitud(_config, IJSRuntime, Http, itemStudiosgr.Id);
-                                                // _estudios.PdfBase64 = Convert.ToBase64String(archivopdf.ToArray());
 
                                                 var archivopdf = await _PdfGenerator.CreatePDFByIdSolicitud(_config, IJSRuntime, Http, itemStudiosgr.Id);
                                                 if (archivopdf.Length > 0)
@@ -1974,159 +2038,48 @@ else
                                             {
                                                 dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
                                             }
+                                            else
+                                            {
+                                                dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
+                                            }
                                         }
+                                        // else if (itemStudiosgr.EstatusId == 12)
+                                        // {
+                                        //     if (itemStudiosgr.DepartamentoId == 3)
+                                        //     {
+                                        //         Data.DtoResultadosEstudios.Estudios _estudios = new Data.DtoResultadosEstudios.Estudios();
+                                                
+                                        //         var archivopdf = await _PdfGenerator.CreatePDFByIdSolicitud(_config, IJSRuntime, Http, itemStudiosgr.Id);
+                                        //         if (archivopdf.Length > 0)
+                                        //         {
+                                        //             _estudios.PdfBase64 = Convert.ToBase64String(archivopdf.ToArray());
+                                        //         }
+                                        //         else
+                                        //         {
+                                        //             _estudios.PdfBase64 = ""; // PDF vacío
+                                        //         }
+                                        //         _estudios.Nombre = itemStudiosgr.Nombre;
+                                        //         _estudios.EstatusId = itemStudiosgr.EstatusId;
+                                        //         _estudios.Clave = itemStudiosgr.Clave;
+                                        //         _estudios.Id = itemStudiosgr.Id;
+                                        //         _estudios.SucursalCaptura = itemStudiosgr.SucursalCaptura;
+                                        //         if (!String.IsNullOrEmpty(_estudios.PdfBase64))
+                                        //         {
+                                        //             dtoResultadosEstudios.Estudios.Add(_estudios);
+                                        //         }
+
+                                        //     }
+                                        //     else if (itemStudiosgr.DepartamentoId == 4)
+                                        //     {
+                                        //         dtoResultadosEstudios.Estudios.Add(itemStudiosgr);
+                                        //     }
+                                        // }
                                     }
                                     //dtoResultadosEstudios = dtoResultadosEstudiosGral;
 
                                 }
 
-                                // La carga de datos de EDEN se ejecutará después de mostrar los estudios
-                                // Ver método LoadEdenDataAsync() que se llama después de establecer dataLoaded = false
-
-                                // Código de EDEN movido a LoadEdenDataAsync() - inicio del bloque comentado
-                                /*
-                                foreach (var itStudy in dtoResultadosEstudiosGral.Estudios)
-                                {
-                                    if (itStudy.DepartamentoId.Equals(2) || itStudy.DepartamentoId.Equals(7))
-                                    {
-                                        switch (itStudy.AreaId)
-                                        {
-                                            case 36:
-                                                HttpResponseMessage restRX = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}RX");
-                                                switch (restRX.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restRX.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = $"{itStudy.Nombre} RX   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restRX.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.NotFound:
-                                                        HttpResponseMessage restSERIE = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}SERIE");
-                                                        switch (restSERIE.StatusCode)
-                                                        {
-                                                            case System.Net.HttpStatusCode.OK:
-                                                                var imgurl1 = await restSERIE.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                                imgurl1.TypeImage = $"{itStudy.Nombre} SERIE   ";
-                                                                _dtoEdenImagenologia.Add(imgurl1);
-                                                                break;
-                                                            case System.Net.HttpStatusCode.InternalServerError:
-                                                                var intSerMsg1 = await restSERIE.Content.ReadAsStringAsync();
-                                                                //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                                break;
-                                                        }
-                                                        break;
-                                                }
-                                                break;
-                                            case 49:
-                                                HttpResponseMessage restUS = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}USG");
-                                                switch (restUS.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restUS.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = $"{itStudy.Nombre} USG   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restUS.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                break;
-                                            case 50:
-                                                HttpResponseMessage restMC = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}MG");
-                                                switch (restMC.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restMC.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = $"{itStudy.Nombre} MG   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restMC.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                break;
-                                            case 57:
-                                                HttpResponseMessage restECG = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ECG");
-                                                switch (restECG.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restECG.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = $"{itStudy.Nombre} ECG   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restECG.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                break;
-                                            case 59:
-                                                HttpResponseMessage restECG1 = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ECG");
-                                                switch (restECG1.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restECG1.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = $"{itStudy.Nombre} ECG   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restECG1.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                break;
-                                            case 61:
-                                                HttpResponseMessage restESPIRO = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}ESPIRO");
-                                                switch (restESPIRO.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restESPIRO.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = $"{itStudy.Nombre} ESPIRO   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restESPIRO.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                break;
-                                            case 62:
-                                                HttpResponseMessage restAUDIO = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}AUDIO");
-                                                switch (restAUDIO.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        var imgurl = await restAUDIO.Content.ReadFromJsonAsync<DtoEdenImagenologia>();
-                                                        imgurl.TypeImage = $"{itStudy.Nombre} AUDIO   ";
-                                                        _dtoEdenImagenologia.Add(imgurl);
-                                                        break;
-                                                    case System.Net.HttpStatusCode.InternalServerError:
-                                                        var intSerMsg = await restAUDIO.Content.ReadAsStringAsync();
-                                                        //ShowSnack($"Error Interno del Servidor: {intSerMsg}", 4);
-                                                        break;
-                                                }
-                                                break;
-                                            default:
-                                                HttpResponseMessage rest = await HttpEDEN.GetAsync($"{_config.GetSection("UrlAPI:UrlAPIEden").Value.Trim()}{LstExpedientes[0].Solicitud}");
-                                                _dtoEdenImagenologia = new();
-                                                switch (rest.StatusCode)
-                                                {
-                                                    case System.Net.HttpStatusCode.OK:
-                                                        _dtoEdenImagenologia.Add(await rest.Content.ReadFromJsonAsync<DtoEdenImagenologia>());
-                                                        break;
-                                                }
-                                                break;
-                                        }
-                                    }
-                                }
-                                */
-                                // Fin del bloque comentado - código movido a LoadEdenDataAsync()
-
+                               
 
                             }
                             catch (Exception ex)
