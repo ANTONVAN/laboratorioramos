@@ -52,6 +52,7 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.Configure<LaboratorioRamos.Configuration.SessionSettings>(
     builder.Configuration.GetSection("SessionSettings"));
 
+//Comentario
 
 var app = builder.Build();
 
