@@ -325,11 +325,18 @@ else
         if (!_dataLoaded || _pdfReady || _loadFailed)
             return;
 
-        _pdfGenerator.ViewPDF(JSRuntime, "pdfViewerFrame", _pdfStream);
-        _pdfReady = true;
-        _dataLoaded = false;
-        StateHasChanged();
-        await Task.CompletedTask;
+        try
+        {
+            await _pdfGenerator.ViewPDF(JSRuntime, "pdfViewerFrame", _pdfStream);
+            _pdfReady = true;
+            _dataLoaded = false;
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            SetLoadError($"No se pudo mostrar el PDF: {ex.Message}");
+            StateHasChanged();
+        }
     }
 
     private void SetLoadError(string message)

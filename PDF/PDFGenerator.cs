@@ -39,8 +39,8 @@ namespace LaboratorioRamos.PDF
         public void ViewPDFInNewTab(IJSRuntime js, MemoryStream archivo) {
             js.InvokeVoidAsync("ViewPDFInNewTab", "Estudio.pdf", Convert.ToBase64String(archivo.ToArray()));
         }
-        public void ViewPDF(IJSRuntime js, string idIFrame, MemoryStream archivo) {
-            js.InvokeVoidAsync("ViewPDF", idIFrame, Convert.ToBase64String(archivo.ToArray()));
+        public async Task ViewPDF(IJSRuntime js, string idIFrame, MemoryStream archivo) {
+            await js.InvokeVoidAsync("ViewPDF", idIFrame, Convert.ToBase64String(archivo.ToArray()));
         }
         public async Task ViewPDFOrder(IJSRuntime js, string idIFrame, MemoryStream archivo) {
             js.InvokeVoidAsync("ViewPDFOrder", idIFrame, Convert.ToBase64String(archivo.ToArray()));
