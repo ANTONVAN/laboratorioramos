@@ -1,207 +1,332 @@
 @page "/ImpresionResultados"
 @layout LabRamosLayout
 @using LaboratorioRamos.Data.DtoPaciente
-@using LaboratorioRamos.Data.DtoExpediente
-@using LaboratorioRamos.Data.DtoExpediente.DtoRequestExpedientes
-@using LaboratorioRamos.Data.DtoMedico.DtoRequestMedicoPacientes
 @using LaboratorioRamos.Data.DtoMedico.DtoResponseMedicoPaciente
-@using LaboratorioRamos.Data.DtoImpresionResultados
-@using LaboratorioRamos.PDF;
-@using Microsoft.AspNetCore.Mvc
-@using Microsoft.AspNetCore.StaticFiles
-@inject HttpClient Http;
+@using LaboratorioRamos.PDF
+@inject HttpClient Http
 @inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider _authStateProvider
-@inject Cryp Cryp;
-@inject ISnackbar Snackbar
-@inject IJSRuntime IJSRuntime
-@inject IConfiguration _config;
+@inject AuthenticationStateProvider AuthStateProvider
+@inject Cryp Cryp
+@inject IJSRuntime JSRuntime
+@inject IConfiguration Config
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 @inject LoginReturnUrlStore LoginReturnStore
 
-<PageTitle>Consulta de Resultados</PageTitle>
+<PageTitle>Impresión de Resultados - Laboratorio Ramos</PageTitle>
 
-@if (dataLoaded)
+@if (_isLoading)
 {
-    <Loading></Loading>
+    <Loading />
+}
+else if (_loadFailed)
+{
+    <MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Class="mb-4">
+            @_errorMessage
+        </MudAlert>
+        <MudButton Variant="Variant.Filled"
+                 Color="Color.Primary"
+                 StartIcon="@Icons.Material.Filled.ArrowBack"
+                 OnClick="NavigateToLogin">
+            Volver al inicio de sesión
+        </MudButton>
+    </MudContainer>
 }
 else
 {
-    <MudBreadcrumbs Items="_items" Style="padding-bottom: 2px; padding-top:0px;"></MudBreadcrumbs>
-    <MudGrid>
-        <MudItem xs="12" sm="7" md="12" Class="pt-1">
-            <MudText Align="Align.Center" Typo="Typo.h3" style="color: #0d37a8;">Impresión de Resultados</MudText><MudSpacer/>
-            @if (ShowBtnDescargar)
-            {
-                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="() => DownloadPDF()">Descargar</MudButton>
-            }else{
-                <MudGrid>
-                    <MudItem xs="12" sm="12" md="12" style="text-align: center;">
-                        <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
-                    </MudItem>
-                </MudGrid>
-            }
-            
-        </MudItem>
-        @* <div id="iFrameId">
+    <div class="impresion-page">
+        <header class="impresion-toolbar">
+            <div class="impresion-toolbar-top">
+                <MudBreadcrumbs Items="_items" Class="impresion-breadcrumbs" />
+                @if (_pdfReady)
+                {
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Size="Size.Small"
+                               StartIcon="@Icons.Material.Filled.Download"
+                               Class="impresion-download-btn"
+                               OnClick="DownloadPdfAsync">
+                        Descargar
+                    </MudButton>
+                }
+            </div>
+            <MudText Typo="Typo.h6" Class="impresion-title">
+                Impresión de Resultados
+            </MudText>
+        </header>
 
-        </div> *@
-        <MudItem xs="12" sm="7" md="12" id="iFrameId">
-        </MudItem>
-    </MudGrid>
+        <div class="impresion-viewer-area">
+            @if (!_pdfReady)
+            {
+                <div class="impresion-loading">
+                    <MudProgressCircular Color="Color.Primary" Indeterminate="true" Size="Size.Large" />
+                    <MudText Typo="Typo.body2">Generando vista previa del PDF...</MudText>
+                </div>
+            }
+            <div id="pdfViewerFrame" class="impresion-viewer-frame @(_pdfReady ? "impresion-viewer-frame--ready" : "")"></div>
+        </div>
+    </div>
 }
 
 <style>
-    .mud-input-input-control {
-        align-items: normal;
+    .impresion-page {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100dvh;
+        max-height: 100dvh;
+        overflow: hidden;
+        background: #525659;
     }
 
-    .mud-toolbar mud-toolbar-gutters mud-table-toolbar {
-        margin-bottom: 20px;
+    .impresion-toolbar {
+        flex-shrink: 0;
+        background: #fff;
+        padding: 0.5rem 1rem 0.625rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        z-index: 2;
+    }
+
+    .impresion-toolbar-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .impresion-breadcrumbs {
+        padding: 0 !important;
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .impresion-title {
+        color: #0d37a8 !important;
+        font-weight: 600 !important;
+        margin-top: 0.25rem;
+        line-height: 1.3;
+    }
+
+    .impresion-download-btn {
+        flex-shrink: 0;
+    }
+
+    .impresion-viewer-area {
+        flex: 1 1 auto;
+        min-height: 0;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+        background: #525659;
+    }
+
+    .impresion-viewer-frame {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        transition: opacity 0.2s ease-in-out;
+    }
+
+    .impresion-viewer-frame--ready {
+        opacity: 1;
+    }
+
+    .impresion-viewer-frame iframe {
+        width: 100% !important;
+        height: 100% !important;
+        border: none !important;
+        display: block !important;
+    }
+
+    .impresion-loading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: #f5f7fa;
+        z-index: 1;
+    }
+
+    .impresion-loading .mud-typography {
+        color: #6c757d;
+    }
+
+    @@media (max-width: 600px) {
+        .impresion-toolbar {
+            padding: 0.375rem 0.75rem 0.5rem;
+        }
+
+        .impresion-title {
+            font-size: 1rem !important;
+        }
+
+        .impresion-download-btn {
+            width: 100%;
+        }
+
+        .impresion-toolbar-top {
+            flex-direction: column;
+            align-items: stretch;
+        }
     }
 </style>
 
-
 @code {
+    private readonly PDFGenerator _pdfGenerator = new();
+    private readonly List<BreadcrumbItem> _items =
+    [
+        new BreadcrumbItem("Inicio", href: "/Consulta", icon: Icons.Material.Filled.Home),
+        new BreadcrumbItem("Impresión de Resultados", href: null, disabled: true, icon: Icons.Material.Filled.Print)
+    ];
 
-    #region Declaración de variables
+    private List<DtoPaciente> _paciente = new();
+    private List<DtoResponseMedicoPacienteStudios> _studiosSeleccionados = new();
+    private MemoryStream _pdfStream = new();
+    private string _branchId = string.Empty;
 
+    private bool _isLoading = true;
+    private bool _loadFailed;
+    private bool _pdfReady;
+    private string _errorMessage = string.Empty;
+    private bool _dataLoaded;
 
-    public string resDecrip { get; set; }
-
-    private List<DtoPaciente> dtoPaciente = new();
-
-    private List<DtoResponseMedicoPaciente> LstExpedientes = new();
-
-    private List<BreadcrumbItem> _items = new List<BreadcrumbItem>
-    {
-        new BreadcrumbItem("Home", href: "#", icon: Icons.Material.Filled.Home),
-        new BreadcrumbItem("Consulta de Resultados", href: null,disabled: true, icon: Icons.Material.Filled.Badge),
-    };
-
-    PDFGenerator _PdfGenerator = new();
-    private bool ValidateData = false;
-    private bool ShowBtnDescargar = false;
-    private List<DtoResponseMedicoPacienteStudios> StudioSelect = new();
-
-    private bool dataLoaded = true;
-    private MemoryStream archivopdf = new();
-    private string Sucursal = "";
-    private List<int> LstEstatusPrint = new();
-
-    private string UrlUsuario = "services/gateway/api/ClinicResults/getList";
-    private string UrlPaciente = "services/gateway/api/MassSearch/GetAllCaptureResults";
-    private string UrlImprimeResultados = "services/gateway/api/ClinicResults/printResultFile";
-
-    #endregion
-
-    #region Funsiones Página
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        //AuthenticationState authState = await _authStateProvider.GetAuthenticationStateAsync();
-        var authState = await _authStateProvider.GetAuthenticationStateAsync();
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         if (authState.User.Identity?.IsAuthenticated != true)
         {
             await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
             NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
+            return;
         }
-        else
-        {
 
-            dataLoaded = false;
-
-
-        }
-        StateHasChanged();
-
+        await LoadImpresionAsync(authState);
     }
-    protected override async void OnParametersSet()
+
+    private async Task LoadImpresionAsync(AuthenticationState authState)
     {
+        _isLoading = true;
+        _loadFailed = false;
+        _pdfReady = false;
+        _errorMessage = string.Empty;
 
         try
         {
-            var authState = await _authStateProvider.GetAuthenticationStateAsync();
-            var idenUser = authState.User.Claims.ToList();
-            var resDecrip = Cryp.Desencripta(idenUser[0].Value.ToString());
-            dtoPaciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(resDecrip);
-            Sucursal = ((string[])Http.DefaultRequestHeaders.GetValues("branchid"))[0];
-
-            DtoRequestMedicoPacientes parametrobusqueda = new()
+            var claims = authState.User.Claims.ToList();
+            if (claims.Count == 0)
             {
-                MedicoId = new(),
-                CompañiaId = new(),
-                Buscar = dtoPaciente[0].NombrePaciente.Trim(),
-                TipoFecha = 1,
-                Fecha = new()
-            };
-
-            Http.DefaultRequestHeaders.Remove("branchid");
-            Http.DefaultRequestHeaders.Add("branchid", Sucursal);
-
-            var sesExpediente = await Http.PostAsJsonAsync<DtoRequestMedicoPacientes>(UrlPaciente, parametrobusqueda);
-
-            switch (sesExpediente.StatusCode)
-            {
-                case System.Net.HttpStatusCode.OK:
-                    try
-                    {
-                        LstExpedientes = await sesExpediente.Content.ReadFromJsonAsync<List<DtoResponseMedicoPaciente>>();
-                        var estatusSep = _config.GetSection("IdImpresion").Value.Trim().Split(",");
-                        LstEstatusPrint = new();
-                        foreach (var itemST in estatusSep)
-                        {
-                            LstEstatusPrint.Add(int.Parse(itemST));
-                        }
-                        foreach (var itemExp in LstExpedientes)
-                        {
-                            foreach (var itemSol in itemExp.Estudios)
-                            {
-                                if (LstEstatusPrint.Contains(itemSol.EstatusId))
-                                {
-                                    itemSol.SolicitudId = itemExp.SolicitudId;
-                                    if (itemExp.Solicitud == dtoPaciente[0].SolicitudIMR)
-                                    {
-                                        StudioSelect.Add(itemSol);
-                                    }
-                                }
-                            }
-                        }
-                        archivopdf = await _PdfGenerator.CreatePDF(_config, IJSRuntime, Http, StudioSelect);
-                        //_PdfGenerator.DownloadPDF(IJSRuntime, archivopdf);
-                        _PdfGenerator.ViewPDF(IJSRuntime, "iFrameId", archivopdf);
-                        ShowBtnDescargar = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        //ValidateData = false;
-                    }
-
-
-                    break;
+                SetLoadError("No se encontró información de sesión. Inicie sesión nuevamente.");
+                return;
             }
 
-            dataLoaded = false;
+            var decrypted = Cryp.Desencripta(claims[0].Value);
+            _paciente = JsonConvert.DeserializeObject<List<DtoPaciente>>(decrypted) ?? new List<DtoPaciente>();
+            if (_paciente.Count == 0)
+            {
+                SetLoadError("No se encontraron datos del paciente en la sesión.");
+                return;
+            }
+
+            var paciente = _paciente[0];
+            if (string.IsNullOrWhiteSpace(paciente.Token))
+            {
+                SetLoadError("La sesión no contiene token de autenticación. Inicie sesión nuevamente.");
+                return;
+            }
+
+            _branchId = !string.IsNullOrWhiteSpace(paciente.AuthBranchId)
+                ? paciente.AuthBranchId
+                : paciente.SucursalId;
+
+            if (string.IsNullOrWhiteSpace(_branchId))
+            {
+                SetLoadError("No se encontró la sucursal de autenticación. Inicie sesión nuevamente.");
+                return;
+            }
+
+            ImpresionResultadosSearchHelper.ConfigureHttpHeaders(Http, paciente.Token, _branchId);
+
+            var solicitudBuscada = paciente.SolicitudIMR?.Trim() ?? string.Empty;
+            if (string.IsNullOrEmpty(solicitudBuscada))
+            {
+                SetLoadError("No se indicó el número de solicitud.");
+                return;
+            }
+
+            var expedientes = await ImpresionResultadosSearchHelper.FetchResultadosAsync(Http, ApiHandler, paciente);
+            if (expedientes.Count == 0)
+            {
+                SetLoadError("No se encontraron resultados para el expediente indicado.");
+                return;
+            }
+
+            var estatusPermitidos = ImpresionResultadosSearchHelper.ParseEstatusImpresion(Config);
+            _studiosSeleccionados = ImpresionResultadosSearchHelper.SelectStudiosForImpresion(
+                expedientes, solicitudBuscada, estatusPermitidos);
+
+            if (_studiosSeleccionados.Count == 0)
+            {
+                SetLoadError("No se encontraron estudios disponibles para imprimir con el expediente y solicitud indicados.");
+                return;
+            }
+
+            _pdfStream = await _pdfGenerator.CreatePDF(Config, JSRuntime, Http, _studiosSeleccionados);
+            if (_pdfStream.Length == 0)
+            {
+                SetLoadError("No se pudo generar el PDF de resultados.");
+                return;
+            }
+
+            _dataLoaded = true;
         }
         catch (Exception ex)
         {
-
-            var t = "";
+            SetLoadError($"Error al cargar la impresión: {ex.Message}");
         }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_dataLoaded || _pdfReady || _loadFailed)
+            return;
+
+        _pdfGenerator.ViewPDF(JSRuntime, "pdfViewerFrame", _pdfStream);
+        _pdfReady = true;
+        _dataLoaded = false;
         StateHasChanged();
+        await Task.CompletedTask;
     }
 
-    void ShowSnack(string message)
+    private void SetLoadError(string message)
     {
-        Snackbar.Add($"Atención: {message}", Severity.Warning);
+        _loadFailed = true;
+        _errorMessage = message;
+        ApiHandler.ShowWarningMessage(message);
     }
 
-    async Task DownloadPDF()
+    private void NavigateToLogin()
     {
-        _PdfGenerator.DownloadPDF(IJSRuntime, archivopdf);        
+        NavigationManager.NavigateTo("/Consulta", forceLoad: true);
     }
 
-    #endregion
-
+    private Task DownloadPdfAsync()
+    {
+        _pdfGenerator.DownloadPDF(JSRuntime, _pdfStream);
+        return Task.CompletedTask;
+    }
 }

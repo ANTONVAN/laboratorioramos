@@ -26,4 +26,15 @@ namespace LaboratorioRamos.Data.DtoPaciente
         [Required(ErrorMessage = "La Contraseña es requerida")]
         public string Contraseña { get; set; }
     }
+
+    public class DtoLoginImpresion
+    {
+        [Required(ErrorMessage = "El Expediente es requerido")]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Solo se permiten números")]
+        public string Expediente { get; set; } = "";
+
+        [Required(ErrorMessage = "La Solicitud es requerida")]
+        [RegularExpression("^[0-9]*$", ErrorMessage = "Solo se permiten números")]
+        public string Solicitud { get; set; } = "";
+    }
 }

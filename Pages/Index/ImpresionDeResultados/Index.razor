@@ -4,153 +4,325 @@
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
 @using LaboratorioRamos.Data.DtoStateProvider
-@inject HttpClient Http;
-@inject IConfiguration _config;
+@using Newtonsoft.Json
+@inject HttpClient Http
+@inject IConfiguration _config
 @inject AuthenticationStateProvider _authStateProvider
 @inject NavigationManager NavigationManager
-@inject Cryp Cryp;
+@inject Cryp Cryp
 @inject ISnackbar Snackbar
-@inject IJSRuntime IJSRuntime
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 @inject LoginReturnUrlStore LoginReturnStore
 
-<PageTitle>Login</PageTitle>
+<PageTitle>Impresión de Resultados - Laboratorio Ramos</PageTitle>
 
+<div class="login-container">
+    <MudContainer MaxWidth="MaxWidth.Medium" Class="pa-2">
+        <MudGrid Justify="Justify.Center" Class="min-height-100vh">
+            <MudItem xs="12" sm="10" md="8" lg="6" xl="5">
+                <MudPaper Class="pa-6" Elevation="8" Style="border-radius: 16px; background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);">
 
-<MudGrid Justify="Justify.Center">
-    <MudItem xs="12" sm="7" md="12" Class="d-flex absolute justify-center" style="top:15%;">
-        <EditForm Model="@dtoLoginPaciente" OnValidSubmit="OnValidSubmit" style="width: 500px;">
-            <DataAnnotationsValidator />
-            <MudGrid>
-                <MudItem xs="12" md="12" sm="12">
-                    <MudCard>
-                        <MudCardMedia Image="Images/LogotipoWeb.png" Height="175" />
-                        <MudCardContent>
-                            <MudTextField Label="Expediente" HelperText="Max. 16 dígitos"
-                                          @bind-Value="dtoLoginPaciente.Usuario" For="@(() => dtoLoginPaciente.Usuario)" MaxLength="16" />
-                            <MudTextField Label="Código" HelperText="Máx. 16 dígitos" Class="mt-3"
-                                          @bind-Value="dtoLoginPaciente.Contraseña" For="@(() => dtoLoginPaciente.Contraseña)" InputType="InputType.Password" MaxLength="16" />
-                        </MudCardContent>
-                        <MudCardActions>
-                            @if (ValidateData)
-                            {
-                                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Disabled Class="rounded-0 ml-auto"><MudProgressCircular Color="Color.Default" Size="Size.Small" Indeterminate="true" /></MudButton>
-                            }
-                            else
-                            {
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="rounded-0 ml-auto">Ingresar</MudButton>
-                            }
-                            
-                        </MudCardActions>
-                    </MudCard>
-                </MudItem>
-                <MudItem xs="12" sm="7" md="12" style="text-align: center;">
-                    <MudLink Href="#" Typo="Typo.body2" Align="Align.Center">Manual de Usuario</MudLink>
-                </MudItem>
-            </MudGrid>
-        </EditForm>
-    </MudItem>
-</MudGrid>
+                    <div class="mb-6 text-center">
+                        <MudCardMedia Image="Images/LogotipoWeb.png" Height="120" Style="border-radius: 12px;" />
+                        <MudText Typo="Typo.h4" Class="mb-2 mt-4" Style="color: #1A457F; font-weight: 600;">
+                            Impresión de Resultados
+                        </MudText>
+                        <MudText Typo="Typo.body2" Style="color: #6c757d;">
+                            Ingrese expediente y solicitud para imprimir resultados
+                        </MudText>
+                    </div>
 
+                    <EditForm Model="@loginForm" OnValidSubmit="OnValidSubmitAsync">
+                        <DataAnnotationsValidator />
 
-@code{
-    #region Declaracion de Variables y Objetos
-    private DtoLogin dtoLogin = new();
-    private DtoLogin dtoLoginPaciente = new();
-    private List<DtoPaciente> dtoPaciente = new();
-    private DtoRequestPaciente dtoRequestPaciente = new();
-    private bool ValidateData = false;
-    private string UrlAuth = "services/identity/api/profile/login";
-    private string UrlUsuario = "services/gateway/api/MedicalRecord/now";
-    #endregion
+                        <MudStack Spacing="4">
+                            <MudTextField Label="Expediente"
+                                          HelperText="Ingrese su número de expediente (máx. 16 caracteres)"
+                                          @bind-Value="loginForm.Expediente"
+                                          For="@(() => loginForm.Expediente)"
+                                          MaxLength="16"
+                                          Variant="Variant.Outlined"
+                                          Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Person"
+                                          Class="mt-2"
+                                          Style="font-size: 16px;" />
 
-    #region Funcionalidad Página
+                            <MudTextField Label="Código"
+                                          HelperText="Ingrese el Código (máx. 16 caracteres)"
+                                          @bind-Value="loginForm.Solicitud"
+                                          For="@(() => loginForm.Solicitud)"
+                                          MaxLength="16"
+                                          Variant="Variant.Outlined"
+                                          Adornment="Adornment.Start"
+                                          AdornmentIcon="@Icons.Material.Filled.Description"
+                                          Class="mt-2"
+                                          Style="font-size: 16px;" />
+
+                            <div class="text-center">
+                                @if (isSubmitting)
+                                {
+                                    <MudButton ButtonType="ButtonType.Button"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Disabled="true"
+                                               Class="px-8 py-3"
+                                               Style="border-radius: 8px; min-width: 200px; height: 48px;">
+                                        <MudProgressCircular Color="Color.Inherit"
+                                                             Size="Size.Small"
+                                                             Indeterminate="true"
+                                                             Class="mr-2" />
+                                        <MudText Typo="Typo.button">@loginStatusMessage</MudText>
+                                    </MudButton>
+                                }
+                                else
+                                {
+                                    <MudButton ButtonType="ButtonType.Submit"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               Class="px-8 py-3"
+                                               Style="border-radius: 8px; min-width: 200px; height: 48px; font-weight: 600;">
+                                        <MudIcon Icon="@Icons.Material.Filled.Print" Class="mr-2" />
+                                        <MudText Typo="Typo.button">Ingresar</MudText>
+                                    </MudButton>
+                                }
+                            </div>
+                        </MudStack>
+                    </EditForm>
+
+                    <div class="mt-2 pt-4 text-center" style="border-top: 1px solid #e9ecef;">
+                        <MudLink Href="#"
+                                 Typo="Typo.body2"
+                                 Style="color: #1A457F; text-decoration: none;">
+                            <MudIcon Icon="@Icons.Material.Filled.Help" Size="Size.Small" Class="mr-1" />
+                            Manual de Usuario
+                        </MudLink>
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.caption" Style="color: #6c757d;">
+                            ¿Necesita ayuda? Contacte al administrador del sistema
+                        </MudText>
+                    </div>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    </MudContainer>
+</div>
+
+<style>
+    .login-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #ceced1 0%, #646267 100%);
+        display: flex;
+        align-items: center;
+    }
+
+    .min-height-100vh {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .mud-paper {
+        transition: all 0.3s ease-in-out;
+    }
+
+        .mud-paper:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
+        }
+
+    .mud-input-control .mud-input {
+        font-size: 16px;
+    }
+
+    .mud-input-label {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .mud-button-root:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(26, 69, 127, 0.3);
+    }
+
+    @@media (max-width: 600px) {
+        .login-container {
+            padding: 10px;
+        }
+
+        .mud-paper {
+            margin: 10px;
+            padding: 24px !important;
+        }
+    }
+</style>
+
+@code {
+    private const string AuthUrl = "services/identity/api/profile/login";
+    private const string PacienteUrl = "services/gateway/api/MedicalRecord/now";
+    private const string ConfigUserKey = "UsrLoginGral:User";
+    private const string ConfigPasswordKey = "UsrLoginGral:Pwd";
+
+    private readonly DtoLoginImpresion loginForm = new();
+    private bool isSubmitting;
+    private string loginStatusMessage = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+        isSubmitting = false;
+        loginStatusMessage = string.Empty;
+        ClearAuthHeaders();
     }
 
-    void ShowSnack(string message)
+    private void ClearAuthHeaders()
     {
-        Snackbar.Add($"Atención: {message}", Severity.Warning);
+        Http.DefaultRequestHeaders.Remove("Authorization");
+        Http.DefaultRequestHeaders.Remove("branchid");
     }
 
-    #endregion
-
-    #region Operaciones
-    async void OnValidSubmit(EditContext context)
+    private (string User, string Password)? GetGeneralCredentials()
     {
-        ValidateData = true;
-        dtoLogin = new()
+        var user = _config.GetSection(ConfigUserKey).Value;
+        var password = _config.GetSection(ConfigPasswordKey).Value;
+        if (string.IsNullOrWhiteSpace(user) || string.IsNullOrWhiteSpace(password))
         {
-            Usuario = _config.GetSection("UsrLoginGral:User").Value,
-            Contraseña = _config.GetSection("UsrLoginGral:Pwd").Value,
+            ApiHandler.ShowErrorMessage("Configuración de usuario general no encontrada");
+            return null;
+        }
+
+        return (user, password);
+    }
+
+    private async Task<DtoUserSession?> AuthenticateGeneralUserAsync((string User, string Password) credentials)
+    {
+        loginStatusMessage = "Conectando con el servidor...";
+        StateHasChanged();
+
+        var loginRequest = new DtoLogin
+        {
+            Usuario = credentials.User,
+            Contraseña = credentials.Password
         };
+
+        using var authResponse = await Http.PostAsJsonAsync(AuthUrl, loginRequest);
+        var authSuccess = await ApiHandler.HandleResponseAsync<DtoLogin>(authResponse, "autenticación", false);
+        if (!authSuccess || !authResponse.IsSuccessStatusCode)
+            return null;
+
+        return await authResponse.Content.ReadFromJsonAsync<DtoUserSession>();
+    }
+
+    private async Task<List<DtoPaciente>?> GetPacienteDataAsync(string expediente, string token)
+    {
+        loginStatusMessage = "Consultando expediente...";
+        StateHasChanged();
+
+        ClearAuthHeaders();
+        Http.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+
+        var request = new DtoRequestPaciente { Expediente = expediente };
+        using var response = await Http.PostAsJsonAsync(PacienteUrl, request);
+        var success = await ApiHandler.HandleResponseAsync<DtoRequestPaciente>(response, "consulta de paciente para impresión", false);
+        if (!success || !response.IsSuccessStatusCode)
+            return null;
+
+        var pacientes = await response.Content.ReadFromJsonAsync<List<DtoPaciente>>() ?? new List<DtoPaciente>();
+        if (pacientes.Count == 0)
+        {
+            ApiHandler.ShowWarningMessage("¡El Paciente no existe, favor de verificar!");
+            return null;
+        }
+
+        return pacientes;
+    }
+
+    private async Task OnValidSubmitAsync(EditContext context)
+    {
+        if (isSubmitting)
+            return;
+
+        isSubmitting = true;
+        loginStatusMessage = string.Empty;
+
         try
         {
-            // Autenticación inicial
-            var ses = await Http.PostAsJsonAsync<DtoLogin>(UrlAuth, dtoLogin);
-            Http.DefaultRequestHeaders.Remove("Authorization");
-            Http.DefaultRequestHeaders.Remove("branchid");
+            var credentials = GetGeneralCredentials();
+            if (credentials is null)
+                return;
 
-            // Manejar respuesta de autenticación
-            var authSuccess = await ApiHandler.HandleResponseAsync<DtoLogin>(ses, "autenticación");
-            
-            if (authSuccess && ses.StatusCode == System.Net.HttpStatusCode.OK)
+            var session = await AuthenticateGeneralUserAsync(credentials.Value);
+            if (session?.Token is null)
+                return;
+
+            var pacientes = await GetPacienteDataAsync(loginForm.Expediente.Trim(), session.Token);
+            if (pacientes is null || pacientes.Count == 0)
             {
-                var result = await ses.Content.ReadFromJsonAsync<DtoUserSession>();
-                dtoRequestPaciente = new()
-                {
-                    Expediente = dtoLoginPaciente.Usuario
-                };
-                Http.DefaultRequestHeaders.Add("Authorization", "Bearer " + result.Token);
-                
-                // Consulta de datos del paciente para impresión
-                var sesPaciente = await Http.PostAsJsonAsync<DtoRequestPaciente>(UrlUsuario, dtoRequestPaciente);
-                var pacienteSuccess = await ApiHandler.HandleResponseAsync<DtoRequestPaciente>(sesPaciente, "consulta de paciente para impresión");
-                
-                if (pacienteSuccess && sesPaciente.StatusCode == System.Net.HttpStatusCode.OK)
-                {
-                    dtoPaciente = await sesPaciente.Content.ReadFromJsonAsync<List<DtoPaciente>>();
-                    
-                    if (dtoPaciente.Count > 0)
-                    {
-                        // Login exitoso para impresión
-                        dtoPaciente[0].SolicitudIMR = dtoLoginPaciente.Contraseña;
-                        dtoPaciente[0].Token = result.Token;
-                        string json = JsonConvert.SerializeObject(dtoPaciente);
-                        
-                        var cusAuthStateProvider = (AuthStateProvider)_authStateProvider;
-                        await cusAuthStateProvider.UpdAuthenticationState(new DtoUserProvider
-                            {
-                                testsuncretr = Cryp.Encripta(json),
-                                Type = 4
-                            });
-                        
-                        Http.DefaultRequestHeaders.Add("branchid", result.Sucursal.ToString());
-                        ApiHandler.ShowSuccessMessage("¡Login exitoso! Accediendo a impresión de resultados.");
-                        var pendingImp = await LoginReturnStore.GetAndClearPendingReturnPathAsync(4);
-                        var openImp = !string.IsNullOrEmpty(pendingImp) ? pendingImp : "/ImpresionResultados";
-                        await IJSRuntime.InvokeAsync<object>("open", CancellationToken.None, openImp);
-                        ValidateData = false;
-                    }
-                    else
-                    {
-                        Http.DefaultRequestHeaders.Remove("Authorization");
-                        Http.DefaultRequestHeaders.Remove("branchid");
-                        ApiHandler.ShowWarningMessage("¡El Paciente no existe, favor de verificar!");
-                        ValidateData = false;
-                    }
-                }
+                ClearAuthHeaders();
+                return;
             }
+
+            var paciente = pacientes[0];
+            var solicitud = loginForm.Solicitud.Trim();
+            paciente.SolicitudIMR = solicitud;
+            paciente.Token = session.Token;
+            paciente.AuthBranchId = session.Sucursal.ToString();
+
+            Http.DefaultRequestHeaders.Remove("branchid");
+            Http.DefaultRequestHeaders.Add("branchid", session.Sucursal.ToString());
+
+            loginStatusMessage = "Verificando solicitud...";
+            StateHasChanged();
+
+            var resultados = await ImpresionResultadosSearchHelper.FetchResultadosAsync(Http, ApiHandler, paciente);
+            if (resultados.Count == 0)
+            {
+                ClearAuthHeaders();
+                ApiHandler.ShowWarningMessage("No se encontraron resultados para el expediente indicado.");
+                return;
+            }
+
+            if (!ImpresionResultadosSearchHelper.SolicitudExists(resultados, solicitud))
+            {
+                ClearAuthHeaders();
+                ApiHandler.ShowWarningMessage("La solicitud indicada no existe para este expediente. Verifique el número e intente nuevamente.");
+                return;
+            }
+
+            var estatusPermitidos = ImpresionResultadosSearchHelper.ParseEstatusImpresion(_config);
+            var estudios = ImpresionResultadosSearchHelper.SelectStudiosForImpresion(resultados, solicitud, estatusPermitidos);
+            if (estudios.Count == 0)
+            {
+                ClearAuthHeaders();
+                ApiHandler.ShowWarningMessage("La solicitud no tiene estudios disponibles para imprimir en este momento.");
+                return;
+            }
+
+            var json = JsonConvert.SerializeObject(pacientes);
+            var authProvider = (AuthStateProvider)_authStateProvider;
+            await authProvider.UpdAuthenticationState(new DtoUserProvider
+            {
+                testsuncretr = Cryp.Encripta(json),
+                Type = 4
+            });
+
+            ApiHandler.ShowSuccessMessage("¡Login exitoso! Accediendo a impresión de resultados.");
+
+            var pendingPath = await LoginReturnStore.GetAndClearPendingReturnPathAsync(4);
+            var destination = !string.IsNullOrEmpty(pendingPath) ? pendingPath : "/ImpresionResultados";
+            NavigationManager.NavigateTo(destination, forceLoad: true);
         }
         catch (Exception ex)
         {
+            ClearAuthHeaders();
             ApiHandler.ShowErrorMessage($"Error inesperado durante el login: {ex.Message}");
-            ValidateData = false;
         }
-        StateHasChanged();
+        finally
+        {
+            isSubmitting = false;
+            loginStatusMessage = string.Empty;
+            StateHasChanged();
+        }
     }
-    #endregion
-	
 }

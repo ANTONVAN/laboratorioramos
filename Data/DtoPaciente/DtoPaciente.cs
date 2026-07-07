@@ -17,5 +17,8 @@
         public string FechaAlta { get; set; }
         public string Token { get; set; } = "";
 
+        /// <summary>Sucursal de autenticación (branchid) para llamadas API en nuevos circuitos Blazor.</summary>
+        public string AuthBranchId { get; set; } = "";
+
     }
 }

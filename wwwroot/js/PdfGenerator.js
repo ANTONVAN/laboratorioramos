@@ -8,15 +8,26 @@
 }
 
 function ViewPDF(iframeID, byteBase64) {
-    document.getElementById(iframeID).innerHTML = "";
+    var container = document.getElementById(iframeID);
+    if (!container) return;
+
+    container.innerHTML = "";
     var contentType = 'application/pdf';
     var blob = b64toBlob(byteBase64, contentType);
     var blobUrl = URL.createObjectURL(blob);
+
     var ifra = document.createElement('iframe');
-    ifra.setAttribute("src", blobUrl);
-    ifra.style.with = "100%";
-    ifra.style.height = "680%";
-    document.getElementById(iframeID).appendChild(ifra);
+    ifra.setAttribute("src", blobUrl + "#view=FitH&toolbar=1");
+    ifra.setAttribute("title", "Vista previa de resultados");
+    ifra.style.width = "100%";
+    ifra.style.height = "100%";
+    ifra.style.border = "none";
+    ifra.style.display = "block";
+    ifra.addEventListener('load', function () {
+        setTimeout(function () { URL.revokeObjectURL(blobUrl); }, 60000);
+    });
+
+    container.appendChild(ifra);
 }
 function ViewPDFOrder(iframeID, byteBase64) {
     document.getElementById(iframeID).innerHTML = "";
