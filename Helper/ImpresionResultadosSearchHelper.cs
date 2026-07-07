@@ -20,24 +20,18 @@ namespace LaboratorioRamos.Helper
             var expediente = paciente.Expediente?.Trim() ?? string.Empty;
             var nombre = paciente.NombrePaciente?.Trim() ?? string.Empty;
 
-            if (IsNumericExpediente(expediente))
-            {
-                var byExpediente = await QueryResultadosAsync(http, apiHandler, BuildSearchByExpediente(expediente));
-                if (byExpediente.Count > 0)
-                    return byExpediente;
-            }
-
+            // Una sola consulta, mismo criterio que ConsultaResultadosPaciente: Buscar por nombre.
+            DtoRequestMedicoPacientes parametros;
             if (!string.IsNullOrEmpty(nombre))
-            {
-                var byNombre = await QueryResultadosAsync(http, apiHandler, BuildSearchByNombre(nombre));
-                if (byNombre.Count > 0)
-                    return byNombre;
-            }
+                parametros = BuildSearchByNombre(nombre);
+            else if (IsNumericExpediente(expediente))
+                parametros = BuildSearchByExpediente(expediente);
+            else if (!string.IsNullOrEmpty(expediente))
+                parametros = BuildSearchByNombre(expediente);
+            else
+                return new List<DtoResponseMedicoPaciente>();
 
-            if (!string.IsNullOrEmpty(expediente))
-                return await QueryResultadosAsync(http, apiHandler, BuildSearchByNombre(expediente));
-
-            return new List<DtoResponseMedicoPaciente>();
+            return await QueryResultadosAsync(http, apiHandler, parametros);
         }
 
         public static List<DtoResponseMedicoPacienteStudios> SelectStudiosForImpresion(

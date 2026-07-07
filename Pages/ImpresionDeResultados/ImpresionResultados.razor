@@ -11,6 +11,8 @@
 @inject IConfiguration Config
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 @inject LoginReturnUrlStore LoginReturnStore
+@inject ImpresionResultadosPendingStore ImpresionPendingStore
+@inject ImpresionResultadosSessionStore ImpresionSessionStore
 
 <PageTitle>Impresión de Resultados - Laboratorio Ramos</PageTitle>
 
@@ -207,7 +209,7 @@ else
         if (authState.User.Identity?.IsAuthenticated != true)
         {
             await LoginReturnStore.SavePendingReturnFromFullUriAsync(NavigationManager.Uri);
-            NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri), forceLoad: true);
+            NavigationManager.NavigateTo(LoginRedirectHelper.GetLoginPathFromFullUri(NavigationManager.Uri));
             return;
         }
 
@@ -264,16 +266,34 @@ else
                 return;
             }
 
-            var expedientes = await ImpresionResultadosSearchHelper.FetchResultadosAsync(Http, ApiHandler, paciente);
-            if (expedientes.Count == 0)
+            var expedienteKey = paciente.Expediente?.Trim() ?? string.Empty;
+
+            // PDF ya generado en login (mismo circuito Blazor) — sin llamadas extra al API.
+            var pendingPdf = ImpresionPendingStore.GetAndClear(expedienteKey, solicitudBuscada);
+            if (pendingPdf?.PdfBytes is { Length: > 0 })
             {
-                SetLoadError("No se encontraron resultados para el expediente indicado.");
+                _pdfStream = new MemoryStream(pendingPdf.PdfBytes);
+                _dataLoaded = true;
                 return;
             }
 
-            var estatusPermitidos = ImpresionResultadosSearchHelper.ParseEstatusImpresion(Config);
-            _studiosSeleccionados = ImpresionResultadosSearchHelper.SelectStudiosForImpresion(
-                expedientes, solicitudBuscada, estatusPermitidos);
+            // Fallback: estudios en sesión del navegador o búsqueda + generación de PDF.
+            _studiosSeleccionados = await ImpresionSessionStore.GetAndClearPendingStudiosAsync(
+                expedienteKey, solicitudBuscada) ?? new List<DtoResponseMedicoPacienteStudios>();
+
+            if (_studiosSeleccionados.Count == 0)
+            {
+                var expedientes = await ImpresionResultadosSearchHelper.FetchResultadosAsync(Http, ApiHandler, paciente);
+                if (expedientes.Count == 0)
+                {
+                    SetLoadError("No se encontraron resultados para el expediente indicado.");
+                    return;
+                }
+
+                var estatusPermitidos = ImpresionResultadosSearchHelper.ParseEstatusImpresion(Config);
+                _studiosSeleccionados = ImpresionResultadosSearchHelper.SelectStudiosForImpresion(
+                    expedientes, solicitudBuscada, estatusPermitidos);
+            }
 
             if (_studiosSeleccionados.Count == 0)
             {
@@ -321,7 +341,7 @@ else
 
     private void NavigateToLogin()
     {
-        NavigationManager.NavigateTo("/Consulta", forceLoad: true);
+        NavigationManager.NavigateTo("/Consulta");
     }
 
     private Task DownloadPdfAsync()

@@ -4,6 +4,7 @@
 @using LaboratorioRamos.Data.DtoPaciente
 @using LaboratorioRamos.Data.DtoPaciente.DtoRequestPaciente
 @using LaboratorioRamos.Data.DtoStateProvider
+@using LaboratorioRamos.PDF
 @using Newtonsoft.Json
 @inject HttpClient Http
 @inject IConfiguration _config
@@ -11,8 +12,10 @@
 @inject NavigationManager NavigationManager
 @inject Cryp Cryp
 @inject ISnackbar Snackbar
+@inject IJSRuntime JSRuntime
 @inject LaboratorioRamos.Services.IApiResponseHandler ApiHandler
 @inject LoginReturnUrlStore LoginReturnStore
+@inject ImpresionResultadosPendingStore ImpresionPendingStore
 
 <PageTitle>Impresión de Resultados - Laboratorio Ramos</PageTitle>
 
@@ -165,6 +168,7 @@
     private const string ConfigPasswordKey = "UsrLoginGral:Pwd";
 
     private readonly DtoLoginImpresion loginForm = new();
+    private readonly PDFGenerator _pdfGenerator = new();
     private bool isSubmitting;
     private string loginStatusMessage = string.Empty;
 
@@ -299,6 +303,17 @@
                 return;
             }
 
+            loginStatusMessage = "Generando PDF...";
+            StateHasChanged();
+
+            var pdfStream = await _pdfGenerator.CreatePDF(_config, JSRuntime, Http, estudios);
+            if (pdfStream.Length == 0)
+            {
+                ClearAuthHeaders();
+                ApiHandler.ShowWarningMessage("No se pudo generar el PDF de resultados.");
+                return;
+            }
+
             var json = JsonConvert.SerializeObject(pacientes);
             var authProvider = (AuthStateProvider)_authStateProvider;
             await authProvider.UpdAuthenticationState(new DtoUserProvider
@@ -307,11 +322,18 @@
                 Type = 4
             });
 
+            ImpresionPendingStore.Set(new PendingImpresionData
+            {
+                Expediente = paciente.Expediente?.Trim() ?? loginForm.Expediente.Trim(),
+                Solicitud = solicitud,
+                PdfBytes = pdfStream.ToArray()
+            });
+
             ApiHandler.ShowSuccessMessage("¡Login exitoso! Accediendo a impresión de resultados.");
 
             var pendingPath = await LoginReturnStore.GetAndClearPendingReturnPathAsync(4);
             var destination = !string.IsNullOrEmpty(pendingPath) ? pendingPath : "/ImpresionResultados";
-            NavigationManager.NavigateTo(destination, forceLoad: true);
+            NavigationManager.NavigateTo(destination);
         }
         catch (Exception ex)
         {
