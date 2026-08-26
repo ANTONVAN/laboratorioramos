@@ -231,14 +231,7 @@
                 </MudTd>
 
                 @{
-                    int countStudi = 0;
-                    foreach (var itemStd in context.Estudios)
-                    {
-                        if (itemStd.EstatusId == 7 || itemStd.EstatusId == 6 || itemStd.EstatusId == 12)
-                        {
-                            countStudi++;
-                        }
-                    }
+                    int countStudi = EstudioDisplayHelper.FiltrarListado(context.Estudios).Count;
                 }
 
                 <MudTd DataLabel="Número de Solicitud">
@@ -364,7 +357,7 @@
                                 Estudios de la Solicitud
                             </MudText>
                             <MudTable 
-                                Items="@context.Estudios" 
+                                Items="@EstudioDisplayHelper.FiltrarListado(context.Estudios)" 
                                 Context="EstContext" 
                                 @ref="_table" 
                                 T="DtoResponseMedicoPacienteStudios" 
@@ -398,7 +391,7 @@
                                         <MudText Typo="Typo.body2">@EstContext.FechaEntrega</MudText>
                                     </MudTd>
                                     <MudTd DataLabel="Estatus">
-                                        @if (EstContext.EstatusId == 7 || EstContext.EstatusId == 6 || EstContext.EstatusId == 12)
+                                        @if (EstContext.EstatusId == EstudioDisplayHelper.EstatusEnviado)
                                         {
                                             <MudChip T="string"
                                                 Color="Color.Success" 
@@ -598,7 +591,7 @@
                             <MudTd Class="study-name-cell-dialog">@EstContext.Estudio</MudTd>
                             <MudTd>@EstContext.FechaEntrega</MudTd>
                             <MudTd>
-                                @if (EstContext.EstatusId == 7 || EstContext.EstatusId == 6 || EstContext.EstatusId == 12)
+                                @if (EstContext.EstatusId == EstudioDisplayHelper.EstatusEnviado)
                                 {
                                     <span class="status-badge-liberado">
                                         <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Small" />

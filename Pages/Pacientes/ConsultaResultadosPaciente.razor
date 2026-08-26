@@ -267,7 +267,7 @@
                 <!-- Action Buttons -->
                 <MudTd Style="text-align: center;">
                     @{
-                        var availableStudies = context.Estudios.Count(e => IsEstatusLiberado(e.EstatusId));
+                        var availableStudies = EstudioDisplayHelper.FiltrarListado(context.Estudios).Count;
                     }
                     
                     @if (availableStudies > 0)
@@ -323,7 +323,7 @@
                     <td colspan="5" class="py-4">
                         <MudPaper Class="studies-nested-table" Elevation="2">
                             <MudTable 
-                                Items="@context.Estudios" 
+                                Items="@EstudioDisplayHelper.FiltrarListado(context.Estudios)" 
                                 Context="estudio"
                                 T="DtoResponseMedicoPacienteStudios"
                                 Hover="true" 
@@ -1318,8 +1318,6 @@
     private const string POST_REQUIERE_COMPANIA = "3";
     
     private const int ESTATUS_LIBERADO_7 = 7;
-    private const int ESTATUS_LIBERADO_6 = 6;
-    private const int ESTATUS_LIBERADO_12 = 12;
     #endregion
 
     #region Fields
@@ -1731,9 +1729,7 @@
 
     private bool IsEstatusLiberado(int estatusId)
     {
-        return estatusId == ESTATUS_LIBERADO_7 || 
-               estatusId == ESTATUS_LIBERADO_6 || 
-               estatusId == ESTATUS_LIBERADO_12;
+        return estatusId == ESTATUS_LIBERADO_7;
     }
 
     private async Task ToggleEstudios(string solicitud)

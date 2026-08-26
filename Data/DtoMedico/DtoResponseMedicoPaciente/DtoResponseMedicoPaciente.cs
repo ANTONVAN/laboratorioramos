@@ -31,6 +31,7 @@
         public string SolicitudId { get; set; }
         public Int32 EstudioId { get; set; }
         public Int32 EstatusId { get; set; }
+        public int? DepartamentoId { get; set; }
         public string? Estudio { get; set; }
         public string? MedioSolicitado { get; set; }
         public string? FechaEntrega { get; set; }

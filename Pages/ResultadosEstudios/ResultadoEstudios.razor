@@ -1849,7 +1849,7 @@ else
                                         dtoResponseMedicoPacienteStudios = JsonConvert.DeserializeObject<DtoResponseMedicoPacienteStudios>(estuido);
                                         var studioselec = dtoResultadosEstudiosGral.Estudios.FirstOrDefault(e => e.Id.Equals(dtoResponseMedicoPacienteStudios.EstudioId));
                                         //if (studioselec.EstatusId == 7 || studioselec.EstatusId == 6)
-                                        if (studioselec.EstatusId == 7)
+                                        if (EstudioDisplayHelper.DebeMostrarseEnResultadosLaboratorio(studioselec?.EstatusId, studioselec?.DepartamentoId))
                                         {
                                             
                                             if (studioselec.DepartamentoId == 3)
@@ -1927,7 +1927,7 @@ else
                                         foreach (var itemStudiosgr in dtoResultadosEstudiosGral.Estudios)
                                         {
                                             //if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 6)
-                                            if (itemStudiosgr.EstatusId == 7)
+                                            if (EstudioDisplayHelper.DebeMostrarseEnResultadosLaboratorio(itemStudiosgr.EstatusId, itemStudiosgr.DepartamentoId))
                                             {
                                                 
 
@@ -2006,7 +2006,7 @@ else
                                     foreach (var itemStudiosgr in dtoResultadosEstudiosGral.Estudios)
                                     {
                                         //if (itemStudiosgr.EstatusId == 7 || itemStudiosgr.EstatusId == 6)
-                                        if (itemStudiosgr.EstatusId == 7)
+                                        if (EstudioDisplayHelper.DebeMostrarseEnResultadosLaboratorio(itemStudiosgr.EstatusId, itemStudiosgr.DepartamentoId))
                                         {
                                             
 
@@ -2142,7 +2142,7 @@ else
             {
                 foreach (var itStudy in dtoResultadosEstudiosGral.Estudios)
                 {
-                    if (itStudy.DepartamentoId.Equals(2) || itStudy.DepartamentoId.Equals(7))
+                    if (EstudioDisplayHelper.EsImagenologia(itStudy.DepartamentoId))
                     {
                         switch (itStudy.AreaId)
                         {

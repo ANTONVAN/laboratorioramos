@@ -12,3 +12,4 @@ LaboratorioRamos.csproj.user
 /Services/README_BestPractices.md
 /Services/README_ApiResponseHandler_Notifications.md
 /Pages/ResultadosEstudios/README_UX_Improvements.md
+*.md
